@@ -14,9 +14,9 @@
 <style>
   *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; background:#FAFAF7; }
-  :root{ --bg:#FAFAF7; --surface:#FFFFFF; --plate:#FFFFFF; --border:#E3DECF; --accent:#B8860B; --cta-ink:#14181A; --cta-bg:#14181A; --cta-fg:#FAFAF7; --pill-bg:#14181A; --pill-fg:#FFFFFF; --radius-card:14px; --head-font:'Albert Sans',sans-serif; --head-weight:600; }
-  .theme-c{ --bg:#EEF2F2; --surface:#FFFFFF; --plate:#FFFFFF; --border:#DBE2E2; --accent:#23416E; --cta-ink:#FFFFFF; --cta-bg:#23416E; --cta-fg:#FFFFFF; --pill-bg:#23416E; --pill-fg:#FFFFFF; --radius-card:16px; --head-font:'Hanken Grotesk',sans-serif; --head-weight:800; }
-  .theme-d{ --bg:#F4EFE4; --surface:#FCFBF8; --plate:#FFFFFF; --border:#E4DDCB; --accent:#8A4650; --cta-ink:#FFFFFF; --cta-bg:#8A4650; --cta-fg:#FFFFFF; --pill-bg:#2A211F; --pill-fg:#FFFFFF; --radius-card:4px; --head-font:'Hanken Grotesk',sans-serif; --head-weight:800; }
+  :root{ --pagew:2040px; --dot:none; --head-size:clamp(24px,4.6vw,58px); --eyebrow-display:inline-flex; --bg:#FAFAF7; --surface:#FFFFFF; --plate:#FFFFFF; --border:#E3DECF; --accent:#B8860B; --cta-ink:#14181A; --cta-bg:#14181A; --cta-fg:#FAFAF7; --pill-bg:#14181A; --pill-fg:#FFFFFF; --radius-card:2px; --head-font:'Albert Sans',sans-serif; --head-weight:600; }
+  .theme-c{ --pagew:1600px; --dot:inline-block; --head-size:clamp(34px,5vw,64px); --eyebrow-display:inline-flex; --bg:#EEF2F2; --surface:#FFFFFF; --plate:#FFFFFF; --border:#DBE2E2; --accent:#23416E; --cta-ink:#FFFFFF; --cta-bg:#23416E; --cta-fg:#FFFFFF; --pill-bg:#23416E; --pill-fg:#FFFFFF; --radius-card:16px; --head-font:'Hanken Grotesk',sans-serif; --head-weight:800; }
+  .theme-d{ --pagew:1600px; --dot:inline-block; --head-size:clamp(34px,5vw,64px); --eyebrow-display:none; --bg:#F4EFE4; --surface:#FCFBF8; --plate:#FFFFFF; --border:#E4DDCB; --accent:#8A4650; --cta-ink:#FFFFFF; --cta-bg:#8A4650; --cta-fg:#FFFFFF; --pill-bg:#2A211F; --pill-fg:#FFFFFF; --radius-card:0; --head-font:'Hanken Grotesk',sans-serif; --head-weight:800; }
   ::selection{ background:var(--accent); color:var(--cta-ink); }
   .pgrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(248px,1fr)); gap:clamp(20px,2.2vw,34px); }
   .pgrid-compact{ grid-template-columns:repeat(auto-fill,minmax(202px,1fr)); gap:16px; }
@@ -46,33 +46,34 @@
 <div class="{{ themeClass }}" style="min-height:100vh; background:var(--bg); font-family:'Hanken Grotesk',sans-serif; color:#14181A; -webkit-font-smoothing:antialiased;">
 
 
-  <div style="max-width:1320px; margin:0 auto; padding:clamp(30px,4vw,60px) clamp(20px,4vw,44px) clamp(60px,8vw,110px);">
+  <div style="max-width:var(--pagew); margin:0 auto; padding:clamp(30px,4vw,60px) 6vw clamp(60px,8vw,110px);">
 
     <!-- Header -->
-    <h1 style="font-family:var(--head-font); font-weight:var(--head-weight); font-size:clamp(34px,5vw,64px); line-height:1; letter-spacing:-.03em; margin:0 0 18px;">Plagg att förädla</h1>
+    <div style="display:var(--eyebrow-display); align-items:center; gap:8px; font-weight:700; font-size:11px; letter-spacing:.28em; text-transform:uppercase; color:var(--accent); margin:0 0 16px;"><span style="display:var(--dot); width:6px; height:6px; border-radius:50%; background:var(--accent);"></span>Sortiment</div>
+    <h1 style="font-family:var(--head-font); font-weight:var(--head-weight); font-size:var(--head-size); line-height:1.04; letter-spacing:-.02em; margin:0 0 18px;">Plagg att förädla</h1>
     <p style="font-size:17px; line-height:1.6; color:#5A615C; margin:0; max-width:56ch;">Bläddra bland basplagg från ledande varumärken, designa med tryck, brodyr och vävda märken och beställ direkt.</p>
 
     <!-- Toolbar -->
     <div style="margin:clamp(28px,4vw,44px) 0 clamp(22px,3vw,32px);">
       <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
         <sc-for list="{{ mainChips }}" as="c" hint-placeholder-count="4">
-          <button onClick="{{ c.on }}" style="border:1px solid {{ c.border }}; background:{{ c.bg }}; color:{{ c.fg }}; padding:10px 17px; border-radius:999px; font-weight:700; font-size:13.5px; cursor:pointer; white-space:nowrap; font-family:inherit; display:inline-flex; align-items:center; gap:7px;">{{ c.name }}<span style="opacity:.5; font-weight:600; font-size:12px;">{{ c.count }}</span></button>
+          <button onClick="{{ c.on }}" style="border:1px solid {{ c.border }}; background:{{ c.bg }}; color:{{ c.fg }}; padding:10px 17px; border-radius:var(--radius-card); font-weight:700; font-size:13.5px; cursor:pointer; white-space:nowrap; font-family:inherit; display:inline-flex; align-items:center; gap:7px;">{{ c.name }}<span style="opacity:.5; font-weight:600; font-size:12px;">{{ c.count }}</span></button>
         </sc-for>
       </div>
       <sc-if value="{{ hasSubs }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:16px; padding:13px 16px; background:rgba(20,24,26,.035); border-radius:14px;"><span style="font-weight:700; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:#9A9486; margin-right:4px;">Filtrera</span>
           <sc-for list="{{ subChips }}" as="c" hint-placeholder-count="4">
-            <button onClick="{{ c.on }}" style="border:1px solid {{ c.border }}; background:{{ c.bg }}; color:{{ c.fg }}; padding:7px 13px; border-radius:999px; font-weight:600; font-size:12.5px; cursor:pointer; white-space:nowrap; font-family:inherit; display:inline-flex; align-items:center; gap:6px;">{{ c.name }}<span style="opacity:.5; font-weight:600; font-size:11.5px;">{{ c.count }}</span></button>
+            <button onClick="{{ c.on }}" style="border:1px solid {{ c.border }}; background:{{ c.bg }}; color:{{ c.fg }}; padding:7px 13px; border-radius:var(--radius-card); font-weight:600; font-size:12.5px; cursor:pointer; white-space:nowrap; font-family:inherit; display:inline-flex; align-items:center; gap:6px;">{{ c.name }}<span style="opacity:.5; font-weight:600; font-size:11.5px;">{{ c.count }}</span></button>
           </sc-for>
         </div>
       </sc-if>
       <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:18px;">
-        <select onChange="{{ onBrand }}" value="{{ brand }}" style="appearance:none; border:1px solid var(--border); background:var(--surface); color:#14181A; padding:10px 34px 10px 15px; border-radius:999px; font-weight:600; font-size:13px; cursor:pointer; font-family:inherit; background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 12 12%22><path d=%22M2 4l4 4 4-4%22 fill=%22none%22 stroke=%22%235A615C%22 stroke-width=%221.5%22/></svg>'); background-repeat:no-repeat; background-position:right 14px center;">
+        <select onChange="{{ onBrand }}" value="{{ brand }}" style="appearance:none; border:1px solid var(--border); background:var(--surface); color:#14181A; padding:10px 34px 10px 15px; border-radius:var(--radius-card); font-weight:600; font-size:13px; cursor:pointer; font-family:inherit; background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 12 12%22><path d=%22M2 4l4 4 4-4%22 fill=%22none%22 stroke=%22%235A615C%22 stroke-width=%221.5%22/></svg>'); background-repeat:no-repeat; background-position:right 14px center;">
           <sc-for list="{{ brandOptions }}" as="b" hint-placeholder-count="5">
             <option value="{{ b.value }}">{{ b.label }}</option>
           </sc-for>
         </select>
-        <div style="display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:10px 16px;">
+        <div style="display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-card); padding:10px 16px;">
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex:none;"><circle cx="7" cy="7" r="5" stroke="#9A9486" stroke-width="1.5"></circle><path d="M11 11l3 3" stroke="#9A9486" stroke-width="1.5" stroke-linecap="round"></path></svg>
           <input value="{{ q }}" onInput="{{ onQ }}" placeholder="Sök plagg eller varumärke" style="border:none; outline:none; background:transparent; font-size:13.5px; width:clamp(120px,18vw,210px); color:#14181A; font-family:inherit;">
         </div>
@@ -115,7 +116,7 @@
     <div style="text-align:center; padding:clamp(50px,9vw,120px) 20px;">
       <div style="font-weight:700; font-size:20px; letter-spacing:-.01em; margin-bottom:10px;">{{ emptyTitle }}</div>
       <div style="font-size:14.5px; color:#6A6F69; margin-bottom:24px;">Prova en annan kategori, varumärke eller sökning.</div>
-      <button onClick="{{ clearFilters }}" style="border:1px solid var(--pill-bg); background:transparent; color:#14181A; padding:12px 24px; border-radius:999px; font-weight:700; font-size:14px; cursor:pointer; font-family:inherit;">Rensa filter</button>
+      <button onClick="{{ clearFilters }}" style="border:1px solid var(--pill-bg); background:transparent; color:#14181A; padding:12px 24px; border-radius:var(--radius-card); font-weight:700; font-size:14px; cursor:pointer; font-family:inherit;">Rensa filter</button>
     </div>
     </sc-if>
 
@@ -177,10 +178,10 @@
         </div>
 
         <sc-if value="{{ d.canProceed }}" hint-placeholder-val="{{ false }}">
-          <button style="width:100%; background:var(--cta-bg); color:var(--cta-fg); border:none; padding:17px; border-radius:999px; font-weight:800; font-size:15.5px; cursor:pointer; font-family:inherit;">Gå vidare till Design Studio →</button>
+          <button style="width:100%; background:var(--cta-bg); color:var(--cta-fg); border:none; padding:17px; border-radius:var(--radius-card); font-weight:800; font-size:15.5px; cursor:pointer; font-family:inherit;">Gå vidare till Design Studio →</button>
         </sc-if>
         <sc-if value="{{ d.cannotProceed }}" hint-placeholder-val="{{ true }}">
-          <button disabled style="width:100%; background:var(--plate); color:#B7B1A2; border:1px solid var(--border); padding:17px; border-radius:999px; font-weight:800; font-size:15.5px; cursor:not-allowed; font-family:inherit;">Välj antal för att fortsätta</button>
+          <button disabled style="width:100%; background:var(--plate); color:#B7B1A2; border:1px solid var(--border); padding:17px; border-radius:var(--radius-card); font-weight:800; font-size:15.5px; cursor:not-allowed; font-family:inherit;">Välj antal för att fortsätta</button>
         </sc-if>
         <div style="text-align:center; margin-top:14px; font-size:12px; color:#9A9486;">Art.nr {{ d.id }} · {{ d.family }}</div>
       </div>

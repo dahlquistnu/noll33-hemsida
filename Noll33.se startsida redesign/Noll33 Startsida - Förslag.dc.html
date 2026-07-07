@@ -66,9 +66,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&amp;family=Instrument+Serif:ital@0;1&amp;family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&amp;family=Albert+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;}
-  html{overflow-x:hidden;}
+  html{overflow-x:hidden;scrollbar-gutter:stable;}
   html,body{margin:0;padding:0;}
-  body{background:#FAFAF7;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  body{background:#FAFAF7;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;scrollbar-gutter:stable;}
   img{display:block;max-width:100%;}
   a{text-decoration:none;color:inherit;}
   button{font-family:inherit;}
@@ -87,6 +87,15 @@
   @keyframes n33-rollin{from{opacity:0;transform:translateX(-150px) rotate(-380deg);}to{opacity:1;transform:translateX(0) rotate(0);}}
   @keyframes n33-ed-left{from{opacity:0;transform:translateX(-120px);}to{opacity:1;transform:translateX(0);}}
   @keyframes n33-ed-right{from{opacity:0;transform:translateX(120px);}to{opacity:1;transform:translateX(0);}}
+  @keyframes n33-textdrift{from{transform:translateY(0);}to{transform:translateY(var(--dmax,300px));}}
+  .n33-textdrift{animation:n33-textdrift linear both;animation-timeline:view();animation-range:entry 95% exit 15%;will-change:transform;}
+  @keyframes n33-statrise{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+  .n33-statrise{animation:n33-statrise both cubic-bezier(.2,.72,.24,1);animation-timeline:view();}
+  @media (hover:hover){ .n33-statcell{transition:transform .4s cubic-bezier(.2,.72,.24,1);} .n33-statcell:hover{transform:translateY(-4px);} }
+  .n33-featcard{transition:transform .45s cubic-bezier(.2,.72,.24,1);}
+  .n33-featcard img{transition:transform .65s cubic-bezier(.2,.72,.24,1);}
+  .n33-featcard h3{transition:color .3s ease;}
+  @media (hover:hover){ .n33-featcard:hover{transform:translateY(-5px);} .n33-featcard:hover img{transform:scale(1.06);} .n33-featcard:hover h3{color:#8A3344;} }
   .ed-slide{opacity:.34;transition:opacity .9s ease, transform .95s cubic-bezier(.2,.72,.24,1);will-change:opacity,transform;}
   .ed-left{transform:translateX(-150px);}
   .ed-right{transform:translateX(150px);}
@@ -114,13 +123,13 @@
 <div style="font-family:'Hanken Grotesk',system-ui,sans-serif;color:#14181A;background:#FAFAF7;min-height:100%;position:relative;">
   <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="14" fill="#FAFAF7"></rect><rect x="20" y="30" width="60" height="40" rx="5" fill="#14181A"></rect><text x="50" y="56" font-family="sans-serif" font-size="20" fill="#F4B300" text-anchor="middle" font-weight="800">33</text></svg></template>
 
-  <div style="position:fixed;bottom:22px;right:22px;z-index:900;display:{{ switcherDisplay }};align-items:center;gap:3px;padding:5px 5px 5px 6px;background:rgba(18,22,24,.92);backdrop-filter:saturate(160%) blur(14px);border:1px solid rgba(255,255,255,.08);border-radius:999px;box-shadow:0 10px 40px rgba(0,0,0,.32);">
+  <div style="position:fixed;bottom:22px;right:22px;z-index:3000;display:{{ switcherDisplay }};align-items:center;gap:3px;padding:4px 4px 4px 5px;background:rgba(18,22,24,.66);backdrop-filter:saturate(160%) blur(14px);border:1px solid rgba(255,255,255,.08);border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.2);">
     <span style="padding:0 11px 0 8px;font:600 10px/1 'Hanken Grotesk',sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.4);">Koncept</span>
-    <sc-if value="{{ isA }}" hint-placeholder-val="{{ true }}"><button onClick="{{ selA }}" style="padding:9px 17px;border-radius:999px;border:none;cursor:pointer;font:600 13px/1 'Hanken Grotesk',system-ui,sans-serif;letter-spacing:.01em;white-space:nowrap;transition:background .2s ease,color .2s ease;background:#F4B300;color:#131316;">Atelier</button></sc-if>
+    <sc-if value="{{ isA }}" hint-placeholder-val="{{ true }}"><button onClick="{{ selA }}" style="padding:9px 17px;border-radius:999px;border:none;cursor:pointer;font:600 13px/1 'Hanken Grotesk',system-ui,sans-serif;letter-spacing:.01em;white-space:nowrap;transition:background .2s ease,color .2s ease;background:rgba(255,255,255,.18);color:#fff;">Atelier</button></sc-if>
     <sc-if value="{{ notA }}" hint-placeholder-val="{{ false }}"><button onClick="{{ selA }}" style="padding:9px 17px;border-radius:999px;border:none;cursor:pointer;font:600 13px/1 'Hanken Grotesk',system-ui,sans-serif;letter-spacing:.01em;white-space:nowrap;transition:background .2s ease,color .2s ease;background:transparent;color:rgba(255,255,255,.7);">Atelier</button></sc-if>
-    <sc-if value="{{ isC }}" hint-placeholder-val="{{ false }}"><button onClick="{{ selC }}" style="padding:9px 17px;border-radius:999px;border:none;cursor:pointer;font:600 13px/1 'Hanken Grotesk',system-ui,sans-serif;letter-spacing:.01em;white-space:nowrap;transition:background .2s ease,color .2s ease;background:#F4B300;color:#131316;">Kollektion</button></sc-if>
+    <sc-if value="{{ isC }}" hint-placeholder-val="{{ false }}"><button onClick="{{ selC }}" style="padding:9px 17px;border-radius:999px;border:none;cursor:pointer;font:600 13px/1 'Hanken Grotesk',system-ui,sans-serif;letter-spacing:.01em;white-space:nowrap;transition:background .2s ease,color .2s ease;background:rgba(255,255,255,.18);color:#fff;">Kollektion</button></sc-if>
     <sc-if value="{{ notC }}" hint-placeholder-val="{{ true }}"><button onClick="{{ selC }}" style="padding:9px 17px;border-radius:999px;border:none;cursor:pointer;font:600 13px/1 'Hanken Grotesk',system-ui,sans-serif;letter-spacing:.01em;white-space:nowrap;transition:background .2s ease,color .2s ease;background:transparent;color:rgba(255,255,255,.7);">Kollektion</button></sc-if>
-    <sc-if value="{{ isD }}" hint-placeholder-val="{{ false }}"><button onClick="{{ selD }}" style="padding:9px 17px;border-radius:999px;border:none;cursor:pointer;font:600 13px/1 'Hanken Grotesk',system-ui,sans-serif;letter-spacing:.01em;white-space:nowrap;transition:background .2s ease,color .2s ease;background:#F4B300;color:#131316;">Magasin</button></sc-if>
+    <sc-if value="{{ isD }}" hint-placeholder-val="{{ false }}"><button onClick="{{ selD }}" style="padding:9px 17px;border-radius:999px;border:none;cursor:pointer;font:600 13px/1 'Hanken Grotesk',system-ui,sans-serif;letter-spacing:.01em;white-space:nowrap;transition:background .2s ease,color .2s ease;background:rgba(255,255,255,.18);color:#fff;">Magasin</button></sc-if>
     <sc-if value="{{ notD }}" hint-placeholder-val="{{ true }}"><button onClick="{{ selD }}" style="padding:9px 17px;border-radius:999px;border:none;cursor:pointer;font:600 13px/1 'Hanken Grotesk',system-ui,sans-serif;letter-spacing:.01em;white-space:nowrap;transition:background .2s ease,color .2s ease;background:transparent;color:rgba(255,255,255,.7);">Magasin</button></sc-if>
   </div>
 
@@ -130,7 +139,7 @@
 
     <!-- Header -->
     <header style="position:sticky;top:0;z-index:50;background:rgba(250,250,247,.82);backdrop-filter:saturate(150%) blur(14px);border-bottom:1px solid #E8E5DC;">
-      <div style="max-width:2040px;margin:0 auto;padding:0 6vw;height:74px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
+      <div style="max-width:100%;margin:0;padding:0 max(6vw, calc((100vw - 2040px) / 2));height:74px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
         <a href="#" aria-label="noll33 – startsida" style="display:inline-flex;align-items:center;flex:none;font:800 26px/1 'Hanken Grotesk',sans-serif;letter-spacing:-.02em;color:#2A2F2C;text-decoration:none;"><span style="color:#B8860B;">NOLL</span>33<span style="color:#B8860B;">.</span></a>
         <nav style="display:flex;gap:32px;align-items:center;">
           <sc-for list="{{ nav }}" as="item" hint-placeholder-count="5">
@@ -186,8 +195,8 @@
     <!-- Editorial rows -->
     <section style="max-width:2040px;margin:0 auto;padding:clamp(56px,6.5vw,96px) 7vw;display:flex;flex-direction:column;gap:clamp(56px,6.5vw,96px);">
       <!-- Row 1: image left / prose right -->
-      <div style="display:grid;grid-template-columns:0.82fr 1fr;gap:clamp(36px,4.5vw,80px);align-items:center;">
-        <div class="ed-slide ed-left" style="position:relative;aspect-ratio:16/10;max-height:440px;border-radius:2px;overflow:hidden;background:#1B1B1F;">
+      <div style="display:grid;grid-template-columns:0.82fr 1fr;gap:clamp(36px,4.5vw,80px);align-items:start;">
+        <div class="ed-slide ed-left" style="position:relative;aspect-ratio:5/3;border-radius:2px;overflow:hidden;background:#1B1B1F;">
           <img src="assets/c-rack.jpg" alt="Förädlade plagg på ställning, redo för återförsäljare" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
         </div>
         <div class="ed-slide ed-right" style="max-width:40ch;">
@@ -198,8 +207,8 @@
         </div>
       </div>
       <!-- Row 2: image left / prose right -->
-      <div style="display:grid;grid-template-columns:0.82fr 1fr;gap:clamp(36px,4.5vw,80px);align-items:center;">
-        <div class="ed-slide ed-left" style="position:relative;aspect-ratio:16/10;max-height:440px;border-radius:2px;overflow:hidden;background:#EBE7DC;">
+      <div style="display:grid;grid-template-columns:0.82fr 1fr;gap:clamp(36px,4.5vw,80px);align-items:start;">
+        <div class="ed-slide ed-left" style="position:relative;aspect-ratio:5/3;border-radius:2px;overflow:hidden;background:#EBE7DC;">
           <img src="assets/gots-certifierat.jpg" alt="GOTS-certifierad t-shirt" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
         </div>
         <div class="ed-slide ed-right" style="max-width:40ch;">
@@ -210,21 +219,21 @@
         </div>
       </div>
       <!-- Row 3: image left / prose right -->
-      <div style="display:grid;grid-template-columns:0.82fr 1fr;gap:clamp(36px,4.5vw,80px);align-items:center;">
-        <div class="ed-slide ed-left" style="position:relative;aspect-ratio:16/10;max-height:440px;border-radius:2px;overflow:hidden;background:#1C1C21;">
-          <video data-rate="1.8" autoplay="" muted="" loop="" playsinline="" preload="auto" poster="assets/ds-still.jpg" src="https://res.cloudinary.com/e9t94hoz/video/upload/PRNTR_STUDIO_FILM_fchkle.mp4" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;display:block;"></video>
+      <div style="display:grid;grid-template-columns:0.82fr 1fr;gap:clamp(36px,4.5vw,80px);align-items:start;">
+        <div class="ed-slide ed-left" style="position:relative;aspect-ratio:5/3;border-radius:2px;overflow:hidden;background:#1C1C21;">
+          <video data-rate="1.8" autoplay="" muted="" loop="" playsinline="" preload="auto" poster="assets/ds-still.jpg" src="uploads/0706-9d30edb9.mp4" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;display:block;"></video>
         </div>
         <div class="ed-slide ed-right" style="max-width:40ch;">
           <div style="font:600 11px/1 'Hanken Grotesk',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#14181A;">Design Studio</div>
           <h3 style="font-family:'Albert Sans',sans-serif;font-weight:600;font-size:clamp(30px,3.3vw,50px);line-height:1.04;letter-spacing:-.01em;color:#14181A;margin:18px 0 16px;">Designa, förhandsgranska, beställ.</h3>
-          <p style="font:400 16px/1.65 'Hanken Grotesk',sans-serif;color:#5A615C;margin:0 0 26px;">Välj plagg, ladda upp loggan och se din design live — och slutför köpet direkt i studion. Inga offerter fram och tillbaka, inga väntetider.</p>
+          <p style="font:400 16px/1.65 'Hanken Grotesk',sans-serif;color:#5A615C;margin:0 0 18px;">Välj plagg, ladda upp loggan och se din design live — och slutför köpet direkt i studion.</p>
           <a href="https://prntr.dahlquist.se/?_vercel_share=1sWtz0EP2IvzTUPAA2W2soa3fzce3ubb" target="_blank" rel="noopener" style="font:600 13px/1 'Hanken Grotesk',sans-serif;letter-spacing:.02em;color:#14181A;border-bottom:1.5px solid #F4B300;padding-bottom:3px;">Öppna Design Studio →</a>
         </div>
       </div>
     </section>
 
     <!-- Sortiment -->
-    <section style="max-width:2040px;margin:0 auto;padding:96px 6vw 88px;">
+    <section style="max-width:2040px;margin:0 auto;padding:0 7vw 88px;">
       <div data-reveal="" style="opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;">
         <div>
           <div style="font:600 11px/1 'Hanken Grotesk',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#14181A;margin-bottom:16px;">Sortiment</div>
@@ -235,7 +244,7 @@
       <div data-reveal="" data-reveal-delay="80" style="opacity:0;transform:translateY(30px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1);margin-top:44px;overflow:hidden;background:#FAFAF7;position:relative;width:100vw;margin-left:calc(50% - 50vw);height:clamp(460px,44vw,720px);">
         <img data-parallax="" data-travel="200" src="assets/mockup-11.jpg" alt="noll33 sortiment — hela kollektionen" style="position:absolute;left:50%;top:0;transform:translateX(-50%);width:106%;height:auto;opacity:.82;will-change:transform;">
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0 clamp(28px,4vw,64px);margin-top:42px;border-top:1px solid #E3DECF;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0 clamp(28px,4vw,64px);margin-top:42px;">
         <a href="#" style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:20px 4px;border-bottom:1px solid #E3DECF;transition:padding-left .3s cubic-bezier(.2,.7,.2,1);" style-hover="padding-left:9px;"><span style="font-family:'Albert Sans',sans-serif;font-weight:600;font-size:clamp(20px,1.8vw,27px);letter-spacing:-.01em;color:#14181A;">Pikéer</span></a>
         <a href="#" style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:20px 4px;border-bottom:1px solid #E3DECF;transition:padding-left .3s cubic-bezier(.2,.7,.2,1);" style-hover="padding-left:9px;"><span style="font-family:'Albert Sans',sans-serif;font-weight:600;font-size:clamp(20px,1.8vw,27px);letter-spacing:-.01em;color:#14181A;">Arbetskläder</span></a>
         <a href="#" style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:20px 4px;border-bottom:1px solid #E3DECF;transition:padding-left .3s cubic-bezier(.2,.7,.2,1);" style-hover="padding-left:9px;"><span style="font-family:'Albert Sans',sans-serif;font-weight:600;font-size:clamp(20px,1.8vw,27px);letter-spacing:-.01em;color:#14181A;">T-shirts</span></a>
@@ -248,13 +257,13 @@
 
     <!-- Förädlingsmetoder -->
     <section style="background:#F5F1E8;color:#1C1712;">
-      <div style="max-width:2040px;margin:0 auto;padding:72px 6vw;">
+      <div style="max-width:2040px;margin:0 auto;padding:72px 7vw;">
         
         <h2 style="font-family:'Albert Sans',sans-serif;font-weight:600;font-size:clamp(34px,4.4vw,64px);line-height:1;letter-spacing:-.03em;color:#1C1712;margin:0 0 8px;max-width:20ch;">Förädlingsmetoder</h2>
         <p style="font:400 16px/1.6 'Hanken Grotesk',sans-serif;color:rgba(28,23,18,.58);margin:0 0 52px;max-width:48ch;">Lång erfarenhet och bred kunskap om de flesta metoder — vi levererar lösningar som möter och överträffar förväntningarna.</p>
         <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,1.6vw,26px);">
 
-          <div style="transition:border-color .4s,background .4s,box-shadow .4s,transform .4s;background:#FFFFFF;border:1px solid rgba(28,23,18,.1);border-radius:14px;overflow:hidden;position:relative;z-index:0;" style-hover="border-color:rgba(184,137,26,.7);background:#FFFDF8;box-shadow:0 14px 34px rgba(28,23,18,.09);">
+          <div style="transition:border-color .4s,background .4s,box-shadow .4s,transform .4s;background:#FFFFFF;border:1px solid rgba(28,23,18,.1);border-radius:0;overflow:hidden;position:relative;z-index:0;" style-hover="border-color:rgba(184,137,26,.7);background:#FFFDF8;box-shadow:0 7px 16px rgba(28,23,18,.1);">
             <div style="padding:28px 28px 30px;">
               <div style="display:flex;align-items:baseline;gap:10px;">
                 <span style="font:700 11px/1 'Hanken Grotesk',sans-serif;letter-spacing:.1em;color:#A9781A;background:rgba(169,120,26,.12);padding:6px 9px;border-radius:7px;">01</span>
@@ -265,7 +274,7 @@
             </div>
           </div>
 
-          <div style="transition:border-color .4s,background .4s,box-shadow .4s,transform .4s;background:#FFFFFF;border:1px solid rgba(28,23,18,.1);border-radius:14px;overflow:hidden;position:relative;z-index:0;" style-hover="border-color:rgba(184,137,26,.7);background:#FFFDF8;box-shadow:0 14px 34px rgba(28,23,18,.09);">
+          <div style="transition:border-color .4s,background .4s,box-shadow .4s,transform .4s;background:#FFFFFF;border:1px solid rgba(28,23,18,.1);border-radius:0;overflow:hidden;position:relative;z-index:0;" style-hover="border-color:rgba(184,137,26,.7);background:#FFFDF8;box-shadow:0 7px 16px rgba(28,23,18,.1);">
             <div style="padding:28px 28px 30px;">
               <div style="display:flex;align-items:baseline;gap:10px;">
                 <span style="font:700 11px/1 'Hanken Grotesk',sans-serif;letter-spacing:.1em;color:#A9781A;background:rgba(169,120,26,.12);padding:6px 9px;border-radius:7px;">02</span>
@@ -276,7 +285,7 @@
             </div>
           </div>
 
-          <div style="transition:border-color .4s,background .4s,box-shadow .4s,transform .4s;background:#FFFFFF;border:1px solid rgba(28,23,18,.1);border-radius:14px;overflow:hidden;position:relative;z-index:0;" style-hover="border-color:rgba(184,137,26,.7);background:#FFFDF8;box-shadow:0 14px 34px rgba(28,23,18,.09);">
+          <div style="transition:border-color .4s,background .4s,box-shadow .4s,transform .4s;background:#FFFFFF;border:1px solid rgba(28,23,18,.1);border-radius:0;overflow:hidden;position:relative;z-index:0;" style-hover="border-color:rgba(184,137,26,.7);background:#FFFDF8;box-shadow:0 7px 16px rgba(28,23,18,.1);">
             <div style="padding:28px 28px 30px;">
               <div style="display:flex;align-items:baseline;gap:10px;">
                 <span style="font:700 11px/1 'Hanken Grotesk',sans-serif;letter-spacing:.1em;color:#A9781A;background:rgba(169,120,26,.12);padding:6px 9px;border-radius:7px;">03</span>
@@ -287,7 +296,7 @@
             </div>
           </div>
 
-          <div style="transition:border-color .4s,background .4s,box-shadow .4s,transform .4s;background:#FFFFFF;border:1px solid rgba(28,23,18,.1);border-radius:14px;overflow:hidden;position:relative;z-index:0;" style-hover="border-color:rgba(184,137,26,.7);background:#FFFDF8;box-shadow:0 14px 34px rgba(28,23,18,.09);">
+          <div style="transition:border-color .4s,background .4s,box-shadow .4s,transform .4s;background:#FFFFFF;border:1px solid rgba(28,23,18,.1);border-radius:0;overflow:hidden;position:relative;z-index:0;" style-hover="border-color:rgba(184,137,26,.7);background:#FFFDF8;box-shadow:0 7px 16px rgba(28,23,18,.1);">
             <div style="padding:28px 28px 30px;">
               <div style="display:flex;align-items:baseline;gap:10px;">
                 <span style="font:700 11px/1 'Hanken Grotesk',sans-serif;letter-spacing:.1em;color:#A9781A;background:rgba(169,120,26,.12);padding:6px 9px;border-radius:7px;">04</span>
@@ -298,7 +307,7 @@
             </div>
           </div>
 
-          <div style="transition:border-color .4s,background .4s,box-shadow .4s,transform .4s;background:#FFFFFF;border:1px solid rgba(28,23,18,.1);border-radius:14px;overflow:hidden;position:relative;z-index:0;" style-hover="border-color:rgba(184,137,26,.7);background:#FFFDF8;box-shadow:0 14px 34px rgba(28,23,18,.09);">
+          <div style="transition:border-color .4s,background .4s,box-shadow .4s,transform .4s;background:#FFFFFF;border:1px solid rgba(28,23,18,.1);border-radius:0;overflow:hidden;position:relative;z-index:0;" style-hover="border-color:rgba(184,137,26,.7);background:#FFFDF8;box-shadow:0 7px 16px rgba(28,23,18,.1);">
             <div style="padding:28px 28px 30px;">
               <div style="display:flex;align-items:baseline;gap:10px;">
                 <span style="font:700 11px/1 'Hanken Grotesk',sans-serif;letter-spacing:.1em;color:#A9781A;background:rgba(169,120,26,.12);padding:6px 9px;border-radius:7px;">05</span>
@@ -309,7 +318,7 @@
             </div>
           </div>
 
-          <div style="transition:border-color .4s,background .4s,box-shadow .4s,transform .4s;background:#FFFFFF;border:1px solid rgba(28,23,18,.1);border-radius:14px;overflow:hidden;position:relative;z-index:0;" style-hover="border-color:rgba(184,137,26,.7);background:#FFFDF8;box-shadow:0 14px 34px rgba(28,23,18,.09);">
+          <div style="transition:border-color .4s,background .4s,box-shadow .4s,transform .4s;background:#FFFFFF;border:1px solid rgba(28,23,18,.1);border-radius:0;overflow:hidden;position:relative;z-index:0;" style-hover="border-color:rgba(184,137,26,.7);background:#FFFDF8;box-shadow:0 7px 16px rgba(28,23,18,.1);">
             <div style="padding:28px 28px 30px;">
               <div style="display:flex;align-items:baseline;gap:10px;">
                 <span style="font:700 11px/1 'Hanken Grotesk',sans-serif;letter-spacing:.1em;color:#A9781A;background:rgba(169,120,26,.12);padding:6px 9px;border-radius:7px;">06</span>
@@ -325,7 +334,7 @@
     </section>
 
     <!-- Varumärken -->
-    <section style="background:#FFFFFF;overflow:hidden;border-top:1px solid #ECE7DB;border-bottom:1px solid #ECE7DB;">
+    <section style="background:#FAFAF7;overflow:hidden;">
       <div style="max-width:2040px;margin:0 auto;padding:64px 0 60px;">
         <div style="font:600 11px/1 'Hanken Grotesk',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#9A9486;text-align:center;margin-bottom:34px;">Varumärken vi förädlar</div>
         <div style="overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);">
@@ -393,7 +402,7 @@
 
     <!-- Header -->
     <header style="position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #E0E5E5;">
-      <div style="max-width:1280px;margin:0 auto;padding:0 40px;height:70px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
+      <div style="max-width:100%;margin:0;padding:0 max(6vw, calc((100vw - 1600px) / 2));height:70px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
         <a href="#" aria-label="noll33 – startsida" style="display:inline-flex;align-items:center;flex:none;"><img src="assets/resurs-1.png" alt="noll33" style="height:60px;width:60px;display:block;"></a>
         <nav style="display:flex;gap:30px;align-items:center;">
           <sc-for list="{{ nav }}" as="item" hint-placeholder-count="5">
@@ -408,7 +417,7 @@
     </header>
 
     <!-- Hero -->
-    <section style="max-width:1280px;margin:0 auto;padding:72px 40px 40px;display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center;">
+    <section style="max-width:1600px;margin:0 auto;padding:72px 40px 40px;display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center;">
       <div>
         <div style="display:inline-flex;align-items:center;gap:8px;background:#E3E9E9;color:#14181A;padding:8px 14px;border-radius:999px;font:600 12px/1 'Hanken Grotesk',sans-serif;letter-spacing:.02em;margin-bottom:24px;"><span style="width:6px;height:6px;border-radius:50%;background:#1C8B99;"></span>Endast för återförsäljare</div>
         <h1 style="font:700 clamp(40px,5vw,64px)/1.04 'Hanken Grotesk',sans-serif;letter-spacing:-.025em;color:#14181A;margin:0 0 22px;">Hållbar textilförädling — vi sköter <span style="color:#14181A;">hela processen.</span></h1>
@@ -440,7 +449,7 @@
     </section>
 
     <!-- Process -->
-    <section style="max-width:1280px;margin:0 auto;padding:80px 40px;">
+    <section style="max-width:1600px;margin:0 auto;padding:80px 40px;">
       <div style="text-align:center;max-width:46ch;margin:0 auto 52px;">
         <div style="font:700 12px/1 'Hanken Grotesk',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#14181A;margin-bottom:14px;">Så enkelt funkar det</div>
         <h2 style="font:700 clamp(30px,3.6vw,46px)/1.08 'Hanken Grotesk',sans-serif;letter-spacing:-.02em;color:#14181A;margin:0;">Från idé till levererat plagg — på fyra steg</h2>
@@ -457,7 +466,7 @@
     </section>
 
     <!-- Sortiment -->
-    <section style="max-width:1280px;margin:0 auto;padding:24px 40px 80px;">
+    <section style="max-width:1600px;margin:0 auto;padding:24px 40px 80px;">
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:34px;">
         <div>
           <div style="font:700 12px/1 'Hanken Grotesk',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#14181A;margin-bottom:14px;">Sortiment</div>
@@ -495,7 +504,7 @@
 
     <!-- Endast återförsäljare band -->
     <section style="background:#15151A;color:#fff;">
-      <div style="max-width:1280px;margin:0 auto;padding:84px 40px;text-align:center;">
+      <div style="max-width:1600px;margin:0 auto;padding:84px 40px;text-align:center;">
         <h2 style="font:700 clamp(30px,3.8vw,50px)/1.08 'Hanken Grotesk',sans-serif;letter-spacing:-.02em;margin:0 auto 16px;max-width:20ch;">Vi säljer endast till återförsäljare.</h2>
         <p style="font:400 18px/1.6 'Hanken Grotesk',sans-serif;color:rgba(255,255,255,.66);margin:0 auto 32px;max-width:52ch;">Ingen risk för oönskad konkurrens. Du behåller dina kunder och din marginal — vi syns aldrig mot slutkund.</p>
         <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
@@ -507,7 +516,7 @@
     </section>
 
     <!-- Hållbarhet split -->
-    <section style="max-width:1280px;margin:0 auto;padding:88px 40px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;">
+    <section style="max-width:1600px;margin:0 auto;padding:88px 40px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;">
       <div style="position:relative;aspect-ratio:5/4;border-radius:22px;overflow:hidden;background:#1d231d;order:2;">
         <img src="assets/c-prod.jpg" alt="Textilproduktion i Borås" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
       </div>
@@ -521,7 +530,7 @@
 
     <!-- Förädlingsmetoder -->
     <section style="background:#F1EEE6;">
-      <div style="max-width:1280px;margin:0 auto;padding:80px 40px;">
+      <div style="max-width:1600px;margin:0 auto;padding:80px 40px;">
         <div style="text-align:center;margin-bottom:44px;">
           <div style="font:700 12px/1 'Hanken Grotesk',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#14181A;margin-bottom:14px;">Förädlingsmetoder</div>
           <h2 style="font:700 clamp(30px,3.6vw,46px)/1.06 'Hanken Grotesk',sans-serif;letter-spacing:-.02em;color:#14181A;margin:0;">Experter på förädling</h2>
@@ -539,7 +548,7 @@
     </section>
 
     <!-- Varför Noll33 -->
-    <section style="max-width:1280px;margin:0 auto;padding:88px 40px;">
+    <section style="max-width:1600px;margin:0 auto;padding:88px 40px;">
       <div style="display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start;">
         <div>
           <div style="font:700 12px/1 'Hanken Grotesk',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#14181A;margin-bottom:14px;">Varför Noll33</div>
@@ -558,18 +567,18 @@
     </section>
 
     <!-- Varumärken -->
-    <section style="max-width:1280px;margin:0 auto;padding:0 40px 80px;">
+    <section style="max-width:1600px;margin:0 auto;padding:0 40px 80px;">
       <div style="font:700 12px/1 'Hanken Grotesk',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#3C7A82;text-align:center;margin-bottom:22px;">Bästsäljande varumärken</div>
-      <div style="background:#FFFFFF;border:1px solid rgba(28,60,64,.08);border-radius:20px;padding:8px 0;box-shadow:0 1px 2px rgba(20,44,48,.04),0 12px 30px rgba(20,44,48,.06);overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);">
+      <div style="padding:4px 0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);">
         <div style="display:flex;width:max-content;animation:n33-marquee 90s linear infinite;">
           <div style="display:flex;align-items:center;">
             <sc-for list="{{ brandMarks }}" as="brand">
-              <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;height:76px;width:150px;padding:0 32px;border-right:1px solid rgba(28,60,64,.07);"><sc-if value="{{ brand.plain }}" hint-placeholder-val="{{ true }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:38px;max-width:100%;width:auto;object-fit:contain;"></sc-if><sc-if value="{{ brand.badge }}" hint-placeholder-val="{{ false }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:38px;max-width:100%;width:auto;object-fit:contain;border-radius:3px;"></sc-if></span>
+              <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;height:68px;width:148px;margin-right:14px;padding:0 24px;background:#FFFFFF;border:1px solid rgba(28,60,64,.1);border-radius:14px;box-shadow:0 1px 2px rgba(20,44,48,.05);"><sc-if value="{{ brand.plain }}" hint-placeholder-val="{{ true }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:38px;max-width:100%;width:auto;object-fit:contain;"></sc-if><sc-if value="{{ brand.badge }}" hint-placeholder-val="{{ false }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:38px;max-width:100%;width:auto;object-fit:contain;border-radius:3px;"></sc-if></span>
             </sc-for>
           </div>
           <div aria-hidden="true" style="display:flex;align-items:center;">
             <sc-for list="{{ brandMarks }}" as="brand">
-              <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;height:76px;width:150px;padding:0 32px;border-right:1px solid rgba(28,60,64,.07);"><sc-if value="{{ brand.plain }}" hint-placeholder-val="{{ true }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:38px;max-width:100%;width:auto;object-fit:contain;"></sc-if><sc-if value="{{ brand.badge }}" hint-placeholder-val="{{ false }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:38px;max-width:100%;width:auto;object-fit:contain;border-radius:3px;"></sc-if></span>
+              <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;height:68px;width:148px;margin-right:14px;padding:0 24px;background:#FFFFFF;border:1px solid rgba(28,60,64,.1);border-radius:14px;box-shadow:0 1px 2px rgba(20,44,48,.05);"><sc-if value="{{ brand.plain }}" hint-placeholder-val="{{ true }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:38px;max-width:100%;width:auto;object-fit:contain;"></sc-if><sc-if value="{{ brand.badge }}" hint-placeholder-val="{{ false }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:38px;max-width:100%;width:auto;object-fit:contain;border-radius:3px;"></sc-if></span>
             </sc-for>
           </div>
         </div>
@@ -577,7 +586,7 @@
     </section>
 
     <!-- CTA + Newsletter -->
-    <section style="max-width:1280px;margin:0 auto;padding:0 40px 80px;">
+    <section style="max-width:1600px;margin:0 auto;padding:0 40px 80px;">
       <div style="background:#1C8B99;border-radius:26px;padding:56px 48px;display:flex;flex-wrap:wrap;gap:30px;align-items:center;justify-content:space-between;">
         <div>
           <h2 style="font:700 clamp(28px,3.2vw,42px)/1.06 'Hanken Grotesk',sans-serif;letter-spacing:-.02em;color:#FFFFFF;margin:0 0 10px;">Redo att börja sälja?</h2>
@@ -592,7 +601,7 @@
 
     <!-- Footer -->
     <footer style="background:#fff;border-top:1px solid #ECE9E0;">
-      <div style="max-width:1280px;margin:0 auto;padding:64px 40px 36px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1.3fr;gap:40px;">
+      <div style="max-width:1600px;margin:0 auto;padding:64px 40px 36px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1.3fr;gap:40px;">
         <div>
           <a href="#" aria-label="noll33" style="display:inline-flex;align-items:center;flex:none;"><img src="assets/resurs-1.png" alt="noll33" style="height:56px;width:56px;display:block;"></a>
           <p style="font:400 14.5px/1.65 'Hanken Grotesk',sans-serif;color:#6A6F69;margin:16px 0 0;max-width:30ch;">Komplett textilförädling och tryck till återförsäljare. Hållbart, enkelt och till bra priser.</p>
@@ -610,7 +619,7 @@
           <div style="font:400 14px/1.7 'Hanken Grotesk',sans-serif;color:#6A6F69;">Noll33 Tryck &amp; Brodyr AB<br>Hållingsgatan 15, 504 35 Borås<br>033-129110<br><a href="#" style="color:#14181A;">info@noll33.se</a></div>
         </div>
       </div>
-      <div style="max-width:1280px;margin:0 auto;padding:22px 40px 40px;border-top:1px solid #ECE9E0;display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;justify-content:space-between;font:400 12.5px/1.4 'Hanken Grotesk',sans-serif;color:#9A9486;">
+      <div style="max-width:1600px;margin:0 auto;padding:22px 40px 40px;border-top:1px solid #ECE9E0;display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;justify-content:space-between;font:400 12.5px/1.4 'Hanken Grotesk',sans-serif;color:#9A9486;">
         <span>© 2026 Noll33 Tryck &amp; Brodyr — Org.nr 559456-8874. Alla priser ex. moms.</span>
         <span style="display:flex;gap:20px;"><a href="#">Cookies</a><a href="#">Integritet</a></span>
       </div>
@@ -624,7 +633,7 @@
 
     <!-- Header -->
     <header style="position:sticky;top:0;z-index:50;background:rgba(250,250,247,.92);backdrop-filter:saturate(150%) blur(12px);border-bottom:1px solid #E5E2D9;">
-      <div style="max-width:1280px;margin:0 auto;padding:0 5vw;height:70px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
+      <div style="max-width:100%;margin:0;padding:0 max(6vw, calc((100vw - 1600px) / 2));height:70px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
         <a href="#" aria-label="noll33 – startsida" style="display:inline-flex;align-items:center;flex:none;"><img src="assets/resurs-1.png" alt="noll33" style="height:60px;width:60px;display:block;"></a>
         <nav style="display:flex;gap:28px;align-items:center;">
           <sc-for list="{{ nav }}" as="item" hint-placeholder-count="5">
@@ -642,9 +651,9 @@
     <section id="kollHero" style="background:#23416E;position:relative;overflow:hidden;">
       <video id="kollHeroVid" autoplay="" muted="" loop="" playsinline="" preload="auto" src="https://res.cloudinary.com/e9t94hoz/video/upload/Tjej_med_tryck_tx96ux.mp4" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.62;z-index:0;transform:scale(1.04);"></video>
       <div style="position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(35,65,110,.82) 0%,rgba(35,65,110,.55) 48%,rgba(35,65,110,.3) 100%);"></div>
-      <div style="position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:clamp(54px,6.5vw,92px) 5vw clamp(24px,3vw,40px);">
+      <div style="position:relative;z-index:1;max-width:1600px;margin:0 auto;padding:clamp(150px,22vw,340px) 5vw clamp(40px,4vw,60px);">
       <div style="display:inline-flex;align-items:center;gap:8px;font:700 11px/1 'Hanken Grotesk',sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#E7EEF8;margin-bottom:24px;"><span style="width:6px;height:6px;border-radius:50%;background:#B6C8E4;"></span>Endast för återförsäljare</div>
-      <h1 style="font:800 clamp(46px,7.2vw,104px)/.94 'Hanken Grotesk',sans-serif;letter-spacing:-.032em;color:#FFFFFF;margin:0;max-width:15ch;">Profilkläder, förädlade i Borås.</h1>
+      <h1 style="font:800 clamp(38px,5.6vw,80px)/.96 'Hanken Grotesk',sans-serif;letter-spacing:-.032em;color:#FFFFFF;margin:0;max-width:15ch;">Profilkläder, förädlade i Borås.</h1>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap;margin-top:28px;">
         <p style="font:500 18px/1.6 'Hanken Grotesk',sans-serif;color:rgba(240,247,242,.82);margin:0;max-width:46ch;">Designa, beställ och få levererat — allt på ett ställe. Du säljer vidare, vi sköter tryck och brodyr bakom kulisserna.</p>
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
@@ -656,15 +665,15 @@
     </section>
 
     <!-- Kollektion feature -->
-    <section style="max-width:1280px;margin:0 auto;padding:clamp(14px,1.8vw,26px) 5vw clamp(40px,5vw,64px);">
-      <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;">
-        <a href="#" style="position:relative;display:block;aspect-ratio:4/5;border-radius:16px;overflow:hidden;background:#E7E3D6;">
+    <section style="max-width:1600px;margin:0 auto;padding:clamp(40px,5vw,64px) 5vw;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
+        <a href="#" style="position:relative;display:block;height:100%;border-radius:16px;overflow:hidden;background:#E7E3D6;">
           <img src="assets/gots-certifierat.jpg" alt="GOTS-certifierad t-shirt" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:56% 50%;">
           <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,12,.04) 44%,rgba(10,10,12,.58));"></span>
           <span style="position:absolute;left:24px;bottom:22px;right:24px;font:800 23px/1.05 'Hanken Grotesk',sans-serif;letter-spacing:-.02em;color:#FAFAF7;text-shadow:0 1px 14px rgba(0,0,0,.55);">Ekocertifierade basplagg</span>
         </a>
-        <a href="#" style="position:relative;display:block;aspect-ratio:16/10;border-radius:16px;overflow:hidden;background:#1A1A1E;">
-          <video data-rate="1.8" autoplay="" muted="" loop="" playsinline="" preload="auto" poster="assets/ds-still.jpg" src="https://res.cloudinary.com/e9t94hoz/video/upload/PRNTR_STUDIO_FILM_fchkle.mp4" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;display:block;"></video>
+        <a href="#" style="position:relative;display:block;aspect-ratio:5/3;grid-column:span 2;border-radius:16px;overflow:hidden;background:#1A1A1E;">
+          <video data-rate="1.8" autoplay="" muted="" loop="" playsinline="" preload="auto" poster="assets/ds-still.jpg" src="uploads/0706-9d30edb9.mp4" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;display:block;"></video>
           <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,12,.12),rgba(10,10,12,.58));"></span>
           <span style="position:absolute;left:22px;top:20px;font:700 10px/1 'Hanken Grotesk',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#9DB1D2;">Nyhet</span>
           <span style="position:absolute;left:22px;bottom:20px;right:22px;font:800 23px/1.05 'Hanken Grotesk',sans-serif;letter-spacing:-.02em;color:#FAFAF7;">Design Studion</span>
@@ -673,9 +682,9 @@
     </section>
 
     <!-- Sortiment -->
-    <section style="max-width:1280px;margin:0 auto;padding:clamp(16px,2vw,28px) 5vw clamp(56px,6vw,80px);">
+    <section style="max-width:1600px;margin:0 auto;padding:0 5vw clamp(56px,6vw,80px);">
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:30px;">
-        <h2 style="font:800 clamp(28px,3.6vw,46px)/1 'Hanken Grotesk',sans-serif;letter-spacing:-.025em;color:#14181A;margin:0;">Välj ett basplagg</h2>
+        <h2 style="font:800 clamp(28px,3.6vw,46px)/1 'Hanken Grotesk',sans-serif;letter-spacing:-.025em;color:#14181A;margin:0;">Välj ett plagg</h2>
         <a href="#" style="font:600 14px/1 'Hanken Grotesk',sans-serif;color:#1E335A;">Hela katalogen →</a>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
@@ -708,7 +717,7 @@
 
     <!-- Värdeprops -->
     <section style="background:#E7EDEF;border-top:1px solid #D8E1E3;border-bottom:1px solid #D8E1E3;">
-      <div style="max-width:1280px;margin:0 auto;padding:clamp(48px,5vw,72px) 5vw;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,4vw,52px);">
+      <div style="max-width:1600px;margin:0 auto;padding:clamp(48px,5vw,72px) 5vw;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
         <div style="background:#FFFFFF;border:1px solid #DCE4E5;border-radius:14px;padding:30px 26px;transition:transform .32s cubic-bezier(.2,.7,.2,1),box-shadow .32s;" style-hover="transform:translateY(-4px);box-shadow:0 20px 44px -24px rgba(20,45,80,.4);"><div style="font:800 19px/1.2 'Hanken Grotesk',sans-serif;color:#14181A;margin-bottom:9px;">Endast återförsäljare</div><p style="font:400 15px/1.6 'Hanken Grotesk',sans-serif;color:#565C58;margin:0;">Ingen konkurrens om dina kunder — du äger relationen och marginalen.</p></div>
         <div style="background:#FFFFFF;border:1px solid #DCE4E5;border-radius:14px;padding:30px 26px;transition:transform .32s cubic-bezier(.2,.7,.2,1),box-shadow .32s;" style-hover="transform:translateY(-4px);box-shadow:0 20px 44px -24px rgba(20,45,80,.4);"><div style="font:800 19px/1.2 'Hanken Grotesk',sans-serif;color:#14181A;margin-bottom:9px;">GOTS-certifierat</div><p style="font:400 15px/1.6 'Hanken Grotesk',sans-serif;color:#565C58;margin:0;">Grönt genom hela ledet — ekologiskt och socialt godkänt.</p></div>
         <div style="background:#FFFFFF;border:1px solid #DCE4E5;border-radius:14px;padding:30px 26px;transition:transform .32s cubic-bezier(.2,.7,.2,1),box-shadow .32s;" style-hover="transform:translateY(-4px);box-shadow:0 20px 44px -24px rgba(20,45,80,.4);"><div style="font:800 19px/1.2 'Hanken Grotesk',sans-serif;color:#14181A;margin-bottom:9px;">Snabba leveranser</div><p style="font:400 15px/1.6 'Hanken Grotesk',sans-serif;color:#565C58;margin:0;">Fri leverans från leverantör och smidig 3PL-hantering.</p></div>
@@ -716,7 +725,7 @@
     </section>
 
     <!-- Process -->
-    <section style="max-width:1280px;margin:0 auto;padding:clamp(56px,6vw,80px) 5vw;">
+    <section style="max-width:1600px;margin:0 auto;padding:clamp(56px,6vw,80px) 5vw;">
       <h2 style="font:800 clamp(28px,3.6vw,46px)/1.04 'Hanken Grotesk',sans-serif;letter-spacing:-.025em;color:#14181A;margin:0 0 40px;max-width:18ch;">Från idé till levererat plagg</h2>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(22px,3vw,46px);border-top:2px solid #D3DBDD;">
         <sc-for list="{{ steps }}" as="s" hint-placeholder-count="4">
@@ -731,7 +740,7 @@
 
     <!-- Förädling -->
     <section style="background:#E7EDEF;border-top:1px solid #D8E1E3;">
-      <div style="max-width:1280px;margin:0 auto;padding:clamp(56px,6vw,80px) 5vw;">
+      <div style="max-width:1600px;margin:0 auto;padding:clamp(56px,6vw,80px) 5vw;">
         <h2 style="font:800 clamp(28px,3.6vw,46px)/1.04 'Hanken Grotesk',sans-serif;letter-spacing:-.025em;color:#14181A;margin:0 0 36px;">Experter på förädling</h2>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
           <sc-for list="{{ methods }}" as="m" hint-placeholder-count="5">
@@ -746,7 +755,7 @@
     </section>
 
     <!-- Brands -->
-    <section style="max-width:1280px;margin:0 auto;padding:clamp(48px,5vw,68px) 5vw;">
+    <section style="max-width:1600px;margin:0 auto;padding:clamp(48px,5vw,68px) 5vw;">
       <div style="font:700 11px/1 'Hanken Grotesk',sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#23416E;text-align:center;margin-bottom:26px;">Bästsäljande varumärken</div>
       <div style="border-top:1px solid #E6E2D8;border-bottom:1px solid #E6E2D8;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);">
         <div style="display:flex;width:max-content;animation:n33-marquee 112s linear infinite;">
@@ -765,7 +774,7 @@
     </section>
 
     <!-- CTA -->
-    <section style="max-width:1280px;margin:0 auto;padding:0 5vw clamp(64px,7vw,90px);">
+    <section style="max-width:1600px;margin:0 auto;padding:0 5vw clamp(64px,7vw,90px);">
       <div style="background:#23416E;border-radius:24px;padding:clamp(40px,5vw,64px);display:flex;flex-wrap:wrap;gap:28px;align-items:center;justify-content:space-between;">
         <div>
           <h2 style="font:800 clamp(28px,3.4vw,46px)/1.04 'Hanken Grotesk',sans-serif;letter-spacing:-.025em;color:#FFFFFF;margin:0 0 8px;">Redo att börja sälja?</h2>
@@ -780,7 +789,7 @@
 
     <!-- Footer -->
     <footer style="background:#EAEFF0;border-top:1px solid #DBE2E2;">
-      <div style="max-width:1280px;margin:0 auto;padding:56px 5vw 30px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1.3fr;gap:36px;">
+      <div style="max-width:1600px;margin:0 auto;padding:56px 5vw 30px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1.3fr;gap:36px;">
         <div>
           <a href="#" aria-label="noll33" style="display:inline-flex;align-items:center;flex:none;"><img src="assets/resurs-1.png" alt="noll33" style="height:56px;width:56px;display:block;"></a>
           <p style="font:400 14px/1.65 'Hanken Grotesk',sans-serif;color:#6A6F69;margin:16px 0 0;max-width:30ch;">Komplett textilförädling och tryck till återförsäljare. Hållbart, enkelt och till bra priser.</p>
@@ -798,7 +807,7 @@
           <div style="font:400 14px/1.7 'Hanken Grotesk',sans-serif;color:#6A6F69;">Hållingsgatan 15, 504 35 Borås<br>033-129110<br><a href="#" style="color:#14181A;border-bottom:1px solid #23416E;">info@noll33.se</a></div>
         </div>
       </div>
-      <div style="max-width:1280px;margin:0 auto;padding:22px 5vw 40px;border-top:1px solid #E5E2D9;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;justify-content:space-between;font:400 12px/1.4 'Hanken Grotesk',sans-serif;color:#9A9486;">
+      <div style="max-width:1600px;margin:0 auto;padding:22px 5vw 40px;border-top:1px solid #E5E2D9;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;justify-content:space-between;font:400 12px/1.4 'Hanken Grotesk',sans-serif;color:#9A9486;">
         <span>© 2026 Noll33 Tryck &amp; Brodyr — Org.nr 559456-8874. Alla priser ex. moms.</span>
         <span style="display:flex;gap:18px;"><a href="#">Cookies</a><a href="#">Integritet</a></span>
       </div>
@@ -819,15 +828,17 @@
           <span style="padding:9px 0;" aria-hidden="true">Tryck &amp; brodyr&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Borås sedan dag noll&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;GOTS-certifierat&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Endast till återförsäljare&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Tryck &amp; brodyr&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Borås sedan dag noll&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;GOTS-certifierat&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Endast till återförsäljare&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;</span>
         </div>
       </div>
-      <div style="max-width:1240px;margin:0 auto;padding:0 6vw;height:64px;display:flex;align-items:center;justify-content:space-between;gap:20px;">
+      <div style="max-width:100%;margin:0;padding:0 max(6vw, calc((100vw - 1600px) / 2));height:64px;display:flex;align-items:center;justify-content:space-between;gap:20px;">
         <a href="#" aria-label="noll33 – startsida" style="display:inline-flex;align-items:center;flex:none;"><img src="assets/resurs-1.png" alt="noll33" style="height:60px;width:60px;display:block;animation:n33-rollin 2.6s cubic-bezier(.2,.72,.2,1) both;"></a>
         <nav style="display:flex;gap:26px;align-items:center;">
-          <a href="#" style="font:600 12px/1 'Hanken Grotesk',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#14181A;">Hem</a>
-          <a href="#" style="font:500 12px/1 'Hanken Grotesk',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#5A615C;">Sortiment</a>
-          <a href="#" style="font:500 12px/1 'Hanken Grotesk',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#5A615C;">Förädling</a>
-          <a href="#" style="font:500 12px/1 'Hanken Grotesk',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#5A615C;">Hållbarhet</a>
-          <a href="#" style="font:500 12px/1 'Hanken Grotesk',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#5A615C;">Om oss</a>
-          <a href="#" style="font:500 12px/1 'Hanken Grotesk',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#5A615C;">Kontakt</a>
+          <a href="#" style="font:600 10px/1 'Hanken Grotesk',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#14181A;">Hem</a>
+          <a href="#" style="font:500 10px/1 'Hanken Grotesk',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#5A615C;">Sortiment</a>
+          <a href="#" style="font:500 10px/1 'Hanken Grotesk',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#5A615C;">Design Studio</a>
+          <a href="#" style="font:500 10px/1 'Hanken Grotesk',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#5A615C;">Förädling</a>
+          <a href="#" style="font:500 10px/1 'Hanken Grotesk',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#5A615C;">Hållbarhet</a>
+          <a href="#" style="font:500 10px/1 'Hanken Grotesk',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#5A615C;">Om oss</a>
+          <a href="#" style="font:500 10px/1 'Hanken Grotesk',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#5A615C;">Kontakt</a>
+          <a href="#" style="font:500 10px/1 'Hanken Grotesk',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#5A615C;margin-left:clamp(12px,1.6vw,26px);padding-left:clamp(16px,1.8vw,26px);border-left:1px solid #D8CFBE;">Logga in</a>
         </nav>
 
       </div>
@@ -837,8 +848,8 @@
     <section style="background:#14181A;color:#FAFAF7;overflow:hidden;position:relative;aspect-ratio:21/9;min-height:340px;display:flex;align-items:center;">
       <video data-rate="1" autoplay="" muted="" loop="" playsinline="" preload="auto" src="https://res.cloudinary.com/e9t94hoz/video/upload/HEADER_VIDEO_ULTRA_WIDE_LONGER_fklkkc.mp4" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.82;z-index:0;"></video>
       <div style="position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(20,24,26,.94) 0%,rgba(20,24,26,.74) 46%,rgba(20,24,26,.5) 100%);"></div>
-      <div style="position:relative;z-index:1;width:100%;max-width:1240px;margin:0 auto;padding:clamp(20px,4vw,64px) 6vw;">
-        <h1 style="font:800 clamp(32px,5.4vw,84px)/.96 'Hanken Grotesk',sans-serif;letter-spacing:-.035em;color:#FAFAF7;margin:0;max-width:15ch;">Textilförädling med <span style="color:#C57888;">höga krav</span>.</h1>
+      <div style="position:relative;z-index:1;width:100%;max-width:1600px;margin:0 auto;padding:clamp(120px,18vw,280px) 6vw clamp(40px,5vw,72px);">
+        <h1 style="font:800 clamp(32px,5.4vw,84px)/.96 'Hanken Grotesk',sans-serif;letter-spacing:-.035em;color:#FAFAF7;margin:0;max-width:15ch;">Textilförädling <br>med <span style="color: rgb(197, 120, 136);">höga krav</span>.</h1>
         <p style="font:400 17px/1.6 'Hanken Grotesk',sans-serif;color:rgba(250,250,247,.62);margin:30px 0 0;max-width:48ch;">Tryck och brodyr i världsklass — i <span style="color:#7FB7C4;">Borås</span>, alltid white-label till återförsäljare.</p>
         <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:36px;">
           <a href="#" style="display:inline-flex;align-items:center;gap:9px;background:#FAFAF7;color:#14181A;padding:15px 28px;border-radius:999px;font:700 14.5px/1 'Hanken Grotesk',sans-serif;">Bli återförsäljare</a>
@@ -848,11 +859,11 @@
     </section>
 
     <!-- Feature hero -->
-    <section style="max-width:1240px;margin:0 auto;padding:clamp(40px,5vw,66px) 6vw clamp(48px,6vw,72px);display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(34px,5vw,76px);align-items:center;border-bottom:1px solid #E5E2D9;">
-      <div class="ed-slide ed-left" style="position:relative;aspect-ratio:4/5;border-radius:2px;overflow:hidden;background:#EBE7DC;">
-        <img src="assets/c-craft.jpg" alt="Hantverket bakom varje plagg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+    <section style="max-width:1600px;margin:0 auto;padding:clamp(64px,7vw,104px) 6vw;display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(34px,5vw,76px);align-items:start;border-bottom:1px solid #E5E2D9;">
+      <div class="ed-slide ed-left" data-drift-ref="" style="position:relative;aspect-ratio:4/5;border-radius:2px;overflow:hidden;background:#EBE7DC;">
+        <img src="./pexels-ron-lach-9594087-mrb6hg32.jpg" alt="Hantverket bakom varje plagg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
       </div>
-      <div class="ed-slide ed-right">
+      <div data-drift="" class="n33-textdrift" style="--dmax:clamp(150px,33vw,520px);will-change:transform;">
         <h1 style="font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:clamp(36px,4.8vw,66px);line-height:1.02;letter-spacing:-.035em;color:#14181A;margin:0 0 20px;">Hantverket bakom varje plagg.</h1>
         <p style="font:400 17px/1.65 'Hanken Grotesk',sans-serif;color:#5A615C;margin:0 0 26px;max-width:46ch;">Från råplagg till färdig profil — så förädlar vi textil med tryck och brodyr. Hållbart, noggrant och alltid till återförsäljare, från vår verkstad i Borås.</p>
         <div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap;">
@@ -863,57 +874,57 @@
     </section>
 
     <!-- Stats -->
-    <section style="border-top:1px solid #E5E2D9;border-bottom:1px solid #E5E2D9;">
-      <div class="ed-slide" style="max-width:1240px;margin:0 auto;padding:clamp(26px,3.2vw,42px) 6vw;display:grid;grid-template-columns:repeat(4,1fr);align-items:center;">
+    <section style="border-bottom:1px solid #E5E2D9;">
+      <div class="ed-slide" style="max-width:1600px;margin:0 auto;padding:clamp(26px,3.2vw,42px) 6vw;display:grid;grid-template-columns:repeat(3,1fr);align-items:center;text-align:center;">
         <div style="padding:4px clamp(26px,3.4vw,56px);border-right:1px solid #E5E2D9;">
-          <div style="font:800 clamp(34px,4.6vw,64px)/.95 'Hanken Grotesk',sans-serif;letter-spacing:-.03em;color:#14181A;">65&nbsp;000<span style="color:#8A3344;">+</span></div>
+          <div class="n33-statrise" style="animation-range:entry 2% cover 22%;font:800 clamp(34px,4.6vw,64px)/.95 'Hanken Grotesk',sans-serif;letter-spacing:-.03em;color:#14181A;">65&nbsp;000<span style="color:#8A3344;">+</span></div>
           <div style="font:600 10.5px/1.4 'Hanken Grotesk',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#8A8576;margin-top:14px;">Plagg i sortimentet</div>
         </div>
         <div style="padding:4px clamp(26px,3.4vw,56px);border-right:1px solid #E5E2D9;">
-          <div style="font:800 clamp(34px,4.6vw,64px)/.95 'Hanken Grotesk',sans-serif;letter-spacing:-.03em;color:#14181A;">6</div>
+          <div class="n33-statrise" style="animation-range:entry 9% cover 29%;font:800 clamp(34px,4.6vw,64px)/.95 'Hanken Grotesk',sans-serif;letter-spacing:-.03em;color:#14181A;">6</div>
           <div style="font:600 10.5px/1.4 'Hanken Grotesk',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#8A8576;margin-top:14px;">Förädlingsmetoder</div>
         </div>
-        <div style="padding:4px clamp(26px,3.4vw,56px);border-right:1px solid #E5E2D9;">
-          <div style="font:800 clamp(34px,4.6vw,64px)/.95 'Hanken Grotesk',sans-serif;letter-spacing:-.03em;color:#14181A;">100<span style="color:#8A3344;">%</span></div>
+        <div style="padding:4px clamp(26px,3.4vw,56px);">
+          <div class="n33-statrise" style="animation-range:entry 16% cover 36%;font:800 clamp(34px,4.6vw,64px)/.95 'Hanken Grotesk',sans-serif;letter-spacing:-.03em;color:#14181A;">100<span style="color:#8A3344;">%</span></div>
           <div style="font:600 10.5px/1.4 'Hanken Grotesk',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#8A8576;margin-top:14px;">GOTS-spårbart</div>
         </div>
-        <div style="padding:4px clamp(26px,3.4vw,56px);">
-          <div style="font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:clamp(30px,4vw,56px);line-height:.95;letter-spacing:-.04em;color:#14181A;">Borås</div>
-          <div style="font:600 10.5px/1.4 'Hanken Grotesk',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#8A8576;margin-top:14px;">Förädlat sedan dag noll</div>
         </div>
-      </div>
-    </section>
+      </section></div>
+    
 
     <!-- Stories -->
-    <section style="max-width:1720px;margin:0 auto;padding:clamp(56px,6vw,76px) 4vw;">
-      <div style="display:flex;align-items:center;justify-content:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:34px;">
-        <a href="#" style="font:600 13px/1 'Hanken Grotesk',sans-serif;color:#7B2E3B;">Se alla artiklar →</a>
-      </div>
-      <a href="#" style="display:block;max-width:1040px;margin:0 auto clamp(30px,3.2vw,52px);">
-        <div style="aspect-ratio:5/3;border-radius:2px;overflow:hidden;background:#EFEAE0;position:relative;"><video data-rate="1.8" autoplay="" muted="" loop="" playsinline="" preload="auto" poster="assets/ds-still.jpg" src="https://res.cloudinary.com/e9t94hoz/video/upload/PRNTR_STUDIO_FILM_fchkle.mp4" style="position:absolute;inset:-1px;width:calc(100% + 2px);height:calc(100% + 2px);object-fit:cover;object-position:center center;display:block;"></video></div>
-          <h3 style="font-family:'Hanken Grotesk',sans-serif;font-weight:700;font-size:clamp(26px,2.6vw,36px);line-height:1.1;letter-spacing:-.025em;color:#14181A;margin:22px 0 10px;">Designa, se korrektur, beställ</h3>
-          <p style="font:400 16px/1.6 'Hanken Grotesk',sans-serif;color:#5A615C;margin:0;max-width:60ch;">Ladda upp loggan och se din design live i Design Studio — korrektur direkt, inga väntetider.</p>
-        </a>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,3vw,48px);max-width:1040px;margin:0 auto;">
-        <a href="#" style="display:block;">
+    <section style="background:#F4EFE4;padding:clamp(48px,6vw,72px) 0 clamp(56px,6vw,76px);">
+      <a href="#" style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,3vw,48px);align-items:center;max-width:1600px;margin:0 auto clamp(48px,6vw,80px);padding:0 6vw;">
+        <div>
+          <h3 style="font-family:'Hanken Grotesk',sans-serif;font-weight:700;font-size:clamp(26px,2.6vw,38px);line-height:1.1;letter-spacing:-.025em;color:#14181A;margin:0 0 12px;">Designa, se korrektur, beställ</h3>
+          <p style="font:400 15.5px/1.65 'Hanken Grotesk',sans-serif;color:#5A615C;margin:0 0 20px;max-width:44ch;">Ladda upp loggan och se din design live i Design Studio — korrektur direkt, inga väntetider.</p>
+          <span style="display:inline-flex;align-items:center;gap:7px;font:600 13px/1 'Hanken Grotesk',sans-serif;letter-spacing:.02em;color:#8A3344;">Läs mer →</span>
+        </div>
+        <div style="aspect-ratio:5/3;border-radius:2px;overflow:hidden;background:#F4EFE4;position:relative;"><video data-rate="1.8" autoplay="" muted="" loop="" playsinline="" preload="auto" poster="assets/ds-still.jpg" src="uploads/0706-9d30edb9.mp4" style="position:absolute;inset:-1px;width:calc(100% + 2px);height:calc(100% + 2px);object-fit:cover;object-position:center center;display:block;"></video></div>
+      </a>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,3vw,48px);max-width:1600px;margin:0 auto;padding:0 6vw;">
+        <a href="#" class="n33-featcard" style="display:block;">
           <div style="aspect-ratio:5/3;border-radius:2px;overflow:hidden;background:#1d231d;position:relative;"><img src="assets/gots-certifierat.jpg" alt="Textilproduktion" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></div>
           <h3 style="font-family:'Hanken Grotesk',sans-serif;font-weight:700;font-size:24px;line-height:1.16;letter-spacing:-.02em;color:#14181A;margin:18px 0 9px;">Grönt genom hela ledet</h3>
           <p style="font:400 14.5px/1.6 'Hanken Grotesk',sans-serif;color:#5A615C;margin:0;">GOTS säkerställer att hela produktionsledet är godkänt — ekologiskt, socialt och ekonomiskt.</p>
         </a>
-        <a href="#" style="display:block;">
+        <a href="#" class="n33-featcard" style="display:block;">
           <div style="aspect-ratio:5/3;border-radius:2px;overflow:hidden;background:#EBE7DA;position:relative;"><img src="assets/mockup-8.png" alt="Plaggen vi förädlar" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></div>
           <h3 style="font-family:'Hanken Grotesk',sans-serif;font-weight:700;font-size:24px;line-height:1.16;letter-spacing:-.02em;color:#14181A;margin:18px 0 9px;">Plaggen vi förädlar</h3>
           <p style="font:400 14.5px/1.6 'Hanken Grotesk',sans-serif;color:#5A615C;margin:0;">Pikéer, huvtröjor, t-shirts och kassar — basplagg redo att förädlas med tryck eller brodyr.</p>
         </a>
       </div>
+      <div style="display:flex;justify-content:flex-end;max-width:1600px;margin:clamp(30px,3.4vw,52px) auto 0;padding:0 6vw;"><a href="#" style="font:600 13px/1 'Hanken Grotesk',sans-serif;color:#7B2E3B;">Se alla artiklar →</a></div>
     </section>
 
     <!-- Magnetic proximity mosaic (från Studio) -->
     <section data-mosaic-sec="" style="position:relative;z-index:1;background:#14181A;overflow:hidden;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08);">
-      <div style="position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:clamp(52px,6.5vw,96px) 6vw;overflow:visible;">
+      <video data-rate="0.4" autoplay="" muted="" loop="" playsinline="" preload="auto" src="assets/mosaic-bg.mp4" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.28;z-index:0;pointer-events:none;"></video>
+      <div style="position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(20,24,26,.78) 0%,rgba(20,24,26,.66) 42%,rgba(20,24,26,.76) 100%);"></div>
+      <div style="position:relative;z-index:1;max-width:1600px;margin:0 auto;padding:clamp(52px,6.5vw,96px) 6vw clamp(88px,11vw,164px);overflow:visible;">
         <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:38px;">
           <h2 style="font:800 clamp(30px,4.4vw,60px)/.95 'Hanken Grotesk',sans-serif;letter-spacing:-.035em;margin:0;color:#FAFAF7;">Allt vi rör vid<span style="color:#C57888;">.</span></h2>
-          <span style="font:500 12.5px/1.5 'Hanken Grotesk',sans-serif;color:rgba(250,250,247,.55);">Ett urval ur produktionen</span>
+          
         </div>
         <div data-mosaic="" style="display:grid;grid-template-columns:repeat(9,1fr);gap:clamp(24px,3vw,44px);overflow:visible;"></div>
       </div>
@@ -921,7 +932,7 @@
 
     <!-- Featured wide -->
     <section style="background:#F4EFE4;border-top:1px solid #E5E2D9;border-bottom:1px solid #E5E2D9;">
-      <div style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,80px) 6vw;display:grid;grid-template-columns:1fr 1fr;gap:clamp(34px,5vw,72px);align-items:center;">
+      <div style="max-width:1600px;margin:0 auto;padding:clamp(48px,6vw,80px) 6vw;display:grid;grid-template-columns:1fr 1fr;gap:clamp(34px,5vw,72px);align-items:center;">
         <div style="position:relative;aspect-ratio:5/4;border-radius:2px;overflow:hidden;background:#F4EFE4;order:2;"><video data-rate="1" autoplay="" muted="" loop="" playsinline="" preload="auto" src="https://res.cloudinary.com/e9t94hoz/video/upload/Tjej_med_tryck_tx96ux.mp4" style="position:absolute;inset:-1px;width:calc(100% + 2px);height:calc(100% + 2px);object-fit:cover;filter:saturate(.86) contrast(1.05) brightness(.985) sepia(.07);"></video><span style="position:absolute;inset:0;pointer-events:none;mix-blend-mode:overlay;opacity:.1;background-size:150px 150px;"></span><span style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 100% at 50% 46%,rgba(0,0,0,0) 58%,rgba(20,16,10,.2) 100%);"></span></div>
         <div style="order:1;">
           <h2 style="font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:clamp(30px,4vw,54px);line-height:1.05;letter-spacing:-.035em;color:#14181A;margin:0 0 18px;">Vi säljer endast till återförsäljare.</h2>
@@ -932,18 +943,18 @@
     </section>
 
     <!-- Index -->
-    <section style="max-width:1240px;margin:0 auto;padding:clamp(48px,5vw,68px) 6vw;">
+    <section style="background:#F4EFE4;padding:clamp(48px,5vw,68px) 6vw;">
       <div style="text-align:center;font:700 11px/1 'Hanken Grotesk',sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#8A3344;margin-bottom:22px;">Varumärken vi förädlar</div>
       <div style="overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);padding:6px 0;">
         <div style="display:flex;width:max-content;animation:n33-marquee 120s linear infinite;">
           <div style="display:flex;align-items:center;">
             <sc-for list="{{ brandMarks }}" as="brand">
-              <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;height:62px;width:158px;margin-right:14px;padding:0 22px;background:#FFFFFF;border:1px solid rgba(20,24,26,.08);border-radius:0;box-shadow:0 1px 2px rgba(20,24,26,.05);"><sc-if value="{{ brand.plain }}" hint-placeholder-val="{{ true }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:26px;max-width:92px;width:auto;object-fit:contain;"></sc-if><sc-if value="{{ brand.badge }}" hint-placeholder-val="{{ false }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:32px;max-width:62px;width:auto;object-fit:contain;border-radius:3px;"></sc-if></span>
+              <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;height:62px;width:150px;margin-right:20px;padding:0 18px;background:transparent;"><sc-if value="{{ brand.plain }}" hint-placeholder-val="{{ true }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:26px;max-width:92px;width:auto;object-fit:contain;"></sc-if><sc-if value="{{ brand.badge }}" hint-placeholder-val="{{ false }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:32px;max-width:62px;width:auto;object-fit:contain;border-radius:3px;"></sc-if></span>
             </sc-for>
           </div>
           <div aria-hidden="true" style="display:flex;align-items:center;">
             <sc-for list="{{ brandMarks }}" as="brand">
-              <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;height:62px;width:158px;margin-right:14px;padding:0 22px;background:#FFFFFF;border:1px solid rgba(20,24,26,.08);border-radius:0;box-shadow:0 1px 2px rgba(20,24,26,.05);"><sc-if value="{{ brand.plain }}" hint-placeholder-val="{{ true }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:26px;max-width:92px;width:auto;object-fit:contain;"></sc-if><sc-if value="{{ brand.badge }}" hint-placeholder-val="{{ false }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:32px;max-width:62px;width:auto;object-fit:contain;border-radius:3px;"></sc-if></span>
+              <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;height:62px;width:150px;margin-right:20px;padding:0 18px;background:transparent;"><sc-if value="{{ brand.plain }}" hint-placeholder-val="{{ true }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:26px;max-width:92px;width:auto;object-fit:contain;"></sc-if><sc-if value="{{ brand.badge }}" hint-placeholder-val="{{ false }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:32px;max-width:62px;width:auto;object-fit:contain;border-radius:3px;"></sc-if></span>
             </sc-for>
           </div>
         </div>
@@ -952,7 +963,7 @@
 
     <!-- Footer -->
     <footer style="background:#F4EFE4;border-top:1px solid #E4DDCB;">
-      <div style="max-width:1240px;margin:0 auto;padding:60px 6vw 30px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:36px;">
+      <div style="max-width:1600px;margin:0 auto;padding:60px 6vw 30px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:36px;">
         <div>
           <a href="#" aria-label="noll33" style="display:inline-flex;align-items:center;flex:none;"><img src="assets/resurs-1.png" alt="noll33" style="height:56px;width:56px;display:block;"></a>
           <p style="font:400 14px/1.65 'Hanken Grotesk',sans-serif;color:#6A6F69;margin:16px 0 0;max-width:30ch;">Textilförädling till återförsäljare.</p>
@@ -970,14 +981,14 @@
           <div style="font:400 14px/1.7 'Hanken Grotesk',sans-serif;color:#6A6F69;">Hållingsgatan 15, 504 35 Borås<br>033-129110<br><a href="#" style="color:#14181A;border-bottom:1px solid #8A3344;">info@noll33.se</a></div>
         </div>
       </div>
-      <div style="max-width:1240px;margin:0 auto;padding:22px 6vw 40px;border-top:1px solid #E5E2D9;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;justify-content:space-between;font:400 12px/1.4 'Hanken Grotesk',sans-serif;color:#9A9486;">
+      <div style="max-width:1600px;margin:0 auto;padding:22px 6vw 40px;border-top:1px solid #E5E2D9;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;justify-content:space-between;font:400 12px/1.4 'Hanken Grotesk',sans-serif;color:#9A9486;">
         <span>© 2026 Noll33 Tryck &amp; Brodyr — Org.nr 559456-8874. Alla priser ex. moms.</span>
         <span style="display:flex;gap:18px;"><a href="#">Cookies</a><a href="#">Integritet</a></span>
       </div>
     </footer>
 
-  </div>
-  </sc-if>
+  </sc-if></div>
+  
 
   <!-- ============================ VARIANT E — STUDIO (COI-style) ============================ -->
   <sc-if value="{{ isE }}" hint-placeholder-val="{{ false }}">
@@ -1086,12 +1097,12 @@
           <div style="display:flex;width:max-content;animation:n33-marquee 120s linear infinite;">
             <div style="display:flex;align-items:center;">
               <sc-for list="{{ brandMarks }}" as="brand">
-                <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;height:62px;width:158px;margin-right:14px;padding:0 22px;background:#FFFFFF;border:1px solid rgba(20,24,26,.08);border-radius:0;box-shadow:0 1px 2px rgba(20,24,26,.05);"><sc-if value="{{ brand.plain }}" hint-placeholder-val="{{ true }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:26px;max-width:92px;width:auto;object-fit:contain;"></sc-if><sc-if value="{{ brand.badge }}" hint-placeholder-val="{{ false }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:32px;max-width:62px;width:auto;object-fit:contain;border-radius:3px;"></sc-if></span>
+                <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;height:62px;width:158px;margin-right:14px;padding:0 22px;background:transparent;"><sc-if value="{{ brand.plain }}" hint-placeholder-val="{{ true }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:26px;max-width:92px;width:auto;object-fit:contain;"></sc-if><sc-if value="{{ brand.badge }}" hint-placeholder-val="{{ false }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:32px;max-width:62px;width:auto;object-fit:contain;border-radius:3px;"></sc-if></span>
               </sc-for>
             </div>
             <div aria-hidden="true" style="display:flex;align-items:center;">
               <sc-for list="{{ brandMarks }}" as="brand">
-                <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;height:62px;width:158px;margin-right:14px;padding:0 22px;background:#FFFFFF;border:1px solid rgba(20,24,26,.08);border-radius:0;box-shadow:0 1px 2px rgba(20,24,26,.05);"><sc-if value="{{ brand.plain }}" hint-placeholder-val="{{ true }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:26px;max-width:92px;width:auto;object-fit:contain;"></sc-if><sc-if value="{{ brand.badge }}" hint-placeholder-val="{{ false }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:32px;max-width:62px;width:auto;object-fit:contain;border-radius:3px;"></sc-if></span>
+                <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;height:62px;width:158px;margin-right:14px;padding:0 22px;background:transparent;"><sc-if value="{{ brand.plain }}" hint-placeholder-val="{{ true }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:26px;max-width:92px;width:auto;object-fit:contain;"></sc-if><sc-if value="{{ brand.badge }}" hint-placeholder-val="{{ false }}"><img loading="lazy" data-logo="{{ brand.logo }}" alt="{{ brand.name }}" style="max-height:32px;max-width:62px;width:auto;object-fit:contain;border-radius:3px;"></sc-if></span>
               </sc-for>
             </div>
           </div>
@@ -1151,30 +1162,38 @@
   </div>
   </sc-if>
 
-</div>
 
+
+<div aria-hidden="true" style="position:fixed; left:-9999px; top:-9999px; width:1px; height:1px; overflow:hidden; opacity:0; pointer-events:none;"><dc-import name="Noll33 Header" concept="Atelier" active="home" hint-size="100%,98px"></dc-import></div>
 <sc-if value="{{ isApply }}" hint-placeholder-val="{{ false }}">
 <div style="position:fixed; inset:0; z-index:2000; overflow-y:scroll; scrollbar-gutter:stable; background:{{ theme.bg }}; color:{{ theme.ink }}; font-family:'Hanken Grotesk',sans-serif; -webkit-font-smoothing:antialiased;">
-  <dc-import name="Noll33 Header" concept="{{ conceptName }}" active="{{ activePage }}" hint-size="100%,98px"></dc-import>
-  <div style="max-width:1080px; margin:0 auto; padding:clamp(26px,4vw,52px) clamp(20px,5vw,44px) clamp(48px,6vw,80px);">
+  <div style="position:sticky; top:0; z-index:60;"><dc-import name="Noll33 Header" concept="{{ conceptName }}" active="{{ activePage }}" hint-size="100%,98px"></dc-import></div>
+  <div style="max-width:{{ theme.pageW }}; margin:0 auto; padding:clamp(24px,4vw,52px) 6vw clamp(48px,6vw,80px);">
     <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
       <div style="max-width:560px; margin:clamp(24px,7vw,90px) auto; text-align:center;">
         <div style="width:74px; height:74px; border-radius:50%; margin:0 auto 28px; background:{{ theme.accent }}; color:{{ theme.onAccent }}; display:flex; align-items:center; justify-content:center; font-size:36px; line-height:1;">✓</div>
         <h1 style="font-family:{{ theme.head }}; font-weight:800; font-size:clamp(30px,4vw,48px); line-height:1.04; letter-spacing:-.02em; margin:0 0 16px;">Tack för din ansökan!</h1>
         <p style="font-size:17px; line-height:1.6; color:{{ theme.muted }}; margin:0 auto 32px; max-width:44ch;">Vi granskar din ansökan och återkommer inom 1–2 arbetsdagar med inloggning till Design Studio.</p>
-        <a href="#" onClick="{{ goHome }}" style="display:inline-flex; align-items:center; gap:8px; background:{{ theme.accent }}; color:{{ theme.onAccent }}; padding:15px 30px; border-radius:999px; font-weight:700; font-size:14.5px;">Till startsidan →</a>
+        <a href="#" onClick="{{ goHome }}" style="display:inline-flex; align-items:center; gap:8px; background:{{ theme.accent }}; color:{{ theme.onAccent }}; padding:15px 30px; border-radius:{{ theme.pill }}; font-weight:700; font-size:14.5px;">Till startsidan →</a>
       </div>
     </sc-if>
     <sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
-      <div style="margin:0 0 clamp(30px,4vw,52px);border-radius:4px;overflow:hidden;background:#14181A;aspect-ratio:2/1;">
-        <video data-rate="1.8" autoplay="" muted="" loop="" playsinline="" preload="auto" poster="assets/ds-still.jpg" src="https://res.cloudinary.com/e9t94hoz/video/upload/PRNTR_STUDIO_FILM_fchkle.mp4" style="width:100%;height:100%;object-fit:cover;object-position:center center;display:block;"></video>
+      
+      <div style="display:grid; grid-template-columns:1fr 1.2fr; gap:clamp(28px,4vw,60px); align-items:start; margin:0 0 clamp(40px,5vw,64px);">
+        <div>
+          <h2 style="font-family:{{ theme.head }}; font-weight:{{ theme.hw }}; font-size:{{ theme.hs }}; line-height:1.08; letter-spacing:-.015em; color:{{ theme.ink }}; margin:0 0 16px;">Designa live — se resultatet direkt.</h2>
+          <p style="font-size:16px; line-height:1.7; color:{{ theme.muted }}; margin:0;">I Design Studio laddar du upp din logga eller skapar en text, väljer tryckmetod och placering och ser din design direkt på plagget. Justera antal, färg och storlek — och beställ när allt sitter.</p>
+        </div>
+        <div style="border-radius:{{ theme.radius }};overflow:hidden;background:#14181A;aspect-ratio:5/3;">
+          <video data-rate="1.8" autoplay="" muted="" loop="" playsinline="" preload="auto" poster="assets/ds-still.jpg" src="uploads/0706-9d30edb9.mp4" style="width:100%;height:100%;object-fit:cover;object-position:center center;display:block;"></video>
+        </div>
       </div>
     </sc-if>
     <sc-if value="{{ applyA }}" hint-placeholder-val="{{ true }}">
-      <div style="display:grid; grid-template-columns:1.1fr .9fr; gap:clamp(40px,6vw,96px); align-items:start;">
+      <div style="max-width:640px; display:flex; flex-direction:column; gap:clamp(32px,4vw,48px);">
         <div>
           <div style="font-weight:700; font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:#B8860B; margin-bottom:20px;">Endast för återförsäljare</div>
-          <h1 style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(38px,5.2vw,68px); line-height:.98; letter-spacing:-.02em; margin:0 0 22px;">Bli återförsäljare hos noll33.</h1>
+          <h1 style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(26px,3.2vw,44px); line-height:1.08; letter-spacing:-.015em; margin:0 0 22px;">Bli återförsäljare hos noll33.</h1>
           <p style="font-size:17px; line-height:1.7; color:#5A615C; margin:0 0 38px; max-width:40ch;">Design Studio är öppen för godkända återförsäljare. Ansök här — så får du tillgång till hela sortimentet, live-design och beställning direkt.</p>
           <div style="display:flex; flex-direction:column;">
             <div style="display:flex; gap:18px; align-items:baseline; padding:16px 0; border-top:1px solid #E7E3D7;"><span style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:15px; color:#B8860B; min-width:22px;">01</span><span style="font-size:15px; line-height:1.5; color:#3A403C;">Fyll i uppgifterna och skicka ansökan.</span></div>
@@ -1182,18 +1201,18 @@
             <div style="display:flex; gap:18px; align-items:baseline; padding:16px 0; border-top:1px solid #E7E3D7; border-bottom:1px solid #E7E3D7;"><span style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:15px; color:#B8860B; min-width:22px;">03</span><span style="font-size:15px; line-height:1.5; color:#3A403C;">Designa live och beställ direkt.</span></div>
           </div>
         </div>
-        <form onSubmit="{{ submitApply }}" style="display:flex; flex-direction:column; gap:24px; padding-top:8px;">
-          <label style="display:flex; flex-direction:column; gap:9px; font-weight:600; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#8A8576;">Företagsnamn<input required="" type="text" placeholder="Ert företag AB" style="border:none; border-bottom:1.5px solid #14181A; background:transparent; padding:8px 2px; font-size:16px; font-family:inherit; color:#14181A;"></label>
-          <label style="display:flex; flex-direction:column; gap:9px; font-weight:600; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#8A8576;">Org.nr<input required="" type="text" placeholder="556000-0000" style="border:none; border-bottom:1.5px solid #14181A; background:transparent; padding:8px 2px; font-size:16px; font-family:inherit; color:#14181A;"></label>
-          <label style="display:flex; flex-direction:column; gap:9px; font-weight:600; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#8A8576;">Kontaktperson<input required="" type="text" placeholder="För- och efternamn" style="border:none; border-bottom:1.5px solid #14181A; background:transparent; padding:8px 2px; font-size:16px; font-family:inherit; color:#14181A;"></label>
-          <label style="display:flex; flex-direction:column; gap:9px; font-weight:600; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#8A8576;">E-post<input required="" type="email" placeholder="namn@foretag.se" style="border:none; border-bottom:1.5px solid #14181A; background:transparent; padding:8px 2px; font-size:16px; font-family:inherit; color:#14181A;"></label>
-          <label style="display:flex; flex-direction:column; gap:9px; font-weight:600; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#8A8576;">Telefon<input required="" type="tel" placeholder="070-000 00 00" style="border:none; border-bottom:1.5px solid #14181A; background:transparent; padding:8px 2px; font-size:16px; font-family:inherit; color:#14181A;"></label>
-          <button type="submit" style="margin-top:12px; align-self:flex-start; background:#14181A; color:#FAFAF7; border:none; padding:15px 34px; border-radius:999px; font-weight:700; font-size:15px; letter-spacing:.02em; cursor:pointer; font-family:inherit;">Skicka ansökan →</button>
+        <form onSubmit="{{ submitApply }}" style="display:flex; flex-direction:column; gap:18px; padding-top:8px;">
+          <label style="display:flex; flex-direction:column; gap:9px; font-weight:600; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#8A8576;">Företagsnamn<input required="" type="text" placeholder="Ert företag AB" style="border:none; border-bottom:1.5px solid #14181A; background:transparent; padding:7px 2px; font-size:14px; font-family:inherit; color:#14181A;"></label>
+          <label style="display:flex; flex-direction:column; gap:9px; font-weight:600; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#8A8576;">Org.nr<input required="" type="text" placeholder="556000-0000" style="border:none; border-bottom:1.5px solid #14181A; background:transparent; padding:7px 2px; font-size:14px; font-family:inherit; color:#14181A;"></label>
+          <label style="display:flex; flex-direction:column; gap:9px; font-weight:600; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#8A8576;">Kontaktperson<input required="" type="text" placeholder="För- och efternamn" style="border:none; border-bottom:1.5px solid #14181A; background:transparent; padding:7px 2px; font-size:14px; font-family:inherit; color:#14181A;"></label>
+          <label style="display:flex; flex-direction:column; gap:9px; font-weight:600; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#8A8576;">E-post<input required="" type="email" placeholder="namn@foretag.se" style="border:none; border-bottom:1.5px solid #14181A; background:transparent; padding:7px 2px; font-size:14px; font-family:inherit; color:#14181A;"></label>
+          <label style="display:flex; flex-direction:column; gap:9px; font-weight:600; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#8A8576;">Telefon<input required="" type="tel" placeholder="070-000 00 00" style="border:none; border-bottom:1.5px solid #14181A; background:transparent; padding:7px 2px; font-size:14px; font-family:inherit; color:#14181A;"></label>
+          <button type="submit" style="margin-top:14px; align-self:flex-start; background:#14181A; color:#FAFAF7; border:none; padding:15px 32px; border-radius:0; font-weight:700; font-size:14.5px; letter-spacing:.04em; text-transform:uppercase; cursor:pointer; font-family:inherit;">Skicka ansökan →</button>
         </form>
       </div>
     </sc-if>
     <sc-if value="{{ applyC }}" hint-placeholder-val="{{ false }}">
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:clamp(32px,5vw,72px); align-items:center;">
+      <div style="max-width:640px; display:flex; flex-direction:column; gap:clamp(32px,4vw,48px);">
         <div>
           <div style="display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#23416E; margin-bottom:16px;"><span style="width:6px; height:6px; border-radius:50%; background:#23416E;"></span>Endast för återförsäljare</div>
           <h1 style="font-family:'Hanken Grotesk',sans-serif; font-weight:800; font-size:clamp(32px,4.4vw,54px); line-height:1.02; letter-spacing:-.03em; margin:0 0 18px;">Bli återförsäljare hos noll33.</h1>
@@ -1205,18 +1224,17 @@
           </div>
         </div>
         <form onSubmit="{{ submitApply }}" style="background:#FFFFFF; border:1px solid #DBE2E2; border-radius:18px; padding:clamp(24px,3vw,38px); display:flex; flex-direction:column; gap:15px; box-shadow:0 30px 60px -40px rgba(20,45,80,.4);">
-          <label style="display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:12.5px;">Företagsnamn<input required="" type="text" placeholder="Ert företag AB" style="border:1px solid #DBE2E2; background:#F7FAFA; border-radius:10px; padding:12px 13px; font-size:14.5px; font-family:inherit; color:#14181A;"></label>
-          <label style="display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:12.5px;">Org.nr<input required="" type="text" placeholder="556000-0000" style="border:1px solid #DBE2E2; background:#F7FAFA; border-radius:10px; padding:12px 13px; font-size:14.5px; font-family:inherit; color:#14181A;"></label>
-          <label style="display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:12.5px;">Kontaktperson<input required="" type="text" placeholder="För- och efternamn" style="border:1px solid #DBE2E2; background:#F7FAFA; border-radius:10px; padding:12px 13px; font-size:14.5px; font-family:inherit; color:#14181A;"></label>
-          <label style="display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:12.5px;">E-post<input required="" type="email" placeholder="namn@foretag.se" style="border:1px solid #DBE2E2; background:#F7FAFA; border-radius:10px; padding:12px 13px; font-size:14.5px; font-family:inherit; color:#14181A;"></label>
-          <label style="display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:12.5px;">Telefon<input required="" type="tel" placeholder="070-000 00 00" style="border:1px solid #DBE2E2; background:#F7FAFA; border-radius:10px; padding:12px 13px; font-size:14.5px; font-family:inherit; color:#14181A;"></label>
+          <label style="display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:12.5px;">Företagsnamn<input required="" type="text" placeholder="Ert företag AB" style="border:1px solid #DBE2E2; background:#F7FAFA; border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; color:#14181A;"></label>
+          <label style="display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:12.5px;">Org.nr<input required="" type="text" placeholder="556000-0000" style="border:1px solid #DBE2E2; background:#F7FAFA; border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; color:#14181A;"></label>
+          <label style="display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:12.5px;">Kontaktperson<input required="" type="text" placeholder="För- och efternamn" style="border:1px solid #DBE2E2; background:#F7FAFA; border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; color:#14181A;"></label>
+          <label style="display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:12.5px;">E-post<input required="" type="email" placeholder="namn@foretag.se" style="border:1px solid #DBE2E2; background:#F7FAFA; border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; color:#14181A;"></label>
+          <label style="display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:12.5px;">Telefon<input required="" type="tel" placeholder="070-000 00 00" style="border:1px solid #DBE2E2; background:#F7FAFA; border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; color:#14181A;"></label>
           <button type="submit" style="margin-top:8px; background:#23416E; color:#fff; border:none; padding:15px; border-radius:999px; font-weight:700; font-size:15px; cursor:pointer; font-family:inherit;">Skicka ansökan</button>
         </form>
       </div>
     </sc-if>
     <sc-if value="{{ applyD }}" hint-placeholder-val="{{ false }}">
-      <div style="border-top:2px solid #14181A; padding-top:14px; margin-bottom:34px; display:flex; justify-content:space-between; align-items:baseline; font-weight:600; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:#8A3344;"><span>Ansökan · Återförsäljare</span><span style="color:#9A9486;">N°01 · 2026</span></div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:clamp(32px,5vw,72px); align-items:start;">
+      <div style="max-width:640px; display:flex; flex-direction:column; gap:clamp(32px,4vw,48px);">
         <div>
           <h1 style="font-family:'Hanken Grotesk',sans-serif; font-weight:800; font-size:clamp(34px,4.8vw,60px); line-height:.98; letter-spacing:-.035em; margin:0 0 18px;">Bli återförsäljare hos <span style="color:#8A3344;">noll33</span>.</h1>
           <p style="font-size:16.5px; line-height:1.65; color:#5A615C; margin:0 0 30px; max-width:42ch;">Design Studio är öppen för godkända återförsäljare. Ansök här — så får du tillgång till hela sortimentet, live-design och beställning direkt.</p>
@@ -1227,11 +1245,11 @@
           </div>
         </div>
         <form onSubmit="{{ submitApply }}" style="background:#FCFBF8; border:1px solid #E4DDCB; border-radius:2px; padding:clamp(24px,3vw,36px); display:flex; flex-direction:column; gap:15px;">
-          <label style="display:flex; flex-direction:column; gap:7px; font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#8A8576;">Företagsnamn<input required="" type="text" placeholder="Ert företag AB" style="border:1px solid #E4DDCB; background:#FFFFFF; border-radius:2px; padding:12px 13px; font-size:14.5px; font-family:inherit; color:#14181A;"></label>
-          <label style="display:flex; flex-direction:column; gap:7px; font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#8A8576;">Org.nr<input required="" type="text" placeholder="556000-0000" style="border:1px solid #E4DDCB; background:#FFFFFF; border-radius:2px; padding:12px 13px; font-size:14.5px; font-family:inherit; color:#14181A;"></label>
-          <label style="display:flex; flex-direction:column; gap:7px; font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#8A8576;">Kontaktperson<input required="" type="text" placeholder="För- och efternamn" style="border:1px solid #E4DDCB; background:#FFFFFF; border-radius:2px; padding:12px 13px; font-size:14.5px; font-family:inherit; color:#14181A;"></label>
-          <label style="display:flex; flex-direction:column; gap:7px; font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#8A8576;">E-post<input required="" type="email" placeholder="namn@foretag.se" style="border:1px solid #E4DDCB; background:#FFFFFF; border-radius:2px; padding:12px 13px; font-size:14.5px; font-family:inherit; color:#14181A;"></label>
-          <label style="display:flex; flex-direction:column; gap:7px; font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#8A8576;">Telefon<input required="" type="tel" placeholder="070-000 00 00" style="border:1px solid #E4DDCB; background:#FFFFFF; border-radius:2px; padding:12px 13px; font-size:14.5px; font-family:inherit; color:#14181A;"></label>
+          <label style="display:flex; flex-direction:column; gap:7px; font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#8A8576;">Företagsnamn<input required="" type="text" placeholder="Ert företag AB" style="border:1px solid #E4DDCB; background:#FFFFFF; border-radius:2px; padding:10px 12px; font-size:13px; font-family:inherit; color:#14181A;"></label>
+          <label style="display:flex; flex-direction:column; gap:7px; font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#8A8576;">Org.nr<input required="" type="text" placeholder="556000-0000" style="border:1px solid #E4DDCB; background:#FFFFFF; border-radius:2px; padding:10px 12px; font-size:13px; font-family:inherit; color:#14181A;"></label>
+          <label style="display:flex; flex-direction:column; gap:7px; font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#8A8576;">Kontaktperson<input required="" type="text" placeholder="För- och efternamn" style="border:1px solid #E4DDCB; background:#FFFFFF; border-radius:2px; padding:10px 12px; font-size:13px; font-family:inherit; color:#14181A;"></label>
+          <label style="display:flex; flex-direction:column; gap:7px; font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#8A8576;">E-post<input required="" type="email" placeholder="namn@foretag.se" style="border:1px solid #E4DDCB; background:#FFFFFF; border-radius:2px; padding:10px 12px; font-size:13px; font-family:inherit; color:#14181A;"></label>
+          <label style="display:flex; flex-direction:column; gap:7px; font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#8A8576;">Telefon<input required="" type="tel" placeholder="070-000 00 00" style="border:1px solid #E4DDCB; background:#FFFFFF; border-radius:2px; padding:10px 12px; font-size:13px; font-family:inherit; color:#14181A;"></label>
           <button type="submit" style="margin-top:8px; background:#8A3344; color:#fff; border:none; padding:15px; border-radius:2px; font-weight:700; font-size:15px; letter-spacing:.02em; cursor:pointer; font-family:inherit;">Skicka ansökan</button>
         </form>
       </div>
@@ -1241,16 +1259,15 @@
 </sc-if>
 <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
 <div style="position:fixed; inset:0; z-index:2000; overflow-y:scroll; scrollbar-gutter:stable; font-family:'Hanken Grotesk',sans-serif; -webkit-font-smoothing:antialiased;">
-  <dc-import name="Noll33 Header" concept="{{ conceptName }}" active="{{ activePage }}" hint-size="100%,98px"></dc-import>
+  <div style="position:sticky; top:0; z-index:60;"><dc-import name="Noll33 Header" concept="{{ conceptName }}" active="{{ activePage }}" hint-size="100%,98px"></dc-import></div>
 
   <!-- ===== ATELIER (A) — editorial ===== -->
   <sc-if value="{{ aboutA }}" hint-placeholder-val="{{ true }}">
   <div style="min-height:100%; background:#FAFAF7; color:#14181A;">
-    <div style="max-width:1180px; margin:0 auto; padding:clamp(24px,4vw,48px) clamp(20px,5vw,44px) clamp(56px,7vw,100px);">
+    <div style="max-width:2040px; margin:0 auto; padding:clamp(24px,4vw,52px) 6vw clamp(56px,7vw,100px);">
       <div style="font-weight:700; font-size:11px; letter-spacing:.28em; text-transform:uppercase; color:#B8860B; margin-bottom:22px;">Om oss</div>
-      <div style="display:grid; grid-template-columns:1.25fr .75fr; gap:clamp(36px,5vw,80px); align-items:end; margin-bottom:clamp(44px,6vw,80px);">
-        <h1 style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(40px,6.6vw,92px); line-height:.94; letter-spacing:-.03em; margin:0;">Vi förädlar.<br>Ni äger kunden.</h1>
-        <p style="font-size:17px; line-height:1.7; color:#5A615C; margin:0 0 6px;">noll33 är en textilförädlare i Borås. Vi trycker, broderar och märker plagg åt återförsäljare — men aldrig direkt till slutkund.</p>
+      <div style="margin-bottom:clamp(44px,6vw,80px);">
+        <h1 style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(26px,3.2vw,44px); line-height:1.08; letter-spacing:-.015em; margin:0;">Vi förädlar.<br>Ni äger kunden.</h1>
       </div>
       <div style="width:100%; height:clamp(300px,40vw,520px); border-radius:4px; overflow:hidden; background:#EEEBE2; margin-bottom:clamp(44px,6vw,84px);">
         <img src="uploads/james-inigo-beK1tm4ufpU-unsplash.jpg" alt="Brodyr i produktionen" style="width:100%; height:100%; object-fit:cover; display:block;">
@@ -1258,6 +1275,7 @@
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:clamp(36px,5vw,90px); margin-bottom:clamp(44px,6vw,84px);">
         <div>
           <h2 style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(24px,2.6vw,34px); line-height:1.1; letter-spacing:-.02em; margin:0 0 18px;">Din relation med kunden är din.</h2>
+          <p style="font-size:16px; line-height:1.75; color:#5A615C; margin:0 0 16px;">noll33 är en textilförädlare i Borås. Vi trycker, broderar och märker plagg åt återförsäljare — men aldrig direkt till slutkund.</p>
           <p style="font-size:16px; line-height:1.75; color:#5A615C; margin:0 0 16px;">Vår uppgift är att göra plaggen så bra att de bär ditt namn med stolthet. Du säljer vidare — vi står för hantverket bakom.</p>
           <p style="font-size:16px; line-height:1.75; color:#5A615C; margin:0;">Sex metoder under ett tak, och en designstudio där du ser resultatet innan du beställer.</p>
         </div>
@@ -1270,12 +1288,12 @@
       <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:2px; background:#E7E3D7; border:1px solid #E7E3D7; border-radius:4px; overflow:hidden; margin-bottom:clamp(44px,6vw,80px);">
         <div style="background:#FAFAF7; padding:26px 22px;"><div style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(28px,3vw,40px); letter-spacing:-.02em;">250+</div><div style="font-size:12.5px; color:#8A8576; margin-top:6px;">Basplagg</div></div>
         <div style="background:#FAFAF7; padding:26px 22px;"><div style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(28px,3vw,40px); letter-spacing:-.02em;">5</div><div style="font-size:12.5px; color:#8A8576; margin-top:6px;">Förädlingsmetoder</div></div>
-        <div style="background:#FAFAF7; padding:26px 22px;"><div style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(28px,3vw,40px); letter-spacing:-.02em;">1–2</div><div style="font-size:12.5px; color:#8A8576; margin-top:6px;">Dagar till korrektur</div></div>
+        <div style="background:#FAFAF7; padding:26px 22px;"><div style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(28px,3vw,40px); letter-spacing:-.02em;">Direkt</div><div style="font-size:12.5px; color:#8A8576; margin-top:6px;">Korrektur i studion</div></div>
         <div style="background:#FAFAF7; padding:26px 22px;"><div style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(28px,3vw,40px); letter-spacing:-.02em;">Borås</div><div style="font-size:12.5px; color:#8A8576; margin-top:6px;">Vår bas</div></div>
       </div>
       <div style="display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; border-top:1px solid #E7E3D7; padding-top:36px;">
         <div style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(22px,2.4vw,30px); letter-spacing:-.02em;">Redo att bli återförsäljare?</div>
-        <a href="#" style="background:#14181A; color:#FAFAF7; padding:15px 30px; border-radius:999px; font-weight:700; font-size:15px;">Bli återförsäljare →</a>
+        <a href="#" style="background:#14181A; color:#FAFAF7; padding:15px 30px; border-radius:{{ theme.pill }}; font-weight:700; font-size:15px;">Bli återförsäljare →</a>
       </div>
     </div>
   </div>
@@ -1284,14 +1302,14 @@
   <!-- ===== KOLLEKTION (C) — product platform ===== -->
   <sc-if value="{{ aboutC }}" hint-placeholder-val="{{ false }}">
   <div style="min-height:100%; background:#EEF2F2; color:#14181A;">
-    <div style="max-width:1200px; margin:0 auto; padding:clamp(24px,4vw,48px) clamp(20px,5vw,44px) clamp(56px,7vw,100px);">
+    <div style="max-width:1600px; margin:0 auto; padding:clamp(24px,4vw,52px) 6vw clamp(56px,7vw,100px);">
       <div style="display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#23416E; margin-bottom:18px;"><span style="width:6px; height:6px; border-radius:50%; background:#23416E;"></span>Om noll33</div>
-      <h1 style="font-weight:800; font-size:clamp(34px,5vw,62px); line-height:1.0; letter-spacing:-.035em; margin:0 0 20px; max-width:16ch;">Textilförädling, byggd för återförsäljare.</h1>
+      <h1 style="font-weight:800; font-size:clamp(32px,4.4vw,54px); line-height:1.02; letter-spacing:-.035em; margin:0 0 20px; max-width:16ch;">Textilförädling, byggd för återförsäljare.</h1>
       <p style="font-size:17px; line-height:1.65; color:#57605C; margin:0 0 clamp(36px,5vw,56px); max-width:60ch;">Vi trycker, broderar och märker plagg åt återförsäljare i hela Norden — aldrig direkt till slutkund. Du bygger varumärket, vi står för produktionen. Fem metoder under ett tak, ett sortiment på 250+ basplagg och en designstudio som visar resultatet direkt.</p>
       <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:clamp(36px,5vw,56px);">
-        <div style="background:#fff; border:1px solid #DBE2E2; border-radius:16px; padding:24px;"><div style="font-weight:800; font-size:clamp(26px,3vw,38px); color:#23416E; letter-spacing:-.02em;">250+</div><div style="font-size:13px; color:#57605C; margin-top:6px;">Basplagg i sortiment</div></div>
-        <div style="background:#fff; border:1px solid #DBE2E2; border-radius:16px; padding:24px;"><div style="font-weight:800; font-size:clamp(26px,3vw,38px); color:#23416E; letter-spacing:-.02em;">5</div><div style="font-size:13px; color:#57605C; margin-top:6px;">Förädlingsmetoder</div></div>
-        <div style="background:#fff; border:1px solid #DBE2E2; border-radius:16px; padding:24px;"><div style="font-weight:800; font-size:clamp(26px,3vw,38px); color:#23416E; letter-spacing:-.02em;">1–2</div><div style="font-size:13px; color:#57605C; margin-top:6px;">Dagar till korrektur</div></div>
+        <div style="background:#fff; border:1px solid #DBE2E2; border-radius:16px; padding:24px;"><div style="font-weight:800; font-size:clamp(26px,3vw,38px); color:#23416E; letter-spacing:-.02em;">65000+</div><div style="font-size:13px; color:#57605C; margin-top:6px;">Basplagg i sortiment</div></div>
+        <div style="background:#fff; border:1px solid #DBE2E2; border-radius:16px; padding:24px;"><div style="font-weight:800; font-size:clamp(26px,3vw,38px); color:#23416E; letter-spacing:-.02em;">6</div><div style="font-size:13px; color:#57605C; margin-top:6px;">Förädlingsmetoder</div></div>
+        <div style="background:#fff; border:1px solid #DBE2E2; border-radius:16px; padding:24px;"><div style="font-weight:800; font-size:clamp(26px,3vw,38px); color:#23416E; letter-spacing:-.02em;">Direkt</div><div style="font-size:13px; color:#57605C; margin-top:6px;">Korrektur i studion</div></div>
         <div style="background:#fff; border:1px solid #DBE2E2; border-radius:16px; padding:24px;"><div style="font-weight:800; font-size:clamp(26px,3vw,38px); color:#23416E; letter-spacing:-.02em;">100%</div><div style="font-size:13px; color:#57605C; margin-top:6px;">Återförsäljarfokus</div></div>
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:clamp(24px,3vw,44px); align-items:stretch; margin-bottom:clamp(36px,5vw,56px);">
@@ -1304,7 +1322,7 @@
       </div>
       <div style="background:#23416E; border-radius:18px; padding:clamp(28px,3.5vw,44px); display:flex; align-items:center; justify-content:space-between; gap:22px; flex-wrap:wrap;">
         <div><div style="color:#fff; font-weight:800; font-size:clamp(22px,2.4vw,30px); letter-spacing:-.02em; margin-bottom:6px;">Bli återförsäljare hos noll33</div><div style="color:rgba(255,255,255,.7); font-size:15px;">Ansök om konto och lås upp Design Studio.</div></div>
-        <a href="#" style="background:#fff; color:#23416E; padding:15px 30px; border-radius:999px; font-weight:700; font-size:15px; white-space:nowrap;">Bli återförsäljare →</a>
+        <a href="#" style="background:#fff; color:#23416E; padding:15px 30px; border-radius:{{ theme.pill }}; font-weight:700; font-size:15px; white-space:nowrap;">Bli återförsäljare →</a>
       </div>
     </div>
   </div>
@@ -1313,10 +1331,11 @@
   <!-- ===== MAGASIN (D) — journal ===== -->
   <sc-if value="{{ aboutD }}" hint-placeholder-val="{{ false }}">
   <div style="min-height:100%; background:#F4EFE4; color:#14181A;">
-    <div style="max-width:1160px; margin:0 auto; padding:clamp(20px,3vw,36px) clamp(20px,5vw,48px) clamp(56px,7vw,100px);">
-      <div style="border-top:2px solid #14181A; padding-top:12px; display:flex; justify-content:space-between; align-items:baseline; font-weight:600; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:#8A3344; margin-bottom:clamp(28px,4vw,48px);"><span>Om oss · noll33</span><span style="color:#9A9486;">N°01 · 2026</span></div>
-      <h1 style="font-weight:800; font-size:clamp(38px,7vw,104px); line-height:.92; letter-spacing:-.04em; margin:0 0 clamp(28px,4vw,44px); max-width:14ch;">Hantverket bakom varje plagg.</h1>
-      <div style="width:100%; height:clamp(320px,44vw,600px); overflow:hidden; background:#e6ddc9; margin-bottom:14px;"><img src="assets/c-craft.jpg" alt="Screentryck för hand i produktionen" style="width:100%; height:100%; object-fit:cover; display:block;"></div>
+    <div style="max-width:1600px; margin:0 auto; padding:clamp(24px,4vw,44px) 6vw clamp(56px,7vw,100px);">
+      
+      
+      <h1 style="font-weight:800; font-size:clamp(34px,4.8vw,60px); line-height:.98; letter-spacing:-.025em; margin:0 0 clamp(28px,4vw,44px); max-width:16ch;">Hantverket bakom varje plagg.</h1>
+      <div style="width:100%; height:clamp(320px,44vw,600px); overflow:hidden; background:#e6ddc9; margin-bottom:14px;"><img src="./tees-please-40ifl0re5xc-unsplash-mrb5h03a.jpg" alt="Screentryck för hand i produktionen" style="width:100%; height:100%; object-fit:cover; display:block;"></div>
       <div style="font-size:12.5px; color:#9A9486; font-style:italic; margin-bottom:clamp(36px,5vw,60px);">Screentryck i vår produktion i Borås.</div>
       <div style="display:grid; grid-template-columns:1.6fr 1fr; gap:clamp(36px,5vw,80px); margin-bottom:clamp(40px,5vw,70px);">
         <div>
@@ -1345,78 +1364,188 @@
 </div>
 </sc-if>
 <sc-if value="{{ isCatalog }}" hint-placeholder-val="{{ false }}">
-<div style="position:fixed; inset:0; z-index:2500; overflow-y:scroll; scrollbar-gutter:stable; background:{{ catalogBg }};">
-  <dc-import name="Noll33 Header" concept="{{ conceptName }}" active="{{ activePage }}" hint-size="100%,98px"></dc-import>
-  <dc-import name="Produktkatalog" concept="{{ conceptName }}" initial-main="{{ catInitMain }}" initial-sub="{{ catInitSub }}" hint-size="100%,100%"></dc-import>
+<div style="position:fixed; inset:0; z-index:2500; background:{{ catalogBg }}; display:flex; flex-direction:column;">
+  <sc-if value="{{ isA }}" hint-placeholder-val="{{ true }}"><div style="flex:none;height:74px;overflow:hidden;"><dc-import name="Noll33 Header" concept="Atelier" active="{{ activePage }}" hint-size="100%,74px"></dc-import></div></sc-if>
+  <sc-if value="{{ isC }}" hint-placeholder-val="{{ false }}"><div style="flex:none;height:70px;overflow:hidden;"><dc-import name="Noll33 Header" concept="Kollektion" active="{{ activePage }}" hint-size="100%,70px"></dc-import></div></sc-if>
+  <sc-if value="{{ isD }}" hint-placeholder-val="{{ false }}"><div style="flex:none;height:92px;overflow:hidden;"><dc-import name="Noll33 Header" concept="Magasin" active="{{ activePage }}" hint-size="100%,92px"></dc-import></div></sc-if>
+  <div style="flex:1 1 auto; min-height:0; overflow-y:scroll; scrollbar-gutter:stable;">
+    <dc-import name="Produktkatalog" concept="{{ conceptName }}" initial-main="{{ catInitMain }}" initial-sub="{{ catInitSub }}" hint-size="100%,100%"></dc-import>
+  </div>
 </div>
 </sc-if>
 <sc-if value="{{ isForadling }}" hint-placeholder-val="{{ false }}">
 <div style="position:fixed; inset:0; z-index:2000; overflow-y:scroll; scrollbar-gutter:stable; background:{{ theme.bg }}; color:{{ theme.ink }}; font-family:'Hanken Grotesk',sans-serif; -webkit-font-smoothing:antialiased;">
-  <dc-import name="Noll33 Header" concept="{{ conceptName }}" active="{{ activePage }}" hint-size="100%,98px"></dc-import>
-  <div style="max-width:1080px; margin:0 auto; padding:clamp(24px,4vw,52px) clamp(20px,5vw,44px) clamp(56px,7vw,100px);">
-    <sc-if value="{{ isMag }}" hint-placeholder-val="{{ false }}"><div style="border-top:2px solid #14181A; padding-top:12px; margin-bottom:26px; display:flex; justify-content:space-between; font-weight:600; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:{{ theme.accent }};"><span>Förädling · noll33</span><span style="color:#9A9486;">N°01</span></div></sc-if>
-    <div style="font-weight:700; font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:{{ theme.accent }}; margin-bottom:18px;">Förädling</div>
-    <h1 style="font-family:{{ theme.head }}; font-weight:700; font-size:clamp(34px,5.4vw,72px); line-height:.98; letter-spacing:-.025em; margin:0 0 18px; max-width:16ch;">Sex metoder under ett tak.</h1>
-    <p style="font-size:17px; line-height:1.65; color:{{ theme.muted }}; margin:0 0 clamp(36px,5vw,56px); max-width:54ch;">Rätt teknik för rätt plagg och upplaga. Vi rådger och förädlar allt in-house, från enstaka prov till stora serier.</p>
-    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px;">
-      <div style="background:{{ theme.panel }}; border:1px solid {{ theme.border }}; border-radius:14px; padding:26px;"><div style="font-weight:700; font-size:12px; color:{{ theme.accent }}; margin-bottom:12px;">01</div><div style="font-family:{{ theme.head }}; font-weight:700; font-size:20px; margin-bottom:9px;">Screentryck</div><div style="font-size:14px; line-height:1.55; color:{{ theme.muted }};">Mättade, tåliga färger för större upplagor. Bäst pris per plagg vid volym.</div></div>
-      <div style="background:{{ theme.panel }}; border:1px solid {{ theme.border }}; border-radius:14px; padding:26px;"><div style="font-weight:700; font-size:12px; color:{{ theme.accent }}; margin-bottom:12px;">02</div><div style="font-family:{{ theme.head }}; font-weight:700; font-size:20px; margin-bottom:9px;">Screentransfer</div><div style="font-size:14px; line-height:1.55; color:{{ theme.muted }};">Screentryckta transfers som pressas på vid behov. Screentryckets tåliga färger, flexibelt vid blandade motiv och placeringar.</div></div>
-      <div style="background:{{ theme.panel }}; border:1px solid {{ theme.border }}; border-radius:14px; padding:26px;"><div style="font-weight:700; font-size:12px; color:{{ theme.accent }}; margin-bottom:12px;">03</div><div style="font-family:{{ theme.head }}; font-weight:700; font-size:20px; margin-bottom:9px;">DTG-tryck</div><div style="font-size:14px; line-height:1.55; color:{{ theme.muted }};">Fotorealistisk fullfärg direkt på tyget. Perfekt för små serier och detaljrika motiv.</div></div>
-      <div style="background:{{ theme.panel }}; border:1px solid {{ theme.border }}; border-radius:14px; padding:26px;"><div style="font-weight:700; font-size:12px; color:{{ theme.accent }}; margin-bottom:12px;">04</div><div style="font-family:{{ theme.head }}; font-weight:700; font-size:20px; margin-bottom:9px;">Transfer (DTF)</div><div style="font-size:14px; line-height:1.55; color:{{ theme.muted }};">Flexibla tryck på i stort sett alla material och färger, även i små upplagor.</div></div>
-      <div style="background:{{ theme.panel }}; border:1px solid {{ theme.border }}; border-radius:14px; padding:26px;"><div style="font-weight:700; font-size:12px; color:{{ theme.accent }}; margin-bottom:12px;">05</div><div style="font-family:{{ theme.head }}; font-weight:700; font-size:20px; margin-bottom:9px;">Brodyr</div><div style="font-size:14px; line-height:1.55; color:{{ theme.muted }};">Exklusiv, slitstark finish för loggor, kepsar och arbetskläder.</div></div>
-      <div style="background:{{ theme.panel }}; border:1px solid {{ theme.border }}; border-radius:14px; padding:26px;"><div style="font-weight:700; font-size:12px; color:{{ theme.accent }}; margin-bottom:12px;">06</div><div style="font-family:{{ theme.head }}; font-weight:700; font-size:20px; margin-bottom:9px;">Vävda märken</div><div style="font-size:14px; line-height:1.55; color:{{ theme.muted }};">Detaljerade, vävda etiketter som ger plagget ett premiumuttryck.</div></div>
+  <div style="position:sticky; top:0; z-index:60;"><dc-import name="Noll33 Header" concept="{{ conceptName }}" active="{{ activePage }}" hint-size="100%,98px"></dc-import></div>
+  <sc-if value="{{ isA }}" hint-placeholder-val="{{ true }}">
+  <div style="max-width:2040px; margin:0 auto; padding:clamp(24px,4vw,52px) 6vw clamp(64px,7vw,100px);">
+    <div style="font-weight:600; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#B8860B; margin-bottom:20px;">Förädling</div>
+    <h1 style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(26px,3.2vw,44px); line-height:1.08; letter-spacing:-.015em; margin:0 0 20px; max-width:15ch;">Sex metoder under ett tak.</h1>
+    <p style="font:400 17px/1.7 'Hanken Grotesk',sans-serif; color:#5A615C; margin:0 0 clamp(40px,5vw,60px); max-width:52ch;">Rätt teknik för rätt plagg och upplaga. Vi rådger och förädlar allt in-house, från enstaka prov till stora serier.</p>
+    <div style="border-bottom:1px solid #E7E3D7;">
+      <sc-for list="{{ methods }}" as="m" hint-placeholder-count="6">
+        <div style="display:grid; grid-template-columns:auto 1fr; gap:clamp(18px,3vw,44px); align-items:baseline; padding:22px 0; border-top:1px solid #E7E3D7;">
+          <span style="font:600 14px/1 'Albert Sans',sans-serif; color:#B8860B;">{{ m.n }}</span>
+          <div><div style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(20px,2vw,26px); color:#14181A; margin-bottom:7px;">{{ m.name }}</div><div style="font:400 15px/1.6 'Hanken Grotesk',sans-serif; color:#5A615C; max-width:62ch;">{{ m.desc }}</div></div>
+        </div>
+      </sc-for>
     </div>
-    <div style="margin-top:clamp(36px,5vw,56px);"><a href="#" style="display:inline-flex; align-items:center; gap:8px; background:{{ theme.accent }}; color:{{ theme.onAccent }}; padding:15px 30px; border-radius:999px; font-weight:700; font-size:15px;">Bli återförsäljare →</a></div>
+    <div style="margin-top:clamp(40px,5vw,60px);"><a href="#" style="font:600 14px/1 'Hanken Grotesk',sans-serif; letter-spacing:.02em; color:#14181A; border-bottom:1.5px solid #B8860B; padding-bottom:4px;">Bli återförsäljare →</a></div>
   </div>
+  </sc-if>
+
+  <sc-if value="{{ isC }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1600px; margin:0 auto; padding:clamp(24px,4vw,52px) 6vw clamp(64px,7vw,100px);">
+    <div style="display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#23416E; margin-bottom:16px;"><span style="width:6px;height:6px;border-radius:50%;background:#23416E;"></span>Förädling</div>
+    <h1 style="font-family:'Hanken Grotesk',sans-serif; font-weight:800; font-size:clamp(32px,4.4vw,54px); line-height:1.02; letter-spacing:-.03em; margin:0 0 16px;">Sex metoder under ett tak.</h1>
+    <p style="font:400 16.5px/1.65 'Hanken Grotesk',sans-serif; color:#57605C; margin:0 0 clamp(36px,5vw,52px); max-width:52ch;">Rätt teknik för rätt plagg och upplaga. Vi rådger och förädlar allt in-house, från enstaka prov till stora serier.</p>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+      <sc-for list="{{ methods }}" as="m" hint-placeholder-count="6">
+        <div style="background:#FFFFFF; border:1px solid #DBE2E2; border-radius:16px; padding:26px; transition:box-shadow .3s,transform .3s;" style-hover="box-shadow:0 14px 30px rgba(35,65,110,.1); transform:translateY(-3px);">
+          <div style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:50%; background:#23416E; color:#fff; font:700 12px/1 'Hanken Grotesk',sans-serif; margin-bottom:14px;">{{ m.n }}</div>
+          <div style="font-family:'Hanken Grotesk',sans-serif; font-weight:700; font-size:20px; color:#14181A; margin-bottom:8px;">{{ m.name }}</div>
+          <div style="font:400 14px/1.55 'Hanken Grotesk',sans-serif; color:#57605C;">{{ m.desc }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin-top:clamp(36px,5vw,52px);"><a href="#" style="display:inline-flex; align-items:center; gap:8px; background:#23416E; color:#fff; padding:13px 26px; border-radius:999px; font-weight:700; font-size:14.5px;">Bli kund →</a></div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isD }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1600px; margin:0 auto; padding:clamp(24px,4vw,44px) 6vw clamp(64px,7vw,100px);">
+    <h1 style="font-family:'Hanken Grotesk',sans-serif; font-weight:800; font-size:clamp(34px,4.8vw,60px); line-height:.98; letter-spacing:-.035em; margin:0 0 18px; max-width:14ch;">Sex metoder under ett tak<span style="color:#8A3344;">.</span></h1>
+    <p style="font:400 17px/1.65 'Hanken Grotesk',sans-serif; color:#5A615C; margin:0 0 clamp(40px,5vw,60px); max-width:52ch;">Rätt teknik för rätt plagg och upplaga. Vi rådger och förädlar allt in-house, från enstaka prov till stora serier.</p>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0; border-left:1px solid #E4DDCB; border-top:1px solid #E4DDCB;">
+      <sc-for list="{{ methods }}" as="m" hint-placeholder-count="6">
+        <div style="border-right:1px solid #E4DDCB; border-bottom:1px solid #E4DDCB; padding:28px; background:#FCFBF8;">
+          <div style="font:800 13px/1 'Hanken Grotesk',sans-serif; letter-spacing:.02em; color:#8A3344; margin-bottom:14px;">{{ m.n }}</div>
+          <div style="font-family:'Hanken Grotesk',sans-serif; font-weight:700; font-size:20px; color:#14181A; margin-bottom:8px;">{{ m.name }}</div>
+          <div style="font:400 14px/1.55 'Hanken Grotesk',sans-serif; color:#5A615C;">{{ m.desc }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin-top:clamp(40px,5vw,60px);"><a href="#" style="display:inline-flex; align-items:center; gap:8px; background:#8A3344; color:#fff; padding:15px 30px; border-radius:2px; font-weight:700; font-size:15px;">Bli återförsäljare →</a></div>
+  </div>
+  </sc-if>
 </div>
 </sc-if>
 
 <sc-if value="{{ isHallbarhet }}" hint-placeholder-val="{{ false }}">
 <div style="position:fixed; inset:0; z-index:2000; overflow-y:scroll; scrollbar-gutter:stable; background:{{ theme.bg }}; color:{{ theme.ink }}; font-family:'Hanken Grotesk',sans-serif; -webkit-font-smoothing:antialiased;">
-  <dc-import name="Noll33 Header" concept="{{ conceptName }}" active="{{ activePage }}" hint-size="100%,98px"></dc-import>
-  <div style="max-width:1080px; margin:0 auto; padding:clamp(24px,4vw,52px) clamp(20px,5vw,44px) clamp(56px,7vw,100px);">
-    <sc-if value="{{ isMag }}" hint-placeholder-val="{{ false }}"><div style="border-top:2px solid #14181A; padding-top:12px; margin-bottom:26px; display:flex; justify-content:space-between; font-weight:600; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:{{ theme.accent }};"><span>Hållbarhet · noll33</span><span style="color:#9A9486;">N°01</span></div></sc-if>
-    <div style="font-weight:700; font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:{{ theme.accent }}; margin-bottom:18px;">Hållbarhet</div>
-    <h1 style="font-family:{{ theme.head }}; font-weight:700; font-size:clamp(34px,5.4vw,72px); line-height:.98; letter-spacing:-.025em; margin:0 0 18px; max-width:15ch;">Hållbart genom hela ledet.</h1>
-    <p style="font-size:17px; line-height:1.65; color:{{ theme.muted }}; margin:0 0 clamp(36px,5vw,56px); max-width:54ch;">Det räcker inte med ett grönt tryck. Vi väljer material och metoder som håller, för planeten och för plagget.</p>
-    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; margin-bottom:clamp(36px,5vw,52px);">
-      <div style="background:{{ theme.panel }}; border:1px solid {{ theme.border }}; border-radius:14px; padding:28px;"><div style="font-family:{{ theme.head }}; font-weight:700; font-size:20px; margin-bottom:10px;">Certifierade material</div><div style="font-size:14.5px; line-height:1.6; color:{{ theme.muted }};">GOTS- och Oeko-Tex-certifierade basplagg när projektet kräver det.</div></div>
-      <div style="background:{{ theme.panel }}; border:1px solid {{ theme.border }}; border-radius:14px; padding:28px;"><div style="font-family:{{ theme.head }}; font-weight:700; font-size:20px; margin-bottom:10px;">Mindre svinn</div><div style="font-size:14.5px; line-height:1.6; color:{{ theme.muted }};">White-label och tryck vid behov betyder färre leveranser och mindre överproduktion.</div></div>
-      <div style="background:{{ theme.panel }}; border:1px solid {{ theme.border }}; border-radius:14px; padding:28px;"><div style="font-family:{{ theme.head }}; font-weight:700; font-size:20px; margin-bottom:10px;">Nära produktion</div><div style="font-size:14.5px; line-height:1.6; color:{{ theme.muted }};">Förädling i Borås ger kortare transporter och full kontroll på kvaliteten.</div></div>
+  <div style="position:sticky; top:0; z-index:60;"><dc-import name="Noll33 Header" concept="{{ conceptName }}" active="{{ activePage }}" hint-size="100%,98px"></dc-import></div>
+  <sc-if value="{{ isA }}" hint-placeholder-val="{{ true }}">
+  <div style="max-width:2040px; margin:0 auto; padding:clamp(24px,4vw,52px) 6vw clamp(64px,7vw,100px);">
+    <div style="font-weight:600; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#B8860B; margin-bottom:20px;">Hållbarhet</div>
+    <h1 style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(26px,3.2vw,44px); line-height:1.08; letter-spacing:-.015em; margin:0 0 20px; max-width:14ch;">Hållbart genom hela ledet.</h1>
+    <p style="font:400 17px/1.7 'Hanken Grotesk',sans-serif; color:#5A615C; margin:0 0 clamp(40px,5vw,60px); max-width:52ch;">Det räcker inte med ett grönt tryck. Vi väljer material och metoder som håller, för planeten och för plagget.</p>
+    <div style="width:100%; aspect-ratio:21/9; border-radius:4px; overflow:hidden; background:#EEEBE2; margin-bottom:clamp(36px,5vw,56px);"><img src="assets/noplanetb.png" alt="Ekocertifierade plagg" style="width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block;"></div>
+    <div style="border-bottom:1px solid #E7E3D7;">
+      <div style="padding:24px 0; border-top:1px solid #E7E3D7;"><div style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(20px,2vw,26px); color:#14181A; margin-bottom:7px;">Certifierade material</div><div style="font:400 15px/1.6 'Hanken Grotesk',sans-serif; color:#5A615C; max-width:62ch;">GOTS- och Oeko-Tex-certifierade basplagg när projektet kräver det.</div></div>
+      <div style="padding:24px 0; border-top:1px solid #E7E3D7;"><div style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(20px,2vw,26px); color:#14181A; margin-bottom:7px;">Mindre svinn</div><div style="font:400 15px/1.6 'Hanken Grotesk',sans-serif; color:#5A615C; max-width:62ch;">White-label och tryck vid behov betyder färre leveranser och mindre överproduktion.</div></div>
+      <div style="padding:24px 0; border-top:1px solid #E7E3D7;"><div style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(20px,2vw,26px); color:#14181A; margin-bottom:7px;">Nära produktion</div><div style="font:400 15px/1.6 'Hanken Grotesk',sans-serif; color:#5A615C; max-width:62ch;">Förädling i Borås ger kortare transporter och full kontroll på kvaliteten.</div></div>
     </div>
-    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-      <span style="font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:{{ theme.muted }};">Certifieringar:</span>
-      <span style="border:1px solid {{ theme.border }}; background:{{ theme.panel }}; padding:8px 14px; border-radius:999px; font-weight:600; font-size:13px;">GOTS</span>
-      <span style="border:1px solid {{ theme.border }}; background:{{ theme.panel }}; padding:8px 14px; border-radius:999px; font-weight:600; font-size:13px;">Oeko-Tex</span>
-      <span style="border:1px solid {{ theme.border }}; background:{{ theme.panel }}; padding:8px 14px; border-radius:999px; font-weight:600; font-size:13px;">Fairtrade</span>
-    </div>
-    <div style="margin-top:clamp(36px,5vw,56px);"><a href="#" style="display:inline-flex; align-items:center; gap:8px; background:{{ theme.accent }}; color:{{ theme.onAccent }}; padding:15px 30px; border-radius:999px; font-weight:700; font-size:15px;">Bli återförsäljare →</a></div>
+    <div style="margin-top:clamp(30px,4vw,44px); display:flex; align-items:center; gap:16px; flex-wrap:wrap; font:600 13px/1 'Hanken Grotesk',sans-serif; color:#5A615C;"><span style="letter-spacing:.14em; text-transform:uppercase; font-size:11px; color:#9A9486;">Certifieringar</span><span style="color:#B8860B;">GOTS</span><span style="color:#B8860B;">Oeko-Tex</span><span style="color:#B8860B;">Fairtrade</span></div>
+    <div style="margin-top:clamp(40px,5vw,60px);"><a href="#" style="font:600 14px/1 'Hanken Grotesk',sans-serif; letter-spacing:.02em; color:#14181A; border-bottom:1.5px solid #B8860B; padding-bottom:4px;">Bli återförsäljare →</a></div>
   </div>
+  </sc-if>
+
+  <sc-if value="{{ isC }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1600px; margin:0 auto; padding:clamp(24px,4vw,52px) 6vw clamp(64px,7vw,100px);">
+    <div style="display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#23416E; margin-bottom:16px;"><span style="width:6px;height:6px;border-radius:50%;background:#23416E;"></span>Hållbarhet</div>
+    <h1 style="font-family:'Hanken Grotesk',sans-serif; font-weight:800; font-size:clamp(32px,4.4vw,54px); line-height:1.02; letter-spacing:-.03em; margin:0 0 16px;">Hållbart genom hela ledet.</h1>
+    <p style="font:400 16.5px/1.65 'Hanken Grotesk',sans-serif; color:#57605C; margin:0 0 clamp(36px,5vw,52px); max-width:52ch;">Det räcker inte med ett grönt tryck. Vi väljer material och metoder som håller, för planeten och för plagget.</p>
+    <div style="width:100%; aspect-ratio:21/9; border-radius:16px; overflow:hidden; background:#dfe4ea; margin-bottom:clamp(28px,4vw,44px);"><img src="assets/noplanetb.png" alt="Ekocertifierade plagg" style="width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block;"></div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; margin-bottom:clamp(30px,4vw,44px);">
+      <div style="background:#FFFFFF; border:1px solid #DBE2E2; border-radius:16px; padding:28px;"><div style="font-family:'Hanken Grotesk',sans-serif; font-weight:700; font-size:20px; color:#14181A; margin-bottom:10px;">Certifierade material</div><div style="font:400 14.5px/1.6 'Hanken Grotesk',sans-serif; color:#57605C;">GOTS- och Oeko-Tex-certifierade basplagg när projektet kräver det.</div></div>
+      <div style="background:#FFFFFF; border:1px solid #DBE2E2; border-radius:16px; padding:28px;"><div style="font-family:'Hanken Grotesk',sans-serif; font-weight:700; font-size:20px; color:#14181A; margin-bottom:10px;">Mindre svinn</div><div style="font:400 14.5px/1.6 'Hanken Grotesk',sans-serif; color:#57605C;">White-label och tryck vid behov betyder färre leveranser och mindre överproduktion.</div></div>
+      <div style="background:#FFFFFF; border:1px solid #DBE2E2; border-radius:16px; padding:28px;"><div style="font-family:'Hanken Grotesk',sans-serif; font-weight:700; font-size:20px; color:#14181A; margin-bottom:10px;">Nära produktion</div><div style="font:400 14.5px/1.6 'Hanken Grotesk',sans-serif; color:#57605C;">Förädling i Borås ger kortare transporter och full kontroll på kvaliteten.</div></div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:clamp(30px,4vw,44px);"><span style="font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:#57605C;">Certifieringar:</span><span style="border:1px solid #DBE2E2; background:#fff; padding:8px 14px; border-radius:999px; font-weight:600; font-size:13px;">GOTS</span><span style="border:1px solid #DBE2E2; background:#fff; padding:8px 14px; border-radius:999px; font-weight:600; font-size:13px;">Oeko-Tex</span><span style="border:1px solid #DBE2E2; background:#fff; padding:8px 14px; border-radius:999px; font-weight:600; font-size:13px;">Fairtrade</span></div>
+    <div><a href="#" style="display:inline-flex; align-items:center; gap:8px; background:#23416E; color:#fff; padding:13px 26px; border-radius:999px; font-weight:700; font-size:14.5px;">Bli kund →</a></div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isD }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1600px; margin:0 auto; padding:clamp(24px,4vw,44px) 6vw clamp(64px,7vw,100px);">
+    <h1 style="font-family:'Hanken Grotesk',sans-serif; font-weight:800; font-size:clamp(34px,4.8vw,60px); line-height:.98; letter-spacing:-.035em; margin:0 0 18px; max-width:13ch;">Hållbart genom hela ledet<span style="color:#8A3344;">.</span></h1>
+    <p style="font:400 17px/1.65 'Hanken Grotesk',sans-serif; color:#5A615C; margin:0 0 clamp(40px,5vw,56px); max-width:52ch;">Det räcker inte med ett grönt tryck. Vi väljer material och metoder som håller, för planeten och för plagget.</p>
+    <div style="width:100%; aspect-ratio:21/9; overflow:hidden; background:#EBE7DC; margin-bottom:clamp(30px,4vw,44px);"><img src="assets/noplanetb.png" alt="Ekocertifierade plagg" style="width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block;"></div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:0; border-left:1px solid #E4DDCB; border-top:1px solid #E4DDCB; margin-bottom:clamp(30px,4vw,44px);">
+      <div style="border-right:1px solid #E4DDCB; border-bottom:1px solid #E4DDCB; padding:28px; background:#FCFBF8;"><div style="font:800 13px/1 'Hanken Grotesk',sans-serif; color:#8A3344; margin-bottom:12px;">01</div><div style="font-family:'Hanken Grotesk',sans-serif; font-weight:700; font-size:20px; color:#14181A; margin-bottom:8px;">Certifierade material</div><div style="font:400 14px/1.55 'Hanken Grotesk',sans-serif; color:#5A615C;">GOTS- och Oeko-Tex-certifierade basplagg när projektet kräver det.</div></div>
+      <div style="border-right:1px solid #E4DDCB; border-bottom:1px solid #E4DDCB; padding:28px; background:#FCFBF8;"><div style="font:800 13px/1 'Hanken Grotesk',sans-serif; color:#8A3344; margin-bottom:12px;">02</div><div style="font-family:'Hanken Grotesk',sans-serif; font-weight:700; font-size:20px; color:#14181A; margin-bottom:8px;">Mindre svinn</div><div style="font:400 14px/1.55 'Hanken Grotesk',sans-serif; color:#5A615C;">White-label och tryck vid behov betyder färre leveranser och mindre överproduktion.</div></div>
+      <div style="border-right:1px solid #E4DDCB; border-bottom:1px solid #E4DDCB; padding:28px; background:#FCFBF8;"><div style="font:800 13px/1 'Hanken Grotesk',sans-serif; color:#8A3344; margin-bottom:12px;">03</div><div style="font-family:'Hanken Grotesk',sans-serif; font-weight:700; font-size:20px; color:#14181A; margin-bottom:8px;">Nära produktion</div><div style="font:400 14px/1.55 'Hanken Grotesk',sans-serif; color:#5A615C;">Förädling i Borås ger kortare transporter och full kontroll på kvaliteten.</div></div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:clamp(30px,4vw,44px);"><span style="font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:#5A615C;">Certifieringar:</span><span style="border:1px solid #8A3344; color:#8A3344; padding:7px 13px; border-radius:2px; font-weight:600; font-size:13px;">GOTS</span><span style="border:1px solid #8A3344; color:#8A3344; padding:7px 13px; border-radius:2px; font-weight:600; font-size:13px;">Oeko-Tex</span><span style="border:1px solid #8A3344; color:#8A3344; padding:7px 13px; border-radius:2px; font-weight:600; font-size:13px;">Fairtrade</span></div>
+    <div><a href="#" style="display:inline-flex; align-items:center; gap:8px; background:#8A3344; color:#fff; padding:15px 30px; border-radius:2px; font-weight:700; font-size:15px;">Bli återförsäljare →</a></div>
+  </div>
+  </sc-if>
 </div>
 </sc-if>
 
 <sc-if value="{{ isKontakt }}" hint-placeholder-val="{{ false }}">
 <div style="position:fixed; inset:0; z-index:2000; overflow-y:scroll; scrollbar-gutter:stable; background:{{ theme.bg }}; color:{{ theme.ink }}; font-family:'Hanken Grotesk',sans-serif; -webkit-font-smoothing:antialiased;">
-  <dc-import name="Noll33 Header" concept="{{ conceptName }}" active="{{ activePage }}" hint-size="100%,98px"></dc-import>
-  <div style="max-width:1080px; margin:0 auto; padding:clamp(24px,4vw,52px) clamp(20px,5vw,44px) clamp(56px,7vw,100px);">
-    <sc-if value="{{ isMag }}" hint-placeholder-val="{{ false }}"><div style="border-top:2px solid #14181A; padding-top:12px; margin-bottom:26px; display:flex; justify-content:space-between; font-weight:600; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:{{ theme.accent }};"><span>Kontakt · noll33</span><span style="color:#9A9486;">N°01</span></div></sc-if>
-    <div style="font-weight:700; font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:{{ theme.accent }}; margin-bottom:18px;">Kontakt</div>
-    <h1 style="font-family:{{ theme.head }}; font-weight:700; font-size:clamp(34px,5.4vw,72px); line-height:.98; letter-spacing:-.025em; margin:0 0 18px;">Hör av dig.</h1>
-    <p style="font-size:17px; line-height:1.65; color:{{ theme.muted }}; margin:0 0 clamp(36px,5vw,56px); max-width:50ch;">Frågor om förädling, sortiment eller att bli återförsäljare? Vi svarar snabbt.</p>
+  <div style="position:sticky; top:0; z-index:60;"><dc-import name="Noll33 Header" concept="{{ conceptName }}" active="{{ activePage }}" hint-size="100%,98px"></dc-import></div>
+  <sc-if value="{{ isA }}" hint-placeholder-val="{{ true }}">
+  <div style="max-width:2040px; margin:0 auto; padding:clamp(24px,4vw,52px) 6vw clamp(64px,7vw,100px);">
+    <div style="font-weight:600; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#B8860B; margin-bottom:20px;">Kontakt</div>
+    <h1 style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(26px,3.2vw,44px); line-height:1.08; letter-spacing:-.015em; margin:0 0 20px;">Hör av dig.</h1>
+    <p style="font:400 17px/1.7 'Hanken Grotesk',sans-serif; color:#5A615C; margin:0 0 clamp(40px,5vw,56px); max-width:50ch;">Frågor om förädling, sortiment eller att bli återförsäljare? Vi svarar snabbt.</p>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:clamp(28px,4vw,64px); align-items:start;">
-      <div style="display:flex; flex-direction:column;">
-        <div style="padding:18px 0; border-top:1px solid {{ theme.border }};"><div style="font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:{{ theme.muted }}; margin-bottom:6px;">Besök &amp; post</div><div style="font-weight:600; font-size:16px; line-height:1.5;">Noll33 Tryck &amp; Brodyr AB<br>Hållingsgatan 15, 504 35 Borås</div></div>
-        <div style="padding:18px 0; border-top:1px solid {{ theme.border }};"><div style="font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:{{ theme.muted }}; margin-bottom:6px;">Telefon</div><a href="tel:+4633129110" style="font-weight:700; font-size:18px; color:{{ theme.ink }};">033-12 91 10</a></div>
-        <div style="padding:18px 0; border-top:1px solid {{ theme.border }}; border-bottom:1px solid {{ theme.border }};"><div style="font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:{{ theme.muted }}; margin-bottom:6px;">Öppettider</div><div style="font-weight:600; font-size:16px;">Mån–fre 08–17</div></div>
+      <div>
+        <div style="padding:14px 0;"><div style="font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#9A9486; margin-bottom:7px;">Besök &amp; post</div><div style="font-weight:600; font-size:16px; line-height:1.5;">Noll33 Tryck &amp; Brodyr AB<br>Hållingsgatan 15, 504 35 Borås</div></div>
+        <div style="padding:14px 0;"><div style="font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#9A9486; margin-bottom:7px;">Telefon</div><a href="tel:+4633129110" style="font-weight:700; font-size:18px; color:#14181A;">033-12 91 10</a></div>
+        <div style="padding:14px 0;"><div style="font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#9A9486; margin-bottom:7px;">Öppettider</div><div style="font-weight:600; font-size:16px;">Mån–fre 08–17</div></div>
       </div>
-      <div style="background:{{ theme.panel }}; border:1px solid {{ theme.border }}; border-radius:16px; padding:clamp(26px,3vw,38px);">
-        <div style="font-family:{{ theme.head }}; font-weight:700; font-size:22px; margin-bottom:8px;">Mejla oss direkt</div>
-        <div style="font-size:14.5px; line-height:1.6; color:{{ theme.muted }}; margin-bottom:22px;">Skriv några rader om ert projekt så återkommer vi inom en arbetsdag.</div>
-        <a href="mailto:hej@noll33.se" style="display:flex; align-items:center; justify-content:center; background:{{ theme.accent }}; color:{{ theme.onAccent }}; padding:15px; border-radius:12px; font-weight:800; font-size:15px; margin-bottom:12px;">hej@noll33.se</a>
-        <a href="#" style="display:flex; align-items:center; justify-content:center; background:transparent; color:{{ theme.ink }}; border:1.5px solid {{ theme.ink }}; padding:14px; border-radius:12px; font-weight:700; font-size:14.5px;">Bli återförsäljare →</a>
+      <div>
+        <div style="font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(20px,2vw,26px); color:#14181A; margin-bottom:10px;">Mejla oss direkt</div>
+        <p style="font:400 15px/1.6 'Hanken Grotesk',sans-serif; color:#5A615C; margin:0 0 26px; max-width:38ch;">Skriv några rader om ert projekt så återkommer vi inom en arbetsdag.</p>
+        <a href="mailto:hej@noll33.se" style="display:inline-block; font-family:'Albert Sans',sans-serif; font-weight:600; font-size:clamp(18px,1.6vw,22px); color:#14181A; border-bottom:2px solid #B8860B; padding-bottom:5px; margin-bottom:26px;">hej@noll33.se</a>
+        <div><a href="#" style="font:600 14px/1 'Hanken Grotesk',sans-serif; letter-spacing:.02em; color:#14181A; border-bottom:1.5px solid #B8860B; padding-bottom:4px;">Bli återförsäljare →</a></div>
       </div>
     </div>
   </div>
+  </sc-if>
+
+  <sc-if value="{{ isC }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1600px; margin:0 auto; padding:clamp(24px,4vw,52px) 6vw clamp(64px,7vw,100px);">
+    <div style="display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#23416E; margin-bottom:16px;"><span style="width:6px;height:6px;border-radius:50%;background:#23416E;"></span>Kontakt</div>
+    <h1 style="font-family:'Hanken Grotesk',sans-serif; font-weight:800; font-size:clamp(32px,4.4vw,54px); line-height:1.02; letter-spacing:-.03em; margin:0 0 16px;">Hör av dig.</h1>
+    <p style="font:400 16.5px/1.65 'Hanken Grotesk',sans-serif; color:#57605C; margin:0 0 clamp(36px,5vw,52px); max-width:50ch;">Frågor om förädling, sortiment eller att bli återförsäljare? Vi svarar snabbt.</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:clamp(28px,4vw,56px); align-items:stretch;">
+      <div style="background:#FFFFFF; border:1px solid #DBE2E2; border-radius:16px; padding:6px 24px;">
+        <div style="padding:20px 0; border-bottom:1px solid #EDF1F1;"><div style="font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#57605C; margin-bottom:6px;">Besök &amp; post</div><div style="font-weight:600; font-size:16px; line-height:1.5;">Noll33 Tryck &amp; Brodyr AB<br>Hållingsgatan 15, 504 35 Borås</div></div>
+        <div style="padding:20px 0; border-bottom:1px solid #EDF1F1;"><div style="font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#57605C; margin-bottom:6px;">Telefon</div><a href="tel:+4633129110" style="font-weight:700; font-size:18px; color:#14181A;">033-12 91 10</a></div>
+        <div style="padding:20px 0;"><div style="font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#57605C; margin-bottom:6px;">Öppettider</div><div style="font-weight:600; font-size:16px;">Mån–fre 08–17</div></div>
+      </div>
+      <div style="background:#23416E; color:#fff; border-radius:16px; padding:clamp(26px,3vw,38px);">
+        <div style="font-family:'Hanken Grotesk',sans-serif; font-weight:700; font-size:22px; margin-bottom:8px;">Mejla oss direkt</div>
+        <div style="font-size:14.5px; line-height:1.6; color:rgba(255,255,255,.8); margin-bottom:22px;">Skriv några rader om ert projekt så återkommer vi inom en arbetsdag.</div>
+        <a href="mailto:hej@noll33.se" style="display:flex; align-items:center; justify-content:center; background:#fff; color:#23416E; padding:15px; border-radius:999px; font-weight:800; font-size:15px; margin-bottom:12px;">hej@noll33.se</a>
+        <a href="#" style="display:flex; align-items:center; justify-content:center; background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,.5); padding:14px; border-radius:999px; font-weight:700; font-size:14.5px;">Bli återförsäljare →</a>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isD }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1600px; margin:0 auto; padding:clamp(24px,4vw,44px) 6vw clamp(64px,7vw,100px);">
+    <h1 style="font-family:'Hanken Grotesk',sans-serif; font-weight:800; font-size:clamp(34px,4.8vw,60px); line-height:.98; letter-spacing:-.035em; margin:0 0 18px;">Hör av dig<span style="color:#8A3344;">.</span></h1>
+    <p style="font:400 17px/1.65 'Hanken Grotesk',sans-serif; color:#5A615C; margin:0 0 clamp(40px,5vw,56px); max-width:50ch;">Frågor om förädling, sortiment eller att bli återförsäljare? Vi svarar snabbt.</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:clamp(28px,4vw,64px); align-items:start;">
+      <div style="border-bottom:1px solid #E4DDCB;">
+        <div style="padding:20px 0; border-top:1px solid #E4DDCB;"><div style="font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#8A3344; margin-bottom:7px;">Besök &amp; post</div><div style="font-weight:600; font-size:16px; line-height:1.5;">Noll33 Tryck &amp; Brodyr AB<br>Hållingsgatan 15, 504 35 Borås</div></div>
+        <div style="padding:20px 0; border-top:1px solid #E4DDCB;"><div style="font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#8A3344; margin-bottom:7px;">Telefon</div><a href="tel:+4633129110" style="font-weight:700; font-size:18px; color:#14181A;">033-12 91 10</a></div>
+        <div style="padding:20px 0; border-top:1px solid #E4DDCB;"><div style="font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#8A3344; margin-bottom:7px;">Öppettider</div><div style="font-weight:600; font-size:16px;">Mån–fre 08–17</div></div>
+      </div>
+      <div style="background:#FCFBF8; border:1px solid #E4DDCB; padding:clamp(26px,3vw,38px);">
+        <div style="font-family:'Hanken Grotesk',sans-serif; font-weight:800; font-size:22px; margin-bottom:8px;">Mejla oss direkt</div>
+        <div style="font-size:14.5px; line-height:1.6; color:#5A615C; margin-bottom:22px;">Skriv några rader om ert projekt så återkommer vi inom en arbetsdag.</div>
+        <a href="mailto:hej@noll33.se" style="display:flex; align-items:center; justify-content:center; background:#8A3344; color:#fff; padding:15px; border-radius:2px; font-weight:800; font-size:15px; margin-bottom:12px;">hej@noll33.se</a>
+        <a href="#" style="display:flex; align-items:center; justify-content:center; background:transparent; color:#14181A; border:1.5px solid #14181A; padding:14px; border-radius:2px; font-weight:700; font-size:14.5px;">Bli återförsäljare →</a>
+      </div>
+    </div>
+  </div>
+  </sc-if>
 </div>
 </sc-if></x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;showSwitcher&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;startVariant&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;A&quot;,&quot;B&quot;,&quot;C&quot;],&quot;default&quot;:&quot;A&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;heroVideoSrc&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Atelier&quot;,&quot;unit&quot;:&quot;&quot;}}">
@@ -1437,7 +1566,7 @@ class Component extends DCLogic {
         e.preventDefault(); e.stopPropagation(); this.setState({ page:'about' }); try{ window.scrollTo(0,0); }catch(_){}
         return;
       }
-      if(/^Utforska sortiment/i.test(t) || /^Sortiment$/i.test(t) || /^Se sortiment/i.test(t) || /^Bläddra i sortiment/i.test(t)){
+      if(/^Utforska sortiment/i.test(t) || /^Utforska kollektion/i.test(t) || /^Utforska →/i.test(t) || /^Sortiment$/i.test(t) || /^Se sortiment/i.test(t) || /^Bläddra i sortiment/i.test(t)){
         if(this.state.page === 'catalog') return;
         e.preventDefault(); e.stopPropagation(); this.setState({ page:'catalog', catMain:'Alla', catSub:'Alla' }); try{ window.scrollTo(0,0); }catch(_){}
         return;
@@ -1535,13 +1664,13 @@ class Component extends DCLogic {
       'assets/mos3.jpg','assets/mnew2.jpg','assets/mos4.jpg','assets/mnew1.jpg',
       'assets/mos5.jpg','uploads/sm/09.jpg','assets/mos6.jpg','assets/mnew3.jpg',
       'assets/mos7.jpg','assets/mnew4.jpg','uploads/sm/14.jpg','uploads/sm/15.jpg',
-      'assets/mnew5.jpg','assets/mnew6.jpg'
+      'assets/mnew5.jpg','assets/mnew6.jpg','assets/mnew7.jpg','assets/mnew8.jpg','assets/mnew9.jpg','assets/mnew10.jpg','assets/mnew11.jpg','assets/mnew12.jpg','assets/mnew13.jpg','assets/mnew14.jpg','assets/mnew15.jpg'
     ];
     this._mx = -9999; this._my = -9999;
     this._mosaicMove = (e) => { const t = e.touches ? e.touches[0] : e; this._mx = t.clientX; this._my = t.clientY; };
     window.addEventListener('mousemove', this._mosaicMove, { passive: true });
     window.addEventListener('touchmove', this._mosaicMove, { passive: true });
-    const MOSAIC_MAX = 1.38, MOSAIC_R = 460, MOSAIC_R2 = MOSAIC_R * MOSAIC_R, MOSAIC_CELLS = 18;
+    const MOSAIC_MAX = 1.38, MOSAIC_R = 460, MOSAIC_R2 = MOSAIC_R * MOSAIC_R, MOSAIC_CELLS = 27;
     this._mosaicRevealed = false;
     this._mosaicNeedsMeasure = true;
     this._mosaicPrevMx = -99999; this._mosaicPrevMy = -99999;
@@ -1636,6 +1765,22 @@ class Component extends DCLogic {
     };
     this._plxRaf = requestAnimationFrame(this._plxTick);
 
+    // Drift: text column glides from top of the image to its bottom as the row scrolls through view
+    this._driftTick = () => {
+      const vh = window.innerHeight || 1;
+      document.querySelectorAll('[data-drift]').forEach((el) => {
+        const row = el.parentElement; if(!row) return;
+        const ref = row.querySelector('[data-drift-ref]');
+        const r = row.getBoundingClientRect();
+        const c = Math.max(0, Math.min(1, (vh - r.top) / (vh + r.height)));
+        const avail = ref ? Math.max(0, ref.offsetHeight - el.offsetHeight) : 0;
+        el.style.transform = 'translateY(' + (c * avail).toFixed(1) + 'px)';
+      });
+      this._driftRaf = requestAnimationFrame(this._driftTick);
+    };
+    this._driftEnsure = () => { if(this._driftStarted) return; this._driftStarted = true; this._driftRaf = requestAnimationFrame(this._driftTick); };
+    this._driftEnsure();
+
     this._edSeen = new WeakSet();
     this._edScrolled = false; this._edArmed = false; this._edPrevVar = this.state.variant;
     this._edObserve = (immediate) => {
@@ -1729,7 +1874,7 @@ class Component extends DCLogic {
     this._rpRaf = requestAnimationFrame(tick);
   }
   componentWillUnmount(){ if (this._mosaicRaf) cancelAnimationFrame(this._mosaicRaf); if (this._mosaicBuildInt) clearInterval(this._mosaicBuildInt); if (this._mosaicMove){ window.removeEventListener('mousemove', this._mosaicMove); window.removeEventListener('touchmove', this._mosaicMove); } if (this._mosaicResize) window.removeEventListener('resize', this._mosaicResize); if (this._revealInt) clearInterval(this._revealInt); if (this._revealSafety) clearTimeout(this._revealSafety); if (this._revealScan) window.removeEventListener('scroll', this._revealScan); if (this._mqScroll) window.removeEventListener('scroll', this._mqScroll); if (this._mqRaf2) cancelAnimationFrame(this._mqRaf2); if (this._plxRaf) cancelAnimationFrame(this._plxRaf); if (this._rpMove){ window.removeEventListener('mousemove', this._rpMove); window.removeEventListener('touchmove', this._rpMove); } if (this._rpOff){ document.documentElement.removeEventListener('mouseleave', this._rpOff); window.removeEventListener('blur', this._rpOff); window.removeEventListener('touchend', this._rpOff); } if (this._rpRaf) cancelAnimationFrame(this._rpRaf); }
-  componentDidUpdate(){ if(this._bindLogos){ this._bindLogos(); }  if(this._setRates){ this._setRates(); setTimeout(this._setRates, 300); } if(this._edObserve){ var _v=this.state.variant; if(_v!==this._edPrevVar){ this._edPrevVar=_v; this._edObserve(true); } else { this._edObserve(); } } if(this._kollFx){ this._kollFx(); } }
+  componentDidUpdate(){ if(this._bindLogos){ this._bindLogos(); }  if(this._setRates){ this._setRates(); setTimeout(this._setRates, 300); } if(this._edObserve){ var _v=this.state.variant; if(_v!==this._edPrevVar){ this._edPrevVar=_v; this._edObserve(true); } else { this._edObserve(); } } if(this._kollFx){ this._kollFx(); } if(this._driftEnsure){ this._driftEnsure(); } }
   _kollFx = () => {
     var vid=document.getElementById('kollHeroVid');
     if(!vid || vid._fxBound) return; vid._fxBound=true;
@@ -1879,9 +2024,9 @@ class Component extends DCLogic {
   }
   applyTheme(v){
     const T = {
-      A: { bg:'#FAFAF7', ink:'#14181A', muted:'#5A615C', accent:'#F4B300', onAccent:'#14181A', panel:'#FFFFFF', border:'#E7E3D7', field:'#FBFAF7', head:"'Albert Sans',sans-serif" },
-      C: { bg:'#EEF2F2', ink:'#14181A', muted:'#57605C', accent:'#23416E', onAccent:'#FFFFFF', panel:'#FFFFFF', border:'#DBE2E2', field:'#FFFFFF', head:"'Hanken Grotesk',sans-serif" },
-      D: { bg:'#F4EFE4', ink:'#14181A', muted:'#5A615C', accent:'#8A3344', onAccent:'#FFFFFF', panel:'#FCFBF8', border:'#E4DDCB', field:'#FFFFFF', head:"'Hanken Grotesk',sans-serif" }
+      A: { bg:'#FAFAF7', ink:'#14181A', muted:'#5A615C', accent:'#B8860B', onAccent:'#14181A', panel:'#FFFFFF', border:'#E7E3D7', field:'#FBFAF7', head:"'Albert Sans',sans-serif", dot:'none', hw:'600', hs:'clamp(26px,3.2vw,44px)', radius:'0', pill:'0', pageW:'2040px' },
+      C: { bg:'#EEF2F2', ink:'#14181A', muted:'#57605C', accent:'#23416E', onAccent:'#FFFFFF', panel:'#FFFFFF', border:'#DBE2E2', field:'#FFFFFF', head:"'Hanken Grotesk',sans-serif", dot:'inline-block', hw:'800', hs:'clamp(32px,4.4vw,54px)', radius:'16px', pill:'999px', pageW:'1600px' },
+      D: { bg:'#F4EFE4', ink:'#14181A', muted:'#5A615C', accent:'#8A3344', onAccent:'#FFFFFF', panel:'#FCFBF8', border:'#E4DDCB', field:'#FFFFFF', head:"'Hanken Grotesk',sans-serif", dot:'inline-block', hw:'800', hs:'clamp(34px,4.8vw,60px)', radius:'2px', pill:'2px', pageW:'1600px' }
     };
     return T[v] || T.A;
   }
@@ -1975,9 +2120,6 @@ class Component extends DCLogic {
         { name:'Tiger Grip', logo:'uploads/tiger-grip.jpg' },
         { name:'Timberland', logo:'uploads/timberland.jpg' },
         { name:'Tombo', logo:'uploads/tombo.jpg' },
-        { name:'Towel City', logo:'uploads/towel-city.jpg' },
-        { name:'U-Power', logo:'uploads/u-power.jpg' },
-        { name:'Westford Mill', logo:'uploads/westford-mill.jpg' },
         { name:'WK Designed to Work', logo:'uploads/wk-designed-to-work.jpg' },
         { name:'Wrangler', logo:'uploads/wrangler.jpg' },
         { name:'Yoko', logo:'uploads/yoko.jpg' },

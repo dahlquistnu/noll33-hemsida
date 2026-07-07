@@ -18,8 +18,8 @@
 
 <!-- ATELIER -->
 <sc-if value="{{ isA }}" hint-placeholder-val="{{ true }}">
-<header style="position:sticky;top:0;z-index:50;background:rgba(250,250,247,.82);backdrop-filter:saturate(150%) blur(14px);border-bottom:1px solid #E8E5DC;">
-  <div style="max-width:2040px;margin:0 auto;padding:0 6vw;height:74px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
+<header style="position:sticky;top:0;z-index:50;background:#FAFAF7;box-shadow:inset 0 -1px 0 #E8E5DC;">
+  <div style="max-width:100%;margin:0;padding:0 max(6vw, calc((100vw - 2040px) / 2));height:74px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
     <a href="#" data-gohome="" aria-label="noll33 – startsida" style="display:inline-flex;align-items:center;flex:none;font:800 26px/1 'Hanken Grotesk',sans-serif;letter-spacing:-.02em;color:#2A2F2C;text-decoration:none;"><span style="color:#B8860B;">NOLL</span>33<span style="color:#B8860B;">.</span></a>
     <nav style="display:flex;gap:32px;align-items:center;flex-wrap:wrap;">
       <sc-for list="{{ navA }}" as="item" hint-placeholder-count="6">
@@ -33,8 +33,8 @@
 
 <!-- KOLLEKTION -->
 <sc-if value="{{ isC }}" hint-placeholder-val="{{ false }}">
-<header style="position:sticky;top:0;z-index:50;background:rgba(250,250,247,.92);backdrop-filter:saturate(150%) blur(12px);border-bottom:1px solid #E5E2D9;">
-  <div style="max-width:1280px;margin:0 auto;padding:0 5vw;height:70px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
+<header style="position:sticky;top:0;z-index:50;background:#FAFAF7;box-shadow:inset 0 -1px 0 #E5E2D9;">
+  <div style="max-width:100%;margin:0;padding:0 max(6vw, calc((100vw - 1600px) / 2));height:70px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
     <a href="#" data-gohome="" aria-label="noll33 – startsida" style="display:inline-flex;align-items:center;flex:none;"><img src="uploads/Resurs%201.png" alt="noll33" style="height:60px;width:60px;display:block;"></a>
     <nav style="display:flex;gap:28px;align-items:center;flex-wrap:wrap;">
       <sc-for list="{{ navC }}" as="item" hint-placeholder-count="6">
@@ -51,18 +51,18 @@
 
 <!-- MAGASIN -->
 <sc-if value="{{ isD }}" hint-placeholder-val="{{ false }}">
-<header style="position:sticky;top:0;z-index:50;background:rgba(244,239,228,.93);backdrop-filter:saturate(150%) blur(12px);border-bottom:1px solid #E4DDCB;">
-  <div style="border-bottom:1px solid #ECE9E0;overflow:hidden;">
+<header style="position:sticky;top:0;z-index:50;background:#F4EFE4;box-shadow:inset 0 -1px 0 #E4DDCB;">
+  <div style="box-shadow:inset 0 -1px 0 #ECE9E0;overflow:hidden;">
     <div style="display:flex;width:max-content;white-space:nowrap;animation:n33-marquee-h 34s linear infinite;font:600 10px/1 'Hanken Grotesk',sans-serif;letter-spacing:.32em;text-transform:uppercase;color:#7B2E3B;">
       <span style="padding:9px 0;">Tryck &amp; brodyr&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Borås sedan dag noll&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;GOTS-certifierat&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Endast till återförsäljare&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Tryck &amp; brodyr&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Borås sedan dag noll&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;GOTS-certifierat&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Endast till återförsäljare&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;</span>
       <span style="padding:9px 0;" aria-hidden="true">Tryck &amp; brodyr&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Borås sedan dag noll&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;GOTS-certifierat&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Endast till återförsäljare&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Tryck &amp; brodyr&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Borås sedan dag noll&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;GOTS-certifierat&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Endast till återförsäljare&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;</span>
     </div>
   </div>
-  <div style="max-width:1240px;margin:0 auto;padding:0 6vw;height:64px;display:flex;align-items:center;justify-content:space-between;gap:20px;">
+  <div style="max-width:100%;margin:0;padding:0 max(6vw, calc((100vw - 1600px) / 2));height:64px;display:flex;align-items:center;justify-content:space-between;gap:20px;">
     <a href="#" data-gohome="" aria-label="noll33 – startsida" style="display:inline-flex;align-items:center;flex:none;"><img src="uploads/Resurs%201.png" alt="noll33" style="height:60px;width:60px;display:block;"></a>
     <nav style="display:flex;gap:26px;align-items:center;flex-wrap:wrap;">
       <sc-for list="{{ navD }}" as="item" hint-placeholder-count="6">
-        <a href="#" data-gohome="{{ item.home }}" style="font:500 12px/1 'Hanken Grotesk',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:{{ item.color }};font-weight:{{ item.weight }};white-space:nowrap;">{{ item.label }}</a>
+        <a href="#" data-gohome="{{ item.home }}" style="font:500 10px/1 'Hanken Grotesk',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:{{ item.color }};font-weight:{{ item.weight }};white-space:nowrap;{{ item.extra }}">{{ item.label }}</a>
       </sc-for>
     </nav>
   </div>
@@ -79,12 +79,12 @@ class Component extends DCLogic {
     const c = this.props.concept || 'Atelier';
     const active = this.props.active || 'home';
     const shared = [['Sortiment','catalog'],['Design Studio','apply'],['Förädling','foradling'],['Hållbarhet','hallbarhet'],['Kontakt','kontakt'],['Om oss','about']];
-    const mag = [['Hem','home'],['Sortiment','catalog'],['Förädling','foradling'],['Hållbarhet','hallbarhet'],['Om oss','about'],['Kontakt','kontakt']];
+    const mag = [['Hem','home'],['Sortiment','catalog'],['Design Studio','apply'],['Förädling','foradling'],['Hållbarhet','hallbarhet'],['Om oss','about'],['Kontakt','kontakt'],['Logga in','login']];
     return {
       isA: c==='Atelier', isC: c==='Kollektion', isD: c==='Magasin',
       navA: shared.map(function(x){ var on=x[1]===active; return { label:x[0], color:on?'#B8860B':'#2A2F2C', weight:on?'700':'500', border:on?'#B8860B':'transparent' }; }),
       navC: shared.map(function(x){ var on=x[1]===active; return { label:x[0], color:on?'#23416E':'#3A403C', weight:on?'700':'500', border:on?'#23416E':'transparent' }; }),
-      navD: mag.map(function(x){ var on=x[1]===active; return { label:x[0], color:on?'#14181A':'#5A615C', weight:on?'700':'500', home:(x[1]==='home'?'':null) }; })
+      navD: mag.map(function(x){ var on=x[1]===active; return { label:x[0], color:on?'#14181A':'#5A615C', weight:on?'700':'500', home:(x[1]==='home'?'':null), extra:(x[1]==='login'?'margin-left:clamp(12px,1.6vw,26px);padding-left:clamp(16px,1.8vw,26px);border-left:1px solid #D8CFBE;':'') }; })
     };
   }
 }

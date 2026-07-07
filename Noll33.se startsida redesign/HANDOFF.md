@@ -1,142 +1,80 @@
-# HANDOFF — Noll33.se startsida redesign
+# HANDOFF — Noll33.se startsida
 
-> Läs den här filen först. Den sammanfattar **allt** i projektet så du (eller en ny session) kan fortsätta utan att gå igenom gammal chatt-historik — särskilt för att jobba vidare i **Figma** och **Fable**. Alla filer ligger kvar i projektet.
+> Läs den här filen först. Den beskriver **nuläget** så en ny session kan fortsätta utan gammal chatthistorik. Öppna `Noll33 Startsida - Förslag.dc.html` för att se sidan live.
+
+## ⏭️ NÄSTA STEG — todo 37 del 2 (säg "fortsätt med todo 37 del 2")
+Matcha varje **koncepts undersidor** (innehållsbredd) mot konceptets EGNA startsidebredd. KLART: (1) header-bredd per koncept (Atelier 2040, Kollektion 1600, Magasin 1600) och (3) mindre hero-rubriker på Magasin+Atelier-undersidorna. KVAR: **(2) innehållsbredd** — undersidorna har blandad max-width (Design Studio/apply 1080, Förädling/Kontakt 1240, Hållbarhet 1240, Om oss 1160, Sortiment/katalog full-bleed). Sätt varje koncepts undersidor till konceptets startsidebredd: **Atelier 2040px**, **Kollektion 1600px**, **Magasin 1600px** (behåll `margin:0 auto`). Blocken ligger i `Noll33 Startsida - Förslag.dc.html` som `<sc-if value="{{ isForadling }}">`/`isHallbarhet`/`isKontakt`/`isAbout`/`isApply`, var och en med 3 underblock (isA/isC/isD). Ett koncept i taget, `ready_for_verification` efter varje.
 
 ---
 
-## 0. Snabbstart — så fortsätter du
-
-- **Vill du jobba i Figma?** → gå till §2 (Designsystem/spec) + §9 (export-paketet `noll33-handoff/`). Där finns färger, typsnitt, typskala och alla motiv som PNG.
-- **Vill du köra video i Fable?** → gå till §6. Prompt + inställningar + färdiga input-bilder.
-- **Vill du fortsätta bygga här (HTML)?** → gå till §3–§4 och §10 (arbetssätt).
-- **Vill du ha allt som en nedladdning?** → mappen `noll33-handoff/` är packad för det (be om nedladdning).
+## 0. Snabbstart
+- **Fortsätta bygga:** §3 (huvudfil + arkitektur) och §7 (arbetssätt).
+- **Öppna punkter att göra först:** §6 (todo 27 + 28).
+- **Deploya om till Vercel:** §5.
+- **Figma / Fable-material:** §8 (export-paketet `noll33-handoff/`) + §9 (Fable-prompt).
 
 ---
 
 ## 1. Om kunden
-**Noll33** — textilförädling & journal till återförsäljare, baserade i Borås. Förädlar plagg med **screentryck, DTG, transfer (DTF), brodyr och vävda märken**. Affärsmodell: säljer via återförsäljare ("du säljer vidare, vi förädlar").
+**Noll33** — textilförädling till **återförsäljare**, Borås. Affärsmodell: "du säljer vidare, vi förädlar". Sex förädlingsmetoder: **screentryck, screentransfer, DTG, transfer (DTF), brodyr, vävda märken**. De har en egen designmodul, **PRNTR Studio** (separat React-app, repo `dahlquistnu/printrstudio`, live på `prntr.dahlquist.se`) som ska integreras i sajten och bli en SaaS-produkt — håll den separat från själva hemsidan.
 
-## 2. Designsystem (bindande visuell stil) — **Figma-spec**
-
+## 2. Designsystem (bindande)
 ### Typsnitt (Google Fonts)
-- **Hanken Grotesk** — 400/500/600/700/800 + italic 400. *Primärt* — UI, brödtext, de flesta rubriker.
-- **Albert Sans** — 400/500/600/700. Feature-rubriker (variant A "Design Studio").
-- **Bricolage Grotesque** — 500/600/700/800. Display-rubriker i vissa koncept.
-- **Instrument Serif** — roman + italic. Redaktionella accenter/kursiv.
+- **Hanken Grotesk** 400/500/600/700/800 + italic 400 — primärt (UI, brödtext, de flesta rubriker).
+- **Albert Sans** 400–700 — Atelier feature-rubriker.
+- **Instrument Serif** / **Bricolage Grotesque** — redaktionella/display-accenter.
 
-Import-URL (klistra in i kod, eller matcha i Figma):
-`https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Instrument+Serif:ital@0;1&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Albert+Sans:wght@400;500;600;700&display=swap`
-
-### Färger (Figma color styles)
-| Roll | Hex |
-|---|---|
-| Guld / accent (primär) | `#F4B300` |
-| Guld varm (Print Drop) | `#D8A93A` |
-| Off-white bakgrund | `#FAFAF7` |
-| Text nästan-svart | `#14181A` |
-| Text dämpad | `#5A615C` |
-| Text dämpad (länk/meny) | `#6A6F69` |
-| Varm kantlinje | `#E3DECF` |
-| Mörk bakgrund | `#0E0F11` (≈ `#0d0d10`) |
-| Variant B bakgrund | `#EBEFEF` |
-| Variant D bakgrund (beige) | `#F4EFE4` |
-| Variant E accent (rosé) | `#B14A5C` |
-
-### Typskala (så den används i sidan)
-- Hero H1: `clamp(...)` upp till ~64–72px, weight 700–800, letter-spacing −0.02em.
-- Sektionsrubrik: `clamp(26px, 2.6vw, 50px)`, weight 600–800.
-- Kort-rubrik: 24px/700.
-- Brödtext: 15–18px/1.6, weight 400.
-- Eyebrow/label: 10–11px, weight 600–700, letter-spacing 0.16–0.2em, UPPERCASE.
-- Knapp/pill: 13–14.5px, weight 600–700, border-radius 999px.
+### Färger per koncept
+| Roll | Atelier (A) | Kollektion (C) | Magasin (D) |
+|---|---|---|---|
+| Bakgrund | `#FAFAF7` off-white | `#EEF2F2` sval | `#F4EFE4` beige |
+| Accent | `#B8860B` antik-guld | `#23416E` marin | `#8A4650`/`#8A3344` vinröd |
+| Text | `#14181A` | `#14181A` | `#14181A` |
+Gemensamt: text dämpad `#5A615C`, kantlinje varm `#E3DECF`.
 
 ### Regler
-- **Allt byggs som Design Components (`.dc.html`) med inline-styles** (inga stylesheets/CSS-klasser).
-- Projektets kopplade designsystem är visuell referens — utforska det innan nya visuals byggs.
+- Allt byggs som **Design Components (`.dc.html`) med inline-styles** (inga stylesheets/CSS-klasser).
+- Små ändringar: rör bara det som efterfrågas. Punktändringar via `dc_html_str_replace` / `dc_js_str_replace`.
 
-## 3. Startsidan — `Noll33 Startsida - Förslag.dc.html` ⭐
-Huvudfilen. **5 kompletta koncept** av startsidan i EN fil, växlas med koncept-väljaren nere till höger (prop `showSwitcher`; startkoncept via prop `startVariant`, default `A`). State: `this.state.variant` ('A'–'E'). Alla följer samma designsystem men har egen hero/layout/ton:
+## 3. Huvudfil — `Noll33 Startsida - Förslag.dc.html` ⭐
+En fil, **3 koncept** växlas med väljaren nere till höger. State `this.state.variant`: **A = Atelier**, **C = Kollektion**, **D = Magasin**. (Plattform `B` och Studio `E` är **arkiverade** i `Noll33 Startsida - 5 koncept (arkiv).dc.html` — finns kvar i koden men borttagna ur väljaren.)
 
-| Variant | Namn | Bakgrund/känsla |
-|---|---|---|
-| A | **Atelier** | Ljus `#FAFAF7`, redaktionell, standardval |
-| B | **Plattform** | Ljusgrå `#EBEFEF`, produkt/SaaS-känsla |
-| C | **Kollektion** | Ljus, produktfokus (250+ basplagg) |
-| D | **Magasin** | Varm beige `#F4EFE4`, tidnings-/journalkänsla |
-| E | **Studio** | Mörk `#0E0F11`, COI-inspirerad |
+### Arkitektur / navigering
+- **`this.state.page`**: `'home'` | `'catalog'` | `'apply'` | `'foradling'` | `'hallbarhet'` | `'kontakt'` | `'about'`. När en undersida är aktiv **avmonteras heminnehållet** (så bara en scrollbar finns → loggan hoppar inte i sidled).
+- **Delad header:** `Noll33 Header.dc.html` (via `<dc-import concept="…" active="…">`). Renderar **varje koncepts exakta header** — Atelier: `NOLL33.`-wordmark (guld `#B8860B`) + Sök/Logga in/Kundvagn; Kollektion: cirkellogga + navyblå "Bli kund"; Magasin: cirkellogga + versal nav. Klick på logga/`data-gohome` → hem.
+- **Klick-routing** (i `_applyClick`, document-nivå, textbaserad): "Bli kund/Bli återförsäljare/Design Studio" → `apply`; "Plaggen vi förädlar" → `catalog`; basplagg-kort & kategori-listor → `catalog` med rätt kategori (via props `initial-main`/`initial-sub`, karta `_bc`).
+- **Reveal-effekter:** Atelier editorial-rader glider ihop **horisontellt** (`.ed-slide.ed-left/.ed-right`) först vid scroll (armas på första scroll). Sortiment-bandet (fullbredds-flatlay `Mockup 11`, parallax) har opacitets-fade + `opacity:.82`.
+- **Video:** alla `<video data-rate>` — `_setRates()` tvingar `muted`+`loop`+playbackRate och **pausar videor utanför skärmen** (IntersectionObserver) så sidan inte fryser.
 
-- Varje koncept har en **egen logo-ticker** (leverantörslogotyper) anpassad till konceptet.
-- Sid-animationer (`@keyframes n33-*` i `<helmet>`): `n33-up`, `n33-fade`, `n33-marquee` (ticker), `n33-glare`, `n33-squeegee` (screentryck), `n33-stitchgrow` + `n33-needle` (brodyr), `n33-logoswap`, `n33-spinin`. Respekterar `prefers-reduced-motion`.
-- Scroll-reveal via `[data-reveal]` (IntersectionObserver) och `[data-parallax]`.
-- Logotyper i `uploads/logos/` och `uploads/`. Vissa har vit bakgrund borttagen.
-- **För Figma:** öppna filen och växla koncept för att se var och en live (skärmbilder kunde inte fångas automatiskt i den här sessionen — öppna filen och skärmklipp de koncept du vill återskapa).
+### Kataloger & flöden (egna DC-filer, mountade i huvudfilen)
+- **`Produktkatalog.dc.html`** — öppnas som helskärms-overlay (z-index 2500). Tvånivå-kategorier (huvud: Kläder/Huvudbonader/Väskor → subkategorier), sök, sortering, produktvy med storlekar, och **PRNTR Design Studio-vy** (recolorbar tröja, tryckmetoder, motiv, live-pris). **Representativ Toptex-data** (riktig API-koppling är ett dev-steg senare). Läser `initial-main`/`initial-sub` för att öppna på rätt kategori. Tema via `concept`-prop (`.theme-c`/`.theme-d`).
+- **Återförsäljar-ansökan** (`apply`-sidan, i huvudfilen) — koncept-temad, fält: Företagsnamn/Org.nr/Kontaktperson/E-post/Telefon → "Tack, vi återkommer inom 1–2 dagar". Design Studio-filmen visas överst.
 
-## 4. Print Drop-animationen — `Print Drop.dc.html` ⭐
-Mest bearbetade filen. En **boomerang-video** (kvinna i grå t-shirt) som spelas fram→åter och loopar sömlöst i 60fps. (Webbläsare kan inte spela video baklänges, så videons bildrutor ritas fram-och-åter på en `<canvas>`; bildarken är `assets/tee-fr1.jpg` + `tee-fr2.jpg`.)
+### Videor (hostade på Cloudinary — cloud `e9t94hoz`)
+Externa `https://res.cloudinary.com/e9t94hoz/video/upload/<PublicID>.mp4` (gjordes för att bundlen skulle bli liten nog för Vercel):
+- Header-video (Magasin hero, ultra-wide) · Design Studio-film (Atelier/Kollektion/Magasin-kort + apply) · Kollektion-hero ("Tjej med tryck") · brodyr-video (Magasin) — brodyr kan ligga lokalt (liten).
 
-Ovanpå tröjan flyger **12 tryckmotiv** in ett i taget, pressas ner i tyget (multiply-inbländning + mjuk kontaktskugga) och **följer hennes rörelse dämpat** (utslätad rörelsekurva, `damp 0.42`). Ingen rotation. Placeringar varierar: stort centrerat, vänster bröst, höger bröst.
-- Motiv: PEAK (screentryck), fågel, måne (DTG), jordgubbe, asterisk, löv, coastal-badge, blomma, "hey", signatur (Josefine), PRNTR/Resurs11, noll33-patch (vävt märke). **Sköldpaddan borttagen** (gick inte att klippa ur rent mot vattnet).
-- Tweak: `showCaptions` (visa/dölj etiketter). Rörelse/tempo styrs i `componentDidMount` (`this.CYCLE`, `this.damp`, `_fly`).
-- **Viktigt:** ändringar i `componentDidMount` (rörelsekurva/tempo) slår igenom först vid **full omladdning**, inte hot-reload.
-- `Print Drop (standalone).html` = inbakad offline-version (öppna i webbläsare, spela upp, skärminspela).
+## 4. Print Drop-animationen — `Print Drop.dc.html`
+Fristående. Boomerang-video (canvas, `tee-fr1.jpg`+`tee-fr2.jpg`) + 12 tryckmotiv som flyger in och följer rörelsen. `Print Drop (standalone).html` = offline-version. (Inte inlagd i startsidan.)
 
-## 5. Övriga filer
-- `Fable Kit.dc.html` — samlad Fable-sida: kopierbar prompt + negativ prompt, alla 12 motiv (klickbara), inställningar och källvideon.
-- `Screentryck Mockup.dc.html`, `Screentryck Mockup v2.dc.html`, `Screentryck Still.dc.html` — utforskningar av screentryck-mockup på plagg.
-- `Typsnittsförslag.dc.html` — typsnittsförslag.
-- `embroidery-render.html` / `embroidery-render.png` — brodyr-render.
-- `Mejl till kund - material.txt` — färdigt mejl som ber kunden om material (produktionsfoton, kunduppdrag, teamfoton, texter/fakta, certifieringar, FAQ).
-- `uploads/` — alla tryckmotiv, logotyper, källvideon (`6787106-uhd_3840_2160_30fps.mp4`). `assets/` — bearbetade bilder + video-frames.
-- `fable-export/` — Fable-input: `still-peak.png` (hjälte-still), `flyin/01–07.png` (inflygningssekvens), `stills/` (5 produkt-stills).
+## 5. Deploy — Vercel (via GitHub) ✅ LIVE
+Sajten är **deployad**. Single-file-bundling (`bundle_project`) fungerar INTE — designen har för många assets (>30 MiB inbäddat). **Rätt väg: deploya projektmappen som Git-repo.** Repo finns; videorna ligger externt (Cloudinary) så mappen är liten. Vid ny deploy: commita ändrade filer + push → Vercel auto-deployar. (Root Directory i Vercel = projektmappen.)
 
-## 6. Fable (generativ video) — trycket på riktig video
-**Fable är ett separat, generativt video-verktyg** (inte den här design-miljön; inte samma sak som Claude/Opus som bygger här). Kör **image-to-video** från en still i `fable-export/`.
+## 5b. Undersidor per koncept ✅ KLART
+Alla undersidor är uppdelade i egna koncept-layouter (sc-if isA/isC/isD, matchar startsidan): **Förädling, Hållbarhet, Kontakt** samt **Om oss** (`aboutA/C/D`) och **Design Studio/ansökan** (`applyA/C/D`). Atelier = redaktionell/guld `#B8860B`/Albert Sans, Kollektion = rundade navy `#23416E`-kort, Magasin = skarp/vinröd `#8A3344`/N°-masthead. (Apply-sidans yttre wrapper + "Tack"-bekräftelse + Design Studio-filmband använder `{{ theme.* }}` men de resolvas per koncept korrekt.)
 
-**Prompt (engelska — Fable lyssnar bäst så):**
-```
-The model breathes and shifts her weight very subtly; the cotton t-shirt moves
-and folds naturally with her body. The printed design stays locked to the same
-spot on the chest and conforms to the fabric — flexing over the folds, matte and
-absorbed into the cotton, never sliding or floating. Soft studio light, static
-camera, shallow depth of field. Gentle, premium, photoreal. 4 seconds.
-```
-**Negativ prompt:**
-```
-print sliding, warping logo, distorted text, glossy sticker, floating decal,
-drop shadow halo, flickering, duplicated print, morphing, extra hands,
-face distortion, camera movement, zoom
-```
-**Inställningar:** image-to-video (inte text-to-video) · kort klipp 3–5 s · ett tryck per klipp, klipp ihop flera · statisk kamera, liten rörelse · stort/enkelt motiv överlever, finstilt smetar · format 3:4 eller 1:1.
-**Ärlig begränsning:** generativ video håller inte ett tryck 100% stilla — för exakt varumärkes-återgivning krävs tracking i After Effects/Mocha.
+## 6. ÖPPNA PUNKTER (gör dessa)
+**Todo 27 — tjock linje vid Sortiment-klick.** När katalog-overlayt öppnas blinkar en tjock linje till i headern (GPU repaint-flash; layouten är stabil 92px så den syns EJ i `getBoundingClientRect` — **verifiera visuellt i webbläsaren**). Testat utan resultat: `box-shadow`, `translateZ(0)`. Nästa ansats: gör katalog-headern **icke-sticky**, eller bygg om overlayt (fixed z2500 + `overflow-y:scroll` + sticky Noll33 Header ger flashen).
 
-## 7. Status
-**Klart:** 5 startsidekoncept med tickers · Print Drop-animationen (sömlös 60fps, tryck följer rörelsen) · Fable Kit + export + prompt · kundmejl · komplett handoff + export-paket.
+**Todo 28 — Magasin-mosaik 9×3.** "Allt vi rör vid"-mosaiken visar nu **2 rader**. Målet: **9 kolumner × 3 rader**. Grid är redan `repeat(9,1fr)`, MEN bygg-JS:en ritar ett **fast antal rutor (18)** — så `this._mosaicImgs` (~rad 1533) räcker inte att utöka; **själva bygg-loopen/antalet måste ändras till 27**. Baka de **9 nya bilderna** (redan i `uploads/`: brodyr-keps, svart pikémockup, screentryck-ros, `Namnlös …`-serien, `pexels-artempodrez`, `pexels-johndetochka`, `tees-please` YOUR BRAND) till nedskalade jpg i `assets/` (baka i **småbatchar 2–3 st**, annars timeout) och lägg in 27 UNIKA (inga dubbletter).
 
-## 8. Nästa steg (förslag)
-- Välja/vidareutveckla ett av de 5 koncepten till en färdig startsida.
-- Ev. koppla in Print Drop-animationen som en sektion i valt koncept.
-- Fylla in riktiga material när kunden svarat på mejlet (produktionsfoton, teamfoton, kundcitat, siffror).
-- Köra trycken i Fable för fotorealistisk video (§6), återskapa valt koncept i Figma (§2 + §9).
+## 7. Arbetssätt
+- `.dc.html` + inline-styles. Efter arbete: `ready_for_verification`.
+- Bildbearbetning: `run_script` + canvas (nedskalning, keying). Filnamn med **å/ö/mellanslag** kraschar `run_script` → kopiera först till rena namn.
+- Hot-reload kör INTE om `componentDidMount` — helomladdning krävs för ändringar där.
 
-## 9. Export-paket — `noll33-handoff/` (för Figma + Fable)
-Allt relevant samlat i en mapp, redo att laddas ner som zip:
-```
-noll33-handoff/
-  HANDOFF.md            — den här filen
-  DESIGNSPEC.txt        — färger, typsnitt, typskala (för Figma color/text styles)
-  motiv/                — 12 tryckmotiv som transparent PNG (placeras i Figma/på mockups)
-  fable/
-    prompt.txt          — prompt + negativ prompt + inställningar
-    kallvideo.mp4       — 4K-källvideo (modell i enfärgad t-shirt)
-    stillbilder/        — färdiga input-stills (motiv på tröjan) + inflygningssekvens
-  design-filer/         — .dc.html-källfiler + Print Drop (standalone).html för referens
-```
-**I Figma:** skapa color styles och text styles enligt `DESIGNSPEC.txt`; dra in `motiv/`-PNG:erna som komponenter/assets; öppna `design-filer/` i webbläsare som visuell referens när du återskapar layouten.
-**I Fable:** använd `fable/stillbilder/still-peak.png` som image-to-video-input med prompten i `fable/prompt.txt`.
+## 8. Export-paket — `noll33-handoff/` (Figma)
+`DESIGNSPEC.txt` (färger/typsnitt) · `motiv/` (tryckmotiv som PNG) · `design-filer/` (källfiler) · `fable/` (prompt + stills). Skapa color/text styles enligt DESIGNSPEC, dra in motiv-PNG:er.
 
-## 10. Arbetssätt (om du fortsätter bygga HTML här)
-- Bygg allt som `.dc.html` med inline-styles (inga stylesheets/CSS-klasser).
-- Små ändringar: ändra bara det som efterfrågas, rör inte övrig layout.
-- Punktändringar: `dc_html_str_replace` (mall) / `dc_js_str_replace` (logik).
-- Efter arbete: `ready_for_verification`.
-- Bild-urklipp/bearbetning: `run_script` med canvas (så gjordes motiv-keying, video-frames, sköldpaddsförsöken).
+## 9. Fable (generativ video)
+Separat verktyg. Image-to-video från still i `fable-export/`. Prompt: modellen andas subtilt, trycket sitter fast och följer tyget, matt/inbäddat, statisk kamera, 4 s. Negativ: sliding/warping/glossy/flicker/morph. Kort klipp, ett tryck/klipp, stort motiv överlever.
