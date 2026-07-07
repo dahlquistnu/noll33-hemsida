@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:#FAFAF7; }
+  ::selection{ background:#F4B300; color:#14181A; }
+  a{ text-decoration:none; color:inherit; }
+  input,button,select{ font-family:inherit; }
+  input[type=range]{ accent-color:#23416E; }
+  .n33-card:hover .n33-designbtn{ opacity:1; transform:translateY(0); }
+  .n33-card:hover .n33-thumb img{ transform:scale(1.045); }
+</style>
+</helmet>
+
+<div style="min-height:100vh; background:#FAFAF7; font-family:'Hanken Grotesk',sans-serif; color:#14181A; -webkit-font-smoothing:antialiased;">
+
+  <!-- ============ HEADER ============ -->
+  <header style="position:sticky; top:0; z-index:60; background:rgba(250,250,247,.92); backdrop-filter:saturate(150%) blur(12px); border-bottom:1px solid #E5E2D9;">
+    <div style="max-width:1340px; margin:0 auto; padding:0 clamp(20px,4vw,44px); height:70px; display:flex; align-items:center; justify-content:space-between; gap:20px;">
+      <div style="display:flex; align-items:center; gap:26px;">
+        <a href="#" onClick="{{ goCatalog }}" style="display:inline-flex; align-items:center; gap:10px;"><img src="uploads/Resurs 1.png" alt="noll33" style="height:44px; width:44px; display:block;"><span style="font-weight:800; letter-spacing:-.01em; font-size:18px;">Produktkatalog</span></a>
+        <nav style="display:flex; align-items:center; gap:8px; font-size:12.5px; color:#8A8576;">
+          <a href="#" onClick="{{ goCatalog }}" style="font-weight:600; color:#14181A;">Katalog</a>
+          <sc-if value="{{ isProduct }}" hint-placeholder-val="{{ false }}"><span style="color:#C7C1B2;">/</span><span style="color:#5A615C;">Produkt</span></sc-if>
+          <sc-if value="{{ isStudio }}" hint-placeholder-val="{{ false }}"><span style="color:#C7C1B2;">/</span><span style="color:#B8860B;">PRNTR Studio</span></sc-if>
+        </nav>
+      </div>
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="display:flex; align-items:center; gap:8px; background:#fff; border:1px solid #E5E2D9; border-radius:999px; padding:9px 15px;">
+          <span style="width:14px; height:14px; border-radius:50%; border:2px solid #B7B1A2; display:inline-block;"></span>
+          <input value="{{ q }}" onInput="{{ onQ }}" placeholder="Sök plagg eller varumärke" style="border:none; outline:none; background:transparent; font-size:13.5px; width:clamp(120px,20vw,230px); color:#14181A;">
+        </div>
+        <a href="#" style="display:inline-flex; align-items:center; gap:9px; background:#14181A; color:#fff; padding:11px 18px; border-radius:999px; font-weight:700; font-size:13.5px; white-space:nowrap;">Offert <span style="background:#F4B300; color:#14181A; border-radius:999px; min-width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:12px; padding:0 6px;">{{ offert }}</span></a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ VY: KATALOG ============ -->
+  <sc-if value="{{ isCatalog }}" hint-placeholder-val="{{ true }}">
+  <div>
+    <!-- intro -->
+    <section style="max-width:1340px; margin:0 auto; padding:clamp(30px,4vw,52px) clamp(20px,4vw,44px) clamp(18px,2vw,26px);">
+      <div style="font-weight:700; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:#8A8576; margin-bottom:14px;">250+ basplagg · redo att förädla</div>
+      <h1 style="font-weight:800; font-size:clamp(30px,4.4vw,58px); line-height:1; letter-spacing:-.03em; margin:0; max-width:18ch;">Välj ett plagg, gör det till ert.</h1>
+    </section>
+
+    <!-- filter bar -->
+    <section style="position:sticky; top:70px; z-index:40; background:rgba(250,250,247,.92); backdrop-filter:saturate(150%) blur(10px); border-top:1px solid #ECE9E0; border-bottom:1px solid #E5E2D9;">
+      <div style="max-width:1340px; margin:0 auto; padding:14px clamp(20px,4vw,44px); display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="6">
+            <button onClick="{{ c.on }}" style="border:1px solid {{ c.border }}; background:{{ c.bg }}; color:{{ c.fg }}; padding:8px 15px; border-radius:999px; font-weight:600; font-size:13px; cursor:pointer;">{{ c.name }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
+          <span style="font-size:12.5px; color:#8A8576;">{{ count }} plagg</span>
+          <div style="display:flex; align-items:center; gap:7px; font-size:12.5px; color:#5A615C;">
+            <span>Sortera:</span>
+            <button onClick="{{ sortPop }}" style="border:none; background:none; cursor:pointer; font-weight:{{ popW }}; color:{{ popC }}; font-size:12.5px; padding:0;">Populärt</button>
+            <span style="color:#D8D3C6;">·</span>
+            <button onClick="{{ sortLow }}" style="border:none; background:none; cursor:pointer; font-weight:{{ lowW }}; color:{{ lowC }}; font-size:12.5px; padding:0;">Lägst pris</button>
+            <span style="color:#D8D3C6;">·</span>
+            <button onClick="{{ sortHigh }}" style="border:none; background:none; cursor:pointer; font-weight:{{ highW }}; color:{{ highC }}; font-size:12.5px; padding:0;">Högst pris</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- grid -->
+    <section style="max-width:1340px; margin:0 auto; padding:clamp(24px,3vw,38px) clamp(20px,4vw,44px) clamp(56px,7vw,96px);">
+      <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(248px,1fr)); gap:clamp(18px,2vw,30px);">
+        <sc-for list="{{ products }}" as="p" hint-placeholder-count="8">
+          <div class="n33-card" style="position:relative; display:flex; flex-direction:column; cursor:pointer;">
+            <a href="#" onClick="{{ p.open }}" class="n33-thumb" style="position:relative; display:block; aspect-ratio:4/5; border-radius:12px; overflow:hidden; background:#EEEBE2;">
+              <img src="{{ p.img }}" alt="{{ p.name }}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .5s cubic-bezier(.2,.7,.2,1);">
+              <sc-if value="{{ p.eco }}" hint-placeholder-val="{{ false }}"><span style="position:absolute; left:12px; top:12px; background:rgba(250,250,247,.92); color:#2E5A3A; font-weight:700; font-size:10px; letter-spacing:.08em; text-transform:uppercase; padding:5px 9px; border-radius:999px;">{{ p.ecoLabel }}</span></sc-if>
+              <button onClick="{{ p.design }}" class="n33-designbtn" style="position:absolute; right:12px; bottom:12px; opacity:0; transform:translateY(8px); transition:opacity .28s ease, transform .28s ease; background:#F4B300; color:#14181A; border:none; padding:9px 15px; border-radius:999px; font-weight:700; font-size:12.5px; cursor:pointer; box-shadow:0 6px 18px rgba(20,20,16,.18);">Designa →</button>
+            </a>
+            <div style="padding:13px 2px 0; display:flex; flex-direction:column; gap:6px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                <span style="font-weight:600; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#9A9486;">{{ p.brand }}</span>
+                <div style="display:flex; gap:4px;">
+                  <sc-for list="{{ p.colors }}" as="c" hint-placeholder-count="3">
+                    <span style="width:12px; height:12px; border-radius:50%; background:{{ c }}; border:1px solid rgba(0,0,0,.12);"></span>
+                  </sc-for>
+                </div>
+              </div>
+              <a href="#" onClick="{{ p.open }}" style="font-weight:700; font-size:16px; letter-spacing:-.01em; line-height:1.2;">{{ p.name }}</a>
+              <div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px;">
+                <span style="font-size:13px; color:#5A615C;">{{ p.meta }}</span>
+                <span style="font-weight:700; font-size:14px;">från {{ p.priceFrom }} kr</span>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </div>
+  </sc-if>
+
+  <!-- ============ VY: PRODUKT ============ -->
+  <sc-if value="{{ isProduct }}" hint-placeholder-val="{{ false }}">
+  <div>
+    <section style="max-width:1200px; margin:0 auto; padding:clamp(22px,3vw,34px) clamp(20px,4vw,44px) clamp(56px,7vw,90px);">
+      <a href="#" onClick="{{ goCatalog }}" style="display:inline-flex; align-items:center; gap:7px; font-weight:600; font-size:13px; color:#5A615C; margin-bottom:22px;">← Tillbaka till katalogen</a>
+      <div style="display:grid; grid-template-columns:1.1fr 1fr; gap:clamp(28px,4vw,64px); align-items:start;">
+        <!-- gallery -->
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="aspect-ratio:4/5; border-radius:14px; overflow:hidden; background:#EEEBE2;">
+            <img src="{{ sel.img }}" alt="{{ sel.name }}" style="width:100%; height:100%; object-fit:cover; display:block;">
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
+            <sc-for list="{{ gallery }}" as="g" hint-placeholder-count="3">
+              <div style="aspect-ratio:1; border-radius:10px; overflow:hidden; background:#EEEBE2; border:1px solid #E5E2D9;"><img src="{{ g }}" alt="" style="width:100%; height:100%; object-fit:cover; display:block;"></div>
+            </sc-for>
+          </div>
+        </div>
+        <!-- info -->
+        <div style="position:sticky; top:96px;">
+          <div style="font-weight:600; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#9A9486; margin-bottom:10px;">{{ sel.brand }}</div>
+          <h1 style="font-weight:800; font-size:clamp(28px,3.4vw,44px); line-height:1.03; letter-spacing:-.025em; margin:0 0 14px;">{{ sel.name }}</h1>
+          <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:22px;">
+            <span style="font-weight:800; font-size:24px;">från {{ sel.priceFrom }} kr</span>
+            <span style="font-size:13px; color:#8A8576;">/st · exkl. tryck &amp; moms</span>
+          </div>
+          <div style="font-weight:700; font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:#8A8576; margin-bottom:10px;">Färger</div>
+          <div style="display:flex; gap:9px; margin-bottom:22px;">
+            <sc-for list="{{ sel.colors }}" as="c" hint-placeholder-count="4">
+              <span style="width:26px; height:26px; border-radius:50%; background:{{ c }}; border:1px solid rgba(0,0,0,.14); box-shadow:0 0 0 3px #fff, 0 0 0 4px #E5E2D9;"></span>
+            </sc-for>
+          </div>
+          <div style="font-weight:700; font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:#8A8576; margin-bottom:10px;">Storlekar</div>
+          <div style="display:flex; gap:7px; flex-wrap:wrap; margin-bottom:24px;">
+            <sc-for list="{{ sel.sizeList }}" as="s" hint-placeholder-count="6">
+              <span style="min-width:42px; text-align:center; border:1px solid #D8D3C6; border-radius:8px; padding:9px 10px; font-weight:600; font-size:13px; color:#3A403C;">{{ s }}</span>
+            </sc-for>
+          </div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:26px;">
+            <button onClick="{{ sel.design }}" style="flex:1; min-width:200px; background:#F4B300; color:#14181A; border:none; padding:16px 24px; border-radius:12px; font-weight:800; font-size:15px; cursor:pointer; box-shadow:0 10px 26px rgba(244,179,0,.3);">Designa i PRNTR →</button>
+            <button onClick="{{ addOffert }}" style="background:#fff; color:#14181A; border:1.5px solid #14181A; padding:16px 24px; border-radius:12px; font-weight:700; font-size:15px; cursor:pointer;">Lägg i offert</button>
+          </div>
+          <div style="border-top:1px solid #E5E2D9; padding-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:16px 20px;">
+            <div><div style="font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#9A9486; margin-bottom:4px;">Material</div><div style="font-weight:600; font-size:14px;">{{ sel.material }}</div></div>
+            <div><div style="font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#9A9486; margin-bottom:4px;">Vikt</div><div style="font-weight:600; font-size:14px;">{{ sel.gsm }}</div></div>
+            <div><div style="font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#9A9486; margin-bottom:4px;">Certifiering</div><div style="font-weight:600; font-size:14px;">{{ sel.cert }}</div></div>
+            <div><div style="font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#9A9486; margin-bottom:4px;">Förädlingsmetoder</div><div style="font-weight:600; font-size:14px;">Alla 5 metoder</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  </sc-if>
+
+  <!-- ============ VY: PRNTR STUDIO ============ -->
+  <sc-if value="{{ isStudio }}" hint-placeholder-val="{{ false }}">
+  <div style="background:#14181A; color:#FAFAF7; min-height:calc(100vh - 70px);">
+    <div style="max-width:1340px; margin:0 auto; padding:clamp(18px,2.4vw,30px) clamp(20px,4vw,44px) clamp(40px,5vw,72px);">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:22px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-weight:800; letter-spacing:.14em; font-size:13px; color:#F4B300;">PRNTR</span>
+          <span style="color:rgba(250,250,247,.4);">·</span>
+          <span style="font-weight:600; font-size:14px; color:rgba(250,250,247,.85);">Design Studio — {{ sel.name }}</span>
+        </div>
+        <a href="#" onClick="{{ goProductFromStudio }}" style="font-weight:600; font-size:13px; color:rgba(250,250,247,.6);">✕ Stäng</a>
+      </div>
+
+      <div style="display:grid; grid-template-columns:280px 1fr 300px; gap:clamp(16px,2vw,26px); align-items:start;">
+
+        <!-- LEFT: method + placement + garment -->
+        <div style="display:flex; flex-direction:column; gap:24px;">
+          <div>
+            <div style="font-weight:700; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:rgba(250,250,247,.5); margin-bottom:12px;">Tryckmetod</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <sc-for list="{{ methodChips }}" as="m" hint-placeholder-count="5">
+                <button onClick="{{ m.on }}" style="display:flex; align-items:center; justify-content:space-between; gap:10px; text-align:left; border:1px solid {{ m.border }}; background:{{ m.bg }}; color:{{ m.fg }}; padding:12px 14px; border-radius:10px; font-weight:600; font-size:13.5px; cursor:pointer;"><span>{{ m.name }}</span><span style="font-size:12px; color:{{ m.addC }};">{{ m.add }}</span></button>
+              </sc-for>
+            </div>
+          </div>
+          <div>
+            <div style="font-weight:700; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:rgba(250,250,247,.5); margin-bottom:12px;">Placering</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <sc-for list="{{ placeChips }}" as="p" hint-placeholder-count="3">
+                <button onClick="{{ p.on }}" style="border:1px solid {{ p.border }}; background:{{ p.bg }}; color:{{ p.fg }}; padding:9px 13px; border-radius:999px; font-weight:600; font-size:12.5px; cursor:pointer;">{{ p.name }}</button>
+              </sc-for>
+            </div>
+          </div>
+          <div>
+            <div style="font-weight:700; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:rgba(250,250,247,.5); margin-bottom:12px;">Plaggfärg</div>
+            <div style="display:flex; gap:9px; flex-wrap:wrap;">
+              <sc-for list="{{ colorChips }}" as="c" hint-placeholder-count="6">
+                <button onClick="{{ c.on }}" title="{{ c.name }}" style="width:30px; height:30px; border-radius:50%; background:{{ c.hex }}; cursor:pointer; border:1px solid rgba(255,255,255,.2); box-shadow:{{ c.ring }};"></button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- CENTER: live mockup -->
+        <div style="background:#F4F1EA; border-radius:16px; padding:clamp(20px,3vw,44px); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:440px; position:relative;">
+          <span style="position:absolute; left:16px; top:14px; font-weight:700; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:#9A9486;">Live-korrektur</span>
+          <div style="position:relative; width:min(360px,80%);">
+            <svg viewBox="0 0 420 480" style="width:100%; height:auto; display:block; filter:drop-shadow(0 18px 30px rgba(0,0,0,.14));">
+              <path d="M210,54 C186,54 172,44 164,30 L120,44 L70,92 L34,150 L78,196 L104,172 L104,430 Q104,440 114,440 L306,440 Q316,440 316,430 L316,172 L342,196 L386,150 L350,92 L300,44 L256,30 C248,44 234,54 210,54 Z" fill="{{ shirtColor }}" stroke="{{ shirtStroke }}" stroke-width="2"></path>
+              <path d="M168,32 C180,52 200,58 210,58 C220,58 240,52 252,32" fill="none" stroke="{{ shirtStroke }}" stroke-width="2"></path>
+            </svg>
+            <!-- printed motif -->
+            <div style="position:absolute; left:{{ motifLeft }}; top:{{ motifTop }}; width:{{ motifW }}; transform:translate(-50%,-50%); mix-blend-mode:{{ motifBlend }}; filter:{{ motifFilter }}; pointer-events:none;">
+              <img src="{{ motifSrc }}" alt="" style="width:100%; height:auto; display:block;">
+            </div>
+          </div>
+          <div style="margin-top:22px; display:flex; align-items:center; gap:10px; font-size:12.5px; color:#6A6F69;">
+            <span style="font-weight:700; color:#14181A;">{{ method }}</span><span>·</span><span>{{ place }}</span><span>·</span><span>{{ psize }}% bredd</span>
+          </div>
+        </div>
+
+        <!-- RIGHT: motif + size + price -->
+        <div style="display:flex; flex-direction:column; gap:22px;">
+          <div>
+            <div style="font-weight:700; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:rgba(250,250,247,.5); margin-bottom:12px;">Motiv</div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">
+              <sc-for list="{{ motifChips }}" as="m" hint-placeholder-count="6">
+                <button onClick="{{ m.on }}" style="aspect-ratio:1; background:#fff; border:2px solid {{ m.border }}; border-radius:10px; padding:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;"><img src="{{ m.src }}" alt="{{ m.key }}" style="max-width:100%; max-height:100%; object-fit:contain;"></button>
+              </sc-for>
+            </div>
+            <div style="margin-top:10px; border:1px dashed rgba(250,250,247,.28); border-radius:10px; padding:12px; text-align:center; font-size:12.5px; color:rgba(250,250,247,.55);">+ Ladda upp egen logga</div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;"><span style="font-weight:700; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:rgba(250,250,247,.5);">Storlek</span><span style="font-weight:700; font-size:13px;">{{ psize }}%</span></div>
+            <input type="range" min="12" max="40" value="{{ psize }}" onInput="{{ onSize }}" style="width:100%;">
+          </div>
+          <div style="background:#1E2225; border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:18px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+              <span style="font-weight:700; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:rgba(250,250,247,.5);">Antal</span>
+              <input type="number" min="1" value="{{ qty }}" onInput="{{ onQty }}" style="width:74px; text-align:right; background:#14181A; border:1px solid rgba(255,255,255,.16); border-radius:8px; color:#fff; padding:8px 10px; font-weight:700; font-size:14px;">
+            </div>
+            <div style="display:flex; align-items:baseline; justify-content:space-between; font-size:13.5px; color:rgba(250,250,247,.7); margin-bottom:6px;"><span>Pris per plagg</span><span style="font-weight:700; color:#fff;">{{ unit }}</span></div>
+            <div style="display:flex; align-items:baseline; justify-content:space-between; padding-top:12px; margin-top:8px; border-top:1px solid rgba(255,255,255,.1);"><span style="font-weight:700; font-size:15px;">Totalt</span><span style="font-weight:800; font-size:22px; color:#F4B300;">{{ total }}</span></div>
+            <button onClick="{{ addOffert }}" style="width:100%; margin-top:16px; background:#F4B300; color:#14181A; border:none; padding:15px; border-radius:11px; font-weight:800; font-size:15px; cursor:pointer;">Lägg till i offert</button>
+            <div style="text-align:center; margin-top:10px; font-size:11.5px; color:rgba(250,250,247,.4);">Priser exkl. moms · korrektur inom 24h</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1440, &quot;height&quot;: 900 }
+}">
+class Component extends DCLogic {
+  state = { view:'catalog', pid:'p1', cat:'Alla', brand:'Alla', sort:'pop', q:'', offert:0,
+    method:'Screentryck', place:'Vänster bröst', psize:22, color:'#FAFAF7', motif:'PEAK', qty:50 };
+
+  CATS(){ return ['Alla','T-shirts','Pikéer','Sweatshirts','Hoodies','Jackor','Kepsar','Kassar']; }
+  METHODS(){ return ['Screentryck','DTG','Transfer (DTF)','Brodyr','Vävt märke']; }
+  PLACES(){ return ['Vänster bröst','Höger bröst','Centrerat']; }
+  COLORS(){ return [{n:'Vit',h:'#FAFAF7'},{n:'Svart',h:'#1A1D1F'},{n:'Marin',h:'#23324A'},{n:'Grå',h:'#9AA0A6'},{n:'Sand',h:'#D9C7A8'},{n:'Skog',h:'#2E4034'},{n:'Vinröd',h:'#7B2E3B'}]; }
+  MOTIFS(){ return [
+    {key:'PEAK', src:'assets/print-peak.png'},
+    {key:'Fågel', src:'uploads/07_aviary_bird.png'},
+    {key:'Måne', src:'assets/print-moon-trim.png'},
+    {key:'Blomma', src:'assets/print-flower.png'},
+    {key:'PRNTR', src:'assets/print-resurs11.png'},
+    {key:'noll33', src:'uploads/Resurs 1.png'}
+  ]; }
+  methodAdd(m){ return ({'Screentryck':12,'DTG':18,'Transfer (DTF)':16,'Brodyr':28,'Vävt märke':22})[m]||0; }
+  PRODUCTS(){ return [
+    {id:'p1', name:'Organic Tee', brand:'Native Spirit', cat:'T-shirts', img:'uploads/sm/03.jpg', colors:['#FAFAF7','#1A1D1F','#23324A','#D9C7A8'], gsm:'155 g/m²', material:'100% ekologisk bomull', cert:'GOTS, Oeko-Tex', priceFrom:49, eco:true, ecoLabel:'GOTS'},
+    {id:'p2', name:'Heavy Tee', brand:'Bella+Canvas', cat:'T-shirts', img:'uploads/sm/10.jpg', colors:['#FAFAF7','#1A1D1F','#7B2E3B'], gsm:'180 g/m²', material:'100% ringspunnen bomull', cert:'Oeko-Tex', priceFrom:62, eco:false},
+    {id:'p3', name:'Classic Piqué', brand:'B&C', cat:'Pikéer', img:'uploads/sm/01.jpg', colors:['#23324A','#FAFAF7','#2E4034'], gsm:'200 g/m²', material:'100% bomull piké', cert:'Oeko-Tex', priceFrom:89, eco:false},
+    {id:'p4', name:'Crew Sweat', brand:'Kariban', cat:'Sweatshirts', img:'uploads/sm/05.jpg', colors:['#9AA0A6','#1A1D1F','#23324A'], gsm:'280 g/m²', material:'85% bomull / 15% polyester', cert:'Oeko-Tex', priceFrom:129, eco:false},
+    {id:'p5', name:'Heavy Hood', brand:'Build Your Brand', cat:'Hoodies', img:'uploads/sm/15.jpg', colors:['#1A1D1F','#9AA0A6','#2E4034'], gsm:'320 g/m²', material:'80% bomull / 20% polyester', cert:'Oeko-Tex', priceFrom:179, eco:false},
+    {id:'p6', name:'5-panel Cap', brand:'Beechfield', cat:'Kepsar', img:'uploads/sm/14.jpg', colors:['#23324A','#1A1D1F','#7B2E3B'], gsm:'—', material:'100% bomullstwill', cert:'—', priceFrom:79, eco:false},
+    {id:'p7', name:'Canvas Tote', brand:'Westford Mill', cat:'Kassar', img:'uploads/sm/04.jpg', colors:['#D9C7A8','#1A1D1F','#FAFAF7'], gsm:'140 g/m²', material:'100% bomullskanvas', cert:'—', priceFrom:45, eco:true, ecoLabel:'Eko'},
+    {id:'p8', name:'Colour Tee', brand:'Gildan', cat:'T-shirts', img:'uploads/sm/02.jpg', colors:['#7B2E3B','#23324A','#2E4034','#F4B300'], gsm:'150 g/m²', material:'100% bomull', cert:'Oeko-Tex', priceFrom:39, eco:false},
+    {id:'p9', name:'Zip Hood', brand:'Kariban', cat:'Hoodies', img:'uploads/sm/06.jpg', colors:['#1A1D1F','#9AA0A6'], gsm:'300 g/m²', material:'80% bomull / 20% polyester', cert:'Oeko-Tex', priceFrom:199, eco:false},
+    {id:'p10', name:'Eco Sweat', brand:'Native Spirit', cat:'Sweatshirts', img:'uploads/sm/17.jpg', colors:['#2E4034','#D9C7A8','#1A1D1F'], gsm:'300 g/m²', material:'85% eko bomull / 15% polyester', cert:'GOTS', priceFrom:139, eco:true, ecoLabel:'GOTS'},
+    {id:'p11', name:'Performance Polo', brand:'Kariban', cat:'Pikéer', img:'uploads/sm/16.jpg', colors:['#23324A','#FAFAF7','#7B2E3B'], gsm:'180 g/m²', material:'100% funktionspolyester', cert:'Oeko-Tex', priceFrom:95, eco:false},
+    {id:'p12', name:'Softshell-jacka', brand:'Kariban', cat:'Jackor', img:'uploads/sm/18.jpg', colors:['#1A1D1F','#23324A'], gsm:'—', material:'3-lager softshell', cert:'—', priceFrom:349, eco:false}
+  ]; }
+
+  set(k,v){ return () => this.setState({ [k]: v }); }
+  openProduct(id){ return (e) => { if(e&&e.preventDefault) e.preventDefault(); this.setState({ view:'product', pid:id }); }; }
+  openStudio(id){ return (e) => { if(e&&e.preventDefault) e.preventDefault(); this.setState({ view:'studio', pid:id }); }; }
+  goCatalog = (e) => { if(e&&e.preventDefault) e.preventDefault(); this.setState({ view:'catalog' }); };
+  goProductFromStudio = (e) => { if(e&&e.preventDefault) e.preventDefault(); this.setState({ view:'product' }); };
+  onQ = (e) => this.setState({ q: e.target.value });
+  onSize = (e) => this.setState({ psize: +e.target.value });
+  onQty = (e) => this.setState({ qty: Math.max(1, parseInt(e.target.value,10) || 1) });
+  addOffert = (e) => { if(e&&e.preventDefault) e.preventDefault(); this.setState(s => ({ offert: s.offert + (s.qty||1) })); };
+
+  sizesFor(cat){ if(cat==='Kepsar') return ['One size']; if(cat==='Kassar') return ['One size']; return ['XS','S','M','L','XL','2XL','3XL']; }
+  metaFor(p){ if(p.gsm==='—') return p.cert==='—' ? 'Accessoar' : p.cert; return p.gsm; }
+
+  renderVals(){
+    const S = this.state;
+    const all = this.PRODUCTS();
+    const sel0 = all.find(p => p.id === S.pid) || all[0];
+    let list = all.filter(p =>
+      (S.cat==='Alla' || p.cat===S.cat) &&
+      (!S.q || (p.name+' '+p.brand).toLowerCase().includes(S.q.toLowerCase()))
+    );
+    if (S.sort==='low') list = [...list].sort((a,b)=>a.priceFrom-b.priceFrom);
+    else if (S.sort==='high') list = [...list].sort((a,b)=>b.priceFrom-a.priceFrom);
+    const products = list.map(p => ({ ...p, meta:this.metaFor(p), open:this.openProduct(p.id), design:this.openStudio(p.id) }));
+
+    const sel = { ...sel0, sizeList:this.sizesFor(sel0.cat), design:this.openStudio(sel0.id) };
+
+    const catChips = this.CATS().map(c => ({ name:c, active:c===S.cat,
+      bg: c===S.cat?'#14181A':'#fff', fg: c===S.cat?'#fff':'#3A403C', border: c===S.cat?'#14181A':'#E0DBCE', on:this.set('cat',c) }));
+
+    const methodChips = this.METHODS().map(m => ({ name:m, add:'+'+this.methodAdd(m)+' kr',
+      bg: m===S.method?'rgba(244,179,0,.14)':'#1E2225', fg: m===S.method?'#fff':'rgba(250,250,247,.85)',
+      border: m===S.method?'#F4B300':'rgba(255,255,255,.1)', addC: m===S.method?'#F4B300':'rgba(250,250,247,.45)', on:this.set('method',m) }));
+    const placeChips = this.PLACES().map(p => ({ name:p, active:p===S.place,
+      bg: p===S.place?'#F4B300':'#1E2225', fg: p===S.place?'#14181A':'rgba(250,250,247,.85)',
+      border: p===S.place?'#F4B300':'rgba(255,255,255,.1)', on:this.set('place',p) }));
+    const colorChips = this.COLORS().map(c => ({ name:c.n, hex:c.h,
+      ring: c.h===S.color?'0 0 0 2px #14181A, 0 0 0 4px #F4B300':'0 0 0 2px transparent', on:this.set('color',c.h) }));
+    const motifChips = this.MOTIFS().map(m => ({ key:m.key, src:m.src, border: m.key===S.motif?'#F4B300':'#E5E2D9', on:this.set('motif',m.key) }));
+
+    const motif = this.MOTIFS().find(m => m.key===S.motif) || this.MOTIFS()[0];
+    const isCenter = S.place==='Centrerat';
+    const pos = { 'Vänster bröst':{l:'38%',t:'34%'}, 'Höger bröst':{l:'62%',t:'34%'}, 'Centrerat':{l:'50%',t:'47%'} }[S.place];
+    const dark = ['#1A1D1F','#23324A','#2E4034','#7B2E3B'].indexOf(S.color) !== -1;
+
+    const unit = sel0.priceFrom + this.methodAdd(S.method) + (S.psize>28?6:0);
+    const total = unit * (S.qty||1);
+
+    return {
+      isCatalog:S.view==='catalog', isProduct:S.view==='product', isStudio:S.view==='studio',
+      offert:S.offert, q:S.q, onQ:this.onQ, count:products.length, products, catChips, sel,
+      gallery:[sel0.img, 'uploads/sm/07.jpg', 'uploads/sm/11.jpg'],
+      goCatalog:this.goCatalog, goProductFromStudio:this.goProductFromStudio, addOffert:this.addOffert,
+      sortPop:this.set('sort','pop'), sortLow:this.set('sort','low'), sortHigh:this.set('sort','high'),
+      popW:S.sort==='pop'?'700':'500', popC:S.sort==='pop'?'#14181A':'#8A8576',
+      lowW:S.sort==='low'?'700':'500', lowC:S.sort==='low'?'#14181A':'#8A8576',
+      highW:S.sort==='high'?'700':'500', highC:S.sort==='high'?'#14181A':'#8A8576',
+      methodChips, placeChips, colorChips, motifChips,
+      motifSrc:motif.src, motifLeft:pos.l, motifTop:pos.t, motifW:(isCenter?S.psize:S.psize*0.55)+'%',
+      motifBlend: dark?'screen':'multiply', motifFilter: S.method==='Brodyr'?'drop-shadow(0 1px 1px rgba(0,0,0,.4))':'none',
+      shirtColor:S.color, shirtStroke: dark?'rgba(255,255,255,.16)':'rgba(0,0,0,.12)',
+      method:S.method, place:S.place, psize:S.psize, qty:S.qty, onSize:this.onSize, onQty:this.onQty,
+      unit:unit+' kr', total:total.toLocaleString('sv-SE')+' kr'
+    };
+  }
+}
+</script>
+</body>
+</html>

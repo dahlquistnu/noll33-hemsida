@@ -1,0 +1,49 @@
+NOLL33.se — DESIGNSPEC (för Figma)
+==================================
+
+TYPSNITT (Google Fonts)
+-----------------------
+Hanken Grotesk   — 400/500/600/700/800 + italic 400   → PRIMÄRT: UI, brödtext, de flesta rubriker
+Albert Sans      — 400/500/600/700                     → feature-rubriker (t.ex. "Design Studio")
+Bricolage Grotesque — 500/600/700/800                  → display-rubriker i vissa koncept
+Instrument Serif — roman + italic                      → redaktionella accenter / kursiv
+
+Import (matcha samma familjer/vikter i Figma):
+https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Instrument+Serif:ital@0;1&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Albert+Sans:wght@400;500;600;700&display=swap
+
+
+FÄRGER (Figma color styles)
+---------------------------
+Guld / accent (primär)      #F4B300
+Guld varm (Print Drop)      #D8A93A
+Off-white bakgrund          #FAFAF7
+Text nästan-svart           #14181A
+Text dämpad                 #5A615C
+Text dämpad (länk/meny)     #6A6F69
+Varm kantlinje              #E3DECF
+Mörk bakgrund               #0E0F11   (≈ #0d0d10)
+Variant B bakgrund          #EBEFEF
+Variant D bakgrund (beige)  #F4EFE4
+Variant E accent (rosé)     #B14A5C
+
+
+TYPSKALA (så den används i sidan)
+---------------------------------
+Hero H1        clamp upp till ~64–72px, weight 700–800, letter-spacing -0.02em
+Sektionsrubrik clamp(26px, 2.6vw, 50px), weight 600–800
+Kort-rubrik    24px / weight 700
+Brödtext       15–18px / line-height 1.6 / weight 400
+Eyebrow/label  10–11px, weight 600–700, letter-spacing 0.16–0.2em, UPPERCASE
+Knapp/pill     13–14.5px, weight 600–700, border-radius 999px
+
+
+KONCEPT (5 varianter, se HANDOFF.md §3)
+---------------------------------------
+A Atelier    — ljus #FAFAF7, redaktionell (standardval)
+B Plattform  — ljusgrå #EBEFEF, produkt/SaaS
+C Kollektion — ljus, produktfokus (250+ basplagg)
+D Magasin    — varm beige #F4EFE4, tidnings-/journalkänsla
+E Studio     — mörk #0E0F11, COI-inspirerad
+
+Öppna "Noll33 Startsida - Förslag.dc.html" i projektet och växla koncept nere
+till höger för att se var och en live.

@@ -1,0 +1,40 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style>html,body{margin:0;background:#000}#c{display:block;width:1200px;height:560px}</style>
+</head><body><canvas id="c"></canvas>
+<script>
+const W=1200,Hh=560,dpr=2;
+const cv=document.getElementById('c');cv.width=W*dpr;cv.height=Hh*dpr;
+const ctx=cv.getContext('2d');
+function mk(){const e=document.createElement('canvas');e.width=W*dpr;e.height=Hh*dpr;return [e,e.getContext('2d')];}
+function shade(t){t=Math.max(0,Math.min(1,t));let a,b,u;if(t<0.5){a=[104,70,6];b=[240,176,0];u=t/0.5;}else{a=[240,176,0];b=[255,236,180];u=(t-0.5)/0.5;}return 'rgb('+Math.round(a[0]+(b[0]-a[0])*u)+','+Math.round(a[1]+(b[1]-a[1])*u)+','+Math.round(a[2]+(b[2]-a[2])*u)+')';}
+function draw(){
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  let g=ctx.createRadialGradient(W*0.4,Hh*0.3,60,W*0.4,Hh*0.32,W*0.9);g.addColorStop(0,'#24241f');g.addColorStop(.55,'#15140f');g.addColorStop(1,'#0b0a07');ctx.fillStyle=g;ctx.fillRect(0,0,W,Hh);
+  ctx.lineWidth=1;for(let y=0;y<Hh;y+=4){ctx.strokeStyle=((y/4)|0)%2?'rgba(255,255,255,.022)':'rgba(0,0,0,.06)';ctx.beginPath();ctx.moveTo(0,y+.5);ctx.lineTo(W,y+.5);ctx.stroke();}
+  for(let x=0;x<W;x+=4){ctx.strokeStyle=((x/4)|0)%2?'rgba(255,255,255,.018)':'rgba(0,0,0,.05)';ctx.beginPath();ctx.moveTo(x+.5,0);ctx.lineTo(x+.5,Hh);ctx.stroke();}
+  const [m,mx]=mk();mx.setTransform(dpr,0,0,dpr,0,0);mx.fillStyle='#fff';mx.textAlign='center';mx.textBaseline='middle';mx.font='800 150px "Bricolage Grotesque",sans-serif';mx.fillText('Du säljer.',W/2,Hh/2+4);
+  const d=mx.getImageData(0,0,W*dpr,Hh*dpr).data;
+  const inside=(x,y)=>{const ix=(x*dpr)|0,iy=(y*dpr)|0;if(ix<0||iy<0||ix>=W*dpr||iy>=Hh*dpr)return 0;return d[(iy*(W*dpr)+ix)*4+3];};
+  const [st,sx]=mk();sx.setTransform(dpr,0,0,dpr,0,0);sx.lineCap='round';
+  const TW=5.6,TL=16;
+  for(let x=0;x<W;x+=TW){const sheen=0.5+0.5*Math.sin(x*0.05+0.6);
+    for(let y=-TL;y<Hh;y+=TL){const my=y+TL/2;if(inside(x,my)||inside(x-TW*0.5,my)||inside(x+TW*0.5,my)){
+      const jx=(Math.random()-.5)*1.4,ang=(Math.random()-.5)*0.10,jl=(Math.random()-.5)*2.2;
+      const x0=x+jx,y0=y+1.6,x1=x+jx+Math.sin(ang)*TL,y1=y+TL-1.6+jl;
+      const lite=0.5*sheen+(Math.random()-.5)*0.13;
+      sx.beginPath();sx.moveTo(x0,y0);sx.lineTo(x1,y1);sx.lineWidth=TW;sx.strokeStyle=shade(0.16+lite*0.28);sx.stroke();
+      sx.beginPath();sx.moveTo(x0,y0);sx.lineTo(x1,y1);sx.lineWidth=TW*0.62;sx.strokeStyle=shade(0.5+lite*0.48);sx.stroke();
+      sx.beginPath();sx.moveTo(x0,y0+1.2);sx.lineTo(x1,y1-1.2);sx.lineWidth=TW*0.22;sx.strokeStyle=shade(0.86+lite*0.18);sx.stroke();
+    }}
+  }
+  sx.setTransform(1,0,0,1,0,0);sx.globalCompositeOperation='destination-in';sx.drawImage(m,0,0);
+  const [sh,shc]=mk();shc.setTransform(1,0,0,1,0,0);shc.drawImage(m,0,0);shc.globalCompositeOperation='source-in';shc.fillStyle='#000';shc.fillRect(0,0,W*dpr,Hh*dpr);
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.save();ctx.globalAlpha=0.5;ctx.filter='blur(5px)';ctx.drawImage(sh,4*dpr,9*dpr);ctx.restore();ctx.filter='none';
+  ctx.drawImage(st,0,0);
+}
+function go(){draw();}
+if(document.fonts&&document.fonts.load){document.fonts.load('800 150px "Bricolage Grotesque"').then(()=>{go();setTimeout(go,500);}).catch(()=>{setTimeout(go,500);});}else{setTimeout(go,400);}
+</script></body></html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:#0d0d10; }
+  ::selection{ background:#D8A93A; color:#0d0d10; }
+</style>
+</helmet>
+
+<div style="min-height:100vh; background:#0d0d10; font-family:'Hanken Grotesk',sans-serif; -webkit-font-smoothing:antialiased; padding:56px 24px 80px;">
+  <div style="max-width:1000px; margin:0 auto; display:flex; flex-direction:column; gap:40px;">
+
+    <!-- header -->
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; align-items:center; gap:11px;">
+        <span style="width:9px; height:9px; border-radius:50%; background:#D8A93A; box-shadow:0 0 10px rgba(216,169,58,.7);"></span>
+        <span style="color:#f4f2ee; font-weight:700; letter-spacing:.34em; font-size:13px;">NOLL33</span>
+        <span style="color:#7d7b78; font-weight:500; letter-spacing:.34em; font-size:13px;">FABLE&nbsp;KIT</span>
+      </div>
+      <h1 style="margin:0; color:#faf9f6; font-weight:800; font-size:38px; letter-spacing:-.01em; line-height:1.05;">Allt du behöver för Fable</h1>
+      <p style="margin:0; color:#8f8d88; font-size:15px; max-width:620px; line-height:1.55;">Prompt, tryckmotiv och källvideon på ett ställe. Kör <strong style="color:#c9c6c0; font-weight:600;">image-to-video</strong> från en färdig still — mata in motiv och video som referenser.</p>
+    </div>
+
+    <!-- prompt -->
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:16px;">
+        <span style="color:#D8A93A; font-weight:700; letter-spacing:.16em; font-size:12px; text-transform:uppercase;">Prompt</span>
+        <button onClick="{{ copyPrompt }}" style="appearance:none; border:1px solid rgba(216,169,58,.4); background:rgba(216,169,58,.08); color:#e7c877; font-family:inherit; font-weight:600; font-size:13px; padding:7px 15px; border-radius:999px; cursor:pointer; letter-spacing:.02em;" style-hover="background:rgba(216,169,58,.16); border-color:rgba(216,169,58,.7);">Kopiera</button>
+      </div>
+      <pre id="promptText" style="margin:0; white-space:pre-wrap; word-break:break-word; font-family:'Hanken Grotesk',sans-serif; color:#dedbd4; font-size:15px; line-height:1.62; background:#151519; border:1px solid #26262b; border-radius:14px; padding:22px 24px;">The model breathes and shifts her weight very subtly; the cotton t-shirt moves and folds naturally with her body. The printed design stays locked to the same spot on the chest and conforms to the fabric — flexing over the folds, matte and absorbed into the cotton, never sliding or floating. Soft studio light, static camera, shallow depth of field. Gentle, premium, photoreal. 4 seconds.</pre>
+    </div>
+
+    <!-- negative prompt -->
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:16px;">
+        <span style="color:#D8A93A; font-weight:700; letter-spacing:.16em; font-size:12px; text-transform:uppercase;">Negativ prompt</span>
+        <button onClick="{{ copyNeg }}" style="appearance:none; border:1px solid rgba(216,169,58,.4); background:rgba(216,169,58,.08); color:#e7c877; font-family:inherit; font-weight:600; font-size:13px; padding:7px 15px; border-radius:999px; cursor:pointer; letter-spacing:.02em;" style-hover="background:rgba(216,169,58,.16); border-color:rgba(216,169,58,.7);">Kopiera</button>
+      </div>
+      <pre id="negText" style="margin:0; white-space:pre-wrap; word-break:break-word; font-family:'Hanken Grotesk',sans-serif; color:#b9b6af; font-size:14px; line-height:1.6; background:#151519; border:1px solid #26262b; border-radius:14px; padding:20px 24px;">print sliding, warping logo, distorted text, glossy sticker, floating decal, drop shadow halo, flickering, duplicated print, morphing, extra hands, face distortion, camera movement, zoom</pre>
+    </div>
+
+    <!-- settings -->
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <span style="color:#D8A93A; font-weight:700; letter-spacing:.16em; font-size:12px; text-transform:uppercase;">Inställningar</span>
+      <div style="display:flex; flex-wrap:wrap; gap:10px;">
+        <span style="color:#cfccc5; font-size:13.5px; font-weight:500; background:#17171b; border:1px solid #26262b; border-radius:999px; padding:8px 15px;">Image-to-video</span>
+        <span style="color:#cfccc5; font-size:13.5px; font-weight:500; background:#17171b; border:1px solid #26262b; border-radius:999px; padding:8px 15px;">3–5 sekunder</span>
+        <span style="color:#cfccc5; font-size:13.5px; font-weight:500; background:#17171b; border:1px solid #26262b; border-radius:999px; padding:8px 15px;">Statisk kamera</span>
+        <span style="color:#cfccc5; font-size:13.5px; font-weight:500; background:#17171b; border:1px solid #26262b; border-radius:999px; padding:8px 15px;">Liten rörelse</span>
+        <span style="color:#cfccc5; font-size:13.5px; font-weight:500; background:#17171b; border:1px solid #26262b; border-radius:999px; padding:8px 15px;">Ett tryck per klipp</span>
+        <span style="color:#cfccc5; font-size:13.5px; font-weight:500; background:#17171b; border:1px solid #26262b; border-radius:999px; padding:8px 15px;">Format 3:4 / 1:1</span>
+      </div>
+      <p style="margin:2px 0 0; color:#75736e; font-size:13px; line-height:1.55;">Stort, enkelt motiv överlever generering bäst — finstilt text/små loggor kan smeta. Byt inte flera tryck inom samma klipp; klipp ihop separata klipp istället.</p>
+    </div>
+
+    <!-- motifs -->
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px;">
+        <span style="color:#D8A93A; font-weight:700; letter-spacing:.16em; font-size:12px; text-transform:uppercase;">Tryckmotiv · 12</span>
+        <span style="color:#75736e; font-size:12.5px;">Klicka för att öppna / spara</span>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:14px;">
+        <sc-for list="{{ motifs }}" as="m" hint-placeholder-count="12">
+          <a href="{{ m.src }}" target="_blank" style="text-decoration:none; display:flex; flex-direction:column; gap:0; border-radius:14px; overflow:hidden; border:1px solid #26262b; background:#151519;" style-hover="border-color:rgba(216,169,58,.6);">
+            <div style="aspect-ratio:1; background:#f4f1ec; display:flex; align-items:center; justify-content:center; padding:20px;">
+              <img src="{{ m.src }}" alt="{{ m.name }}" style="max-width:100%; max-height:100%; object-fit:contain; display:block;">
+            </div>
+            <div style="padding:11px 13px 13px; display:flex; flex-direction:column; gap:2px;">
+              <span style="color:#f2efe9; font-weight:700; font-size:14px;">{{ m.name }}</span>
+              <span style="color:#9a8a5e; font-weight:500; font-size:12px; letter-spacing:.02em;">{{ m.method }}</span>
+            </div>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- video -->
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px;">
+        <span style="color:#D8A93A; font-weight:700; letter-spacing:.16em; font-size:12px; text-transform:uppercase;">Källvideo</span>
+        <a href="uploads/6787106-uhd_3840_2160_30fps.mp4" target="_blank" style="color:#e7c877; text-decoration:none; font-weight:600; font-size:13px;" style-hover="text-decoration:underline;">Öppna / spara ↗</a>
+      </div>
+      <div style="border-radius:16px; overflow:hidden; border:1px solid #26262b; background:#000; max-width:460px;">
+        <video id="fableVid" controls muted loop playsinline preload="metadata" style="width:100%; height:auto; display:block;">
+          <source src="uploads/6787106-uhd_3840_2160_30fps.mp4" type="video/mp4">
+        </video>
+      </div>
+      <p style="margin:0; color:#75736e; font-size:13px; line-height:1.55;">4K-klipp av modell i enfärgad t-shirt. Använd som rörelsereferens, eller ta en still ur den som image-to-video-input.</p>
+    </div>
+
+    <!-- ready stills note -->
+    <div style="border-top:1px solid #201f24; padding-top:22px; color:#75736e; font-size:13px; line-height:1.6;">
+      Färdiga input-stillbilder (motiv redan på tröjan) ligger i <span style="color:#c9c6c0; font-weight:600;">fable-export/</span> — <span style="color:#c9c6c0;">still-peak.png</span> samt <span style="color:#c9c6c0;">stills/</span> (bird, flower, hey, moon, strawberry) och inflygningssekvensen <span style="color:#c9c6c0;">flyin/01–07</span>.
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  _copy(srcId, ev){
+    const el = document.getElementById(srcId);
+    if(!el) return;
+    const txt = el.textContent.trim();
+    const done = ()=>{ const b = ev && ev.currentTarget; if(!b) return; const old = b.textContent; b.textContent = 'Kopierat ✓'; setTimeout(()=>{ b.textContent = old; }, 1600); };
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(done); }
+    else { try{ const t=document.createElement('textarea'); t.value=txt; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); done(); }catch(e){} }
+  }
+  renderVals(){
+    return {
+      copyPrompt: (e)=>this._copy('promptText', e),
+      copyNeg: (e)=>this._copy('negText', e),
+      motifs: [
+        { name:'PEAK',        method:'Screentryck',        src:'assets/print-peak.png' },
+        { name:'Fågel',       method:'Flerfärgstryck',     src:'uploads/07_aviary_bird.png' },
+        { name:'Måne',        method:'DTG',                src:'assets/print-moon-trim.png' },
+        { name:'Jordgubbe',   method:'Transfer · DTF',     src:'uploads/Resurs 1-7e42a919.png' },
+        { name:'Asterisk',    method:'Flerfärgstryck',     src:'uploads/logomerkki.png' },
+        { name:'Löv',         method:'Screentryck',        src:'uploads/05_monoline_leaf.png' },
+        { name:'Hey',         method:'DTG',                src:'assets/print-hey.png' },
+        { name:'Coastal',     method:'Screentryck',        src:'assets/print-coastal.png' },
+        { name:'Blomma',      method:'DTG',                src:'assets/print-flower.png' },
+        { name:'Josefine',    method:'Screentryck',        src:'assets/print-signature.png' },
+        { name:'PRNTR',       method:'Screentryck',        src:'assets/print-resurs11.png' },
+        { name:'Noll33-märke',method:'Vävt märke',         src:'uploads/Resurs 1.png' }
+      ]
+    };
+  }
+  componentDidMount(){
+    const v = document.getElementById('fableVid');
+    if(!v) return;
+    const KEY = 'fable-kit-video-t';
+    const saved = parseFloat(localStorage.getItem(KEY) || '0');
+    if(saved > 0){ const set=()=>{ try{ v.currentTime = saved; }catch(e){} }; if(v.readyState>=1) set(); else v.addEventListener('loadedmetadata', set, {once:true}); }
+    this._onT = ()=>{ if(!v.seeking) localStorage.setItem(KEY, String(v.currentTime||0)); };
+    v.addEventListener('timeupdate', this._onT);
+  }
+  componentWillUnmount(){ const v=document.getElementById('fableVid'); if(v&&this._onT) v.removeEventListener('timeupdate', this._onT); }
+}
+</script>
+</body>
+</html>

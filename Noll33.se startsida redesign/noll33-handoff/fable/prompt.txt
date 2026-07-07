@@ -1,0 +1,28 @@
+NOLL33 — FABLE PROMPT
+=====================
+
+PROMPT (image-to-video):
+The model breathes and shifts her weight very subtly; the cotton t-shirt moves
+and folds naturally with her body. The printed design stays locked to the same
+spot on the chest and conforms to the fabric — flexing over the folds, matte and
+absorbed into the cotton, never sliding or floating. Soft studio light, static
+camera, shallow depth of field. Gentle, premium, photoreal. 4 seconds.
+
+NEGATIV PROMPT:
+print sliding, warping logo, distorted text, glossy sticker, floating decal,
+drop shadow halo, flickering, duplicated print, morphing, extra hands,
+face distortion, camera movement, zoom
+
+INSTÄLLNINGAR:
+- Image-to-video (inte text-to-video)
+- 3–5 sekunder
+- Statisk kamera, liten rörelse
+- Ett tryck per klipp — klipp ihop separata klipp
+- Format 3:4 eller 1:1
+- Stort/enkelt motiv överlever bäst; finstilt text/små loggor kan smeta
+
+INNEHÅLL I MAPPEN:
+- prompt.txt          — den här filen
+- kallvideo.mp4       — 4K-klipp av modell i enfärgad t-shirt
+- motiv/              — 12 tryckmotiv att lägga på plagget
+- stillbilder/        — färdiga input-stillbilder (motiv redan på tröjan) + inflygningssekvens

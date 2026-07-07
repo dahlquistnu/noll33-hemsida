@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  @keyframes dropTop{
+    0%{opacity:0;transform:translate(-50%,-320%) scale(1.25);animation-timing-function:cubic-bezier(.15,.7,.25,1);}
+    1.5%{opacity:1;} 3%{opacity:1;transform:translate(-50%,-50%) scale(1.06);animation-timing-function:cubic-bezier(.3,0,.3,1);}
+    4%{transform:translate(-50%,-50%) scale(.985);animation-timing-function:ease-out;} 5%{transform:translate(-50%,-50%) scale(1);}
+    6%{opacity:1;transform:translate(-50%,-50%) scale(1);animation-timing-function:cubic-bezier(.5,0,.75,1);}
+    7%{opacity:0;transform:translate(-50%,-56%) scale(1.03);} 100%{opacity:0;transform:translate(-50%,-56%) scale(1.03);}
+  }
+  @keyframes dropBottom{
+    0%{opacity:0;transform:translate(-50%,300%) scale(1.3);animation-timing-function:cubic-bezier(.15,.7,.25,1);}
+    1.5%{opacity:1;} 3%{opacity:1;transform:translate(-50%,-50%) scale(1.06);animation-timing-function:cubic-bezier(.3,0,.3,1);}
+    4%{transform:translate(-50%,-50%) scale(.985);animation-timing-function:ease-out;} 5%{transform:translate(-50%,-50%) scale(1);}
+    6%{opacity:1;transform:translate(-50%,-50%) scale(1);animation-timing-function:cubic-bezier(.5,0,.75,1);}
+    7%{opacity:0;transform:translate(-50%,-56%) scale(1.03);} 100%{opacity:0;transform:translate(-50%,-56%) scale(1.03);}
+  }
+  @keyframes dropLeft{
+    0%{opacity:0;transform:translate(-430%,-50%) scale(1.3);animation-timing-function:cubic-bezier(.15,.7,.25,1);}
+    1.5%{opacity:1;} 3%{opacity:1;transform:translate(-50%,-50%) scale(1.06);animation-timing-function:cubic-bezier(.3,0,.3,1);}
+    4%{transform:translate(-50%,-50%) scale(.985);animation-timing-function:ease-out;} 5%{transform:translate(-50%,-50%) scale(1);}
+    6%{opacity:1;transform:translate(-50%,-50%) scale(1);animation-timing-function:cubic-bezier(.5,0,.75,1);}
+    7%{opacity:0;transform:translate(-50%,-56%) scale(1.03);} 100%{opacity:0;transform:translate(-50%,-56%) scale(1.03);}
+  }
+  @keyframes dropRight{
+    0%{opacity:0;transform:translate(330%,-50%) scale(1.3);animation-timing-function:cubic-bezier(.15,.7,.25,1);}
+    1.5%{opacity:1;} 3%{opacity:1;transform:translate(-50%,-50%) scale(1.06);animation-timing-function:cubic-bezier(.3,0,.3,1);}
+    4%{transform:translate(-50%,-50%) scale(.985);animation-timing-function:ease-out;} 5%{transform:translate(-50%,-50%) scale(1);}
+    6%{opacity:1;transform:translate(-50%,-50%) scale(1);animation-timing-function:cubic-bezier(.5,0,.75,1);}
+    7%{opacity:0;transform:translate(-50%,-56%) scale(1.03);} 100%{opacity:0;transform:translate(-50%,-56%) scale(1.03);}
+  }
+</style>
+</helmet>
+
+<div style="min-height:100vh; background:#0d0d10; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; padding:40px 24px; font-family:'Hanken Grotesk',sans-serif; -webkit-font-smoothing:antialiased;">
+  <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="14" fill="#0d0d10"></rect><rect x="30" y="30" width="40" height="40" rx="8" fill="#cbbdad"></rect><circle cx="50" cy="50" r="11" fill="#0d0d10"></circle><text x="50" y="54.5" font-family="sans-serif" font-size="10" fill="#D8A93A" text-anchor="middle" font-weight="800">33</text></svg></template>
+
+  <div style="width:min(600px,92vw); display:flex; align-items:flex-end; justify-content:space-between; gap:16px;">
+    <div style="display:flex; align-items:center; gap:11px;">
+      <span style="width:9px; height:9px; border-radius:50%; background:#D8A93A; box-shadow:0 0 10px rgba(216,169,58,.7);"></span>
+      <span style="color:#f4f2ee; font-weight:700; letter-spacing:.34em; font-size:13px;">NOLL33</span>
+      <span style="color:#7d7b78; font-weight:500; letter-spacing:.34em; font-size:13px;">PRINT&nbsp;DROP</span>
+    </div>
+    <span style="color:#6a6864; font-weight:500; letter-spacing:.28em; font-size:11px; text-transform:uppercase;">Fram &amp; åter</span>
+  </div>
+
+  <div style="--loop:{{ loopCss }}; position:relative; width:min(600px,92vw); aspect-ratio:480/586; border-radius:16px; overflow:hidden; background:#cbbdad; box-shadow:0 40px 90px -30px rgba(0,0,0,.7); border:1px solid rgba(255,255,255,.07);">
+
+    <canvas id="teecanvas" width="720" height="879" style="position:absolute; inset:0; width:100%; height:100%; display:block; pointer-events:none;"></canvas>
+    <img id="sheet1" src="assets/tee-fr1.jpg" alt="" style="display:none;"><img id="sheet2" src="assets/tee-fr2.jpg" alt="" style="display:none;">
+
+    <!-- INK prints: normal blend inside a multiply group that follows her motion -->
+    <div id="inkgroup" style="position:absolute; inset:0; mix-blend-mode:multiply; will-change:transform; pointer-events:none;">
+      <div style="position:absolute; left:50%; top:42%; width:34%;"><div style="animation-name:dropTop; animation-duration:32s; animation-timing-function:linear; animation-iteration-count:infinite; animation-fill-mode:both; animation-delay:0s; opacity:.92; filter:blur(.2px); will-change:transform,opacity; backface-visibility:hidden;"><img src="assets/print-peak.png" alt="" style="width:100%; height:auto; display:block;"></div></div>
+      <div style="position:absolute; left:37%; top:26%; width:10.5%;"><div style="animation-name:dropLeft; animation-duration:32s; animation-timing-function:linear; animation-iteration-count:infinite; animation-fill-mode:both; animation-delay:-2.46s; opacity:.95; filter:blur(.15px); will-change:transform,opacity; backface-visibility:hidden;"><img src="uploads/07_aviary_bird.png" alt="" style="width:100%; height:auto; display:block;"></div></div>
+      <div style="position:absolute; left:50%; top:43%; width:30%;"><div style="animation-name:dropBottom; animation-duration:32s; animation-timing-function:linear; animation-iteration-count:infinite; animation-fill-mode:both; animation-delay:-4.92s; opacity:.9; filter:blur(.25px); will-change:transform,opacity; backface-visibility:hidden;"><img src="assets/print-moon-trim.png" alt="" style="width:100%; height:auto; display:block; border-radius:2px;"></div></div>
+      <div style="position:absolute; left:63%; top:26%; width:10.5%;"><div style="animation-name:dropRight; animation-duration:32s; animation-timing-function:linear; animation-iteration-count:infinite; animation-fill-mode:both; animation-delay:-7.39s; opacity:.96; filter:blur(.15px); will-change:transform,opacity; backface-visibility:hidden;"><img src="uploads/Resurs 1-7e42a919.png" alt="" style="width:100%; height:auto; display:block;"></div></div>
+      <div style="position:absolute; left:50%; top:38%; width:18%;"><div style="animation-name:dropTop; animation-duration:32s; animation-timing-function:linear; animation-iteration-count:infinite; animation-fill-mode:both; animation-delay:-9.85s; opacity:.96; filter:blur(.15px); will-change:transform,opacity; backface-visibility:hidden;"><img src="uploads/logomerkki.png" alt="" style="width:100%; height:auto; display:block;"></div></div>
+      <div style="position:absolute; left:37%; top:26%; width:5.9%;"><div style="animation-name:dropLeft; animation-duration:32s; animation-timing-function:linear; animation-iteration-count:infinite; animation-fill-mode:both; animation-delay:-12.31s; opacity:.95; filter:blur(.15px); will-change:transform,opacity; backface-visibility:hidden;"><img src="uploads/05_monoline_leaf.png" alt="" style="width:100%; height:auto; display:block;"></div></div>
+      <div style="position:absolute; left:50%; top:42%; width:32%;"><div style="animation-name:dropBottom; animation-duration:32s; animation-timing-function:linear; animation-iteration-count:infinite; animation-fill-mode:both; animation-delay:-14.77s; opacity:.9; filter:blur(.25px); will-change:transform,opacity; backface-visibility:hidden;"><img src="assets/print-hey.png" alt="" style="width:100%; height:auto; display:block; border-radius:6px;"></div></div>
+      <div style="position:absolute; left:63%; top:26%; width:11.9%;"><div style="animation-name:dropRight; animation-duration:32s; animation-timing-function:linear; animation-iteration-count:infinite; animation-fill-mode:both; animation-delay:-17.23s; opacity:.93; filter:blur(.2px); will-change:transform,opacity; backface-visibility:hidden;"><img src="assets/print-coastal.png" alt="" style="width:100%; height:auto; display:block;"></div></div>
+      <div style="position:absolute; left:50%; top:43%; width:27%;"><div style="animation-name:dropTop; animation-duration:32s; animation-timing-function:linear; animation-iteration-count:infinite; animation-fill-mode:both; animation-delay:-19.69s; opacity:.92; filter:blur(.2px); will-change:transform,opacity; backface-visibility:hidden;"><img src="assets/print-flower.png" alt="" style="width:100%; height:auto; display:block;"></div></div>
+      <div style="position:absolute; left:37%; top:26%; width:9.8%;"><div style="animation-name:dropLeft; animation-duration:32s; animation-timing-function:linear; animation-iteration-count:infinite; animation-fill-mode:both; animation-delay:-22.15s; opacity:.95; filter:blur(.15px); will-change:transform,opacity; backface-visibility:hidden;"><img src="assets/print-signature.png" alt="" style="width:100%; height:auto; display:block;"></div></div>
+      <div style="position:absolute; left:50%; top:40%; width:38%;"><div style="animation-name:dropTop; animation-duration:32s; animation-timing-function:linear; animation-iteration-count:infinite; animation-fill-mode:both; animation-delay:-27.08s; opacity:.92; filter:blur(.2px); will-change:transform,opacity; backface-visibility:hidden;"><img src="assets/print-resurs11.png" alt="" style="width:100%; height:auto; display:block;"></div></div>
+    </div>
+
+    <!-- Patch (noll33) · own group, normal blend + shadow, follows her motion -->
+    <div id="patchgroup" style="position:absolute; inset:0; will-change:transform; pointer-events:none;">
+      <div style="position:absolute; left:63%; top:26%; width:10.5%;"><div style="animation-name:dropRight; animation-duration:32s; animation-timing-function:linear; animation-iteration-count:infinite; animation-fill-mode:both; animation-delay:-29.54s; opacity:1; filter:drop-shadow(0 3px 4px rgba(0,0,0,.4)) drop-shadow(0 1px 1px rgba(0,0,0,.28)); will-change:transform,opacity; backface-visibility:hidden;"><img src="uploads/Resurs 1.png" alt="" style="width:100%; height:auto; display:block;"></div></div>
+    </div>
+
+    <div style="position:absolute; inset:0; pointer-events:none; background:radial-gradient(120% 90% at 50% 40%, rgba(0,0,0,0) 60%, rgba(0,0,0,.2) 100%);"></div>
+
+  </div>
+
+  <div style="width:min(600px,92vw); color:#6a6864; font-size:12px; letter-spacing:.04em;">
+    <span>Tryck som flyger in ett i taget och följer hennes rörelse — videon spelas fram och åter.</span>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 700, &quot;height&quot;: 900 },
+  &quot;showCaptions&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Animation&quot;, &quot;label&quot;: &quot;Visa etiketter&quot; }
+}">
+class Component extends DCLogic {
+  renderVals(){
+    const loop = Math.max(6, Number(this.props.loopSeconds ?? 32));
+    return { loopCss: loop + 's', showCaptions: this.props.showCaptions ?? false };
+  }
+  componentDidMount(){
+    // 88 high-res frames across two sheets, played forward+backward (boomerang) = seamless
+    this.N = 88; this.cols = 8; this.TW = 720; this.TH = 879; this.split = 44;
+    this.frameDur = 0.085;  // gentle natural pace
+    this.damp = 0.42;
+    this.cents = [[0.4905,0.4746],[0.4899,0.4757],[0.4902,0.4771],[0.4904,0.4765],[0.4909,0.4802],[0.4916,0.4792],[0.492,0.4792],[0.4923,0.4804],[0.4931,0.4805],[0.4939,0.4815],[0.494,0.4814],[0.4942,0.4812],[0.4946,0.4823],[0.4951,0.4806],[0.4955,0.482],[0.4954,0.4805],[0.4954,0.4762],[0.4954,0.4741],[0.4957,0.4729],[0.496,0.4735],[0.4962,0.4731],[0.496,0.4743],[0.4958,0.4734],[0.4956,0.4734],[0.495,0.4739],[0.4947,0.4744],[0.4939,0.4767],[0.4934,0.4763],[0.4925,0.4785],[0.4912,0.479],[0.4897,0.4797],[0.4885,0.4803],[0.4875,0.4815],[0.486,0.4825],[0.4852,0.4819],[0.4836,0.4827],[0.4823,0.4826],[0.4803,0.4848],[0.479,0.4845],[0.4778,0.4837],[0.4753,0.4821],[0.4741,0.4843],[0.4735,0.4832],[0.4725,0.4833],[0.4711,0.4822],[0.4704,0.4799],[0.4693,0.478],[0.4679,0.475],[0.4668,0.4745],[0.4666,0.4726],[0.4666,0.4755],[0.4661,0.4752],[0.4657,0.4748],[0.4657,0.4756],[0.4656,0.4763],[0.4653,0.4775],[0.4655,0.4761],[0.4662,0.4781],[0.4668,0.477],[0.4669,0.477],[0.4673,0.4774],[0.4671,0.4779],[0.4673,0.4789],[0.4674,0.478],[0.4679,0.4794],[0.4682,0.4778],[0.4679,0.4786],[0.4679,0.4788],[0.4679,0.4782],[0.4673,0.4778],[0.4673,0.4783],[0.4675,0.4779],[0.4675,0.4805],[0.4674,0.4791],[0.4673,0.4791],[0.4672,0.4779],[0.4669,0.4776],[0.4665,0.4751],[0.4663,0.4719],[0.4658,0.4712],[0.4658,0.4683],[0.4659,0.469],[0.4659,0.47],[0.4659,0.4699],[0.4662,0.4707],[0.4667,0.4707],[0.4678,0.4721],[0.47,0.4713]];
+    (()=>{ const c=this.cents, n=c.length, w=6, o=[]; for(let i=0;i<n;i++){ let sx=0,sy=0,ct=0; for(let j=-w;j<=w;j++){ const k=i+j; if(k>=0&&k<n){ sx+=c[k][0]; sy+=c[k][1]; ct++; } } o.push([sx/ct,sy/ct]); } for(let i=0;i<n;i++){ c[i]=o[i]; } })();
+    const refx = this.cents[0][0], refy = this.cents[0][1];
+    this.CYCLE = 32;
+    this.DIRS = ['top','left','bottom','right','top','left','bottom','right','top','left','top','right'];
+    this.prints = [...document.querySelectorAll('#inkgroup > div > div'), ...document.querySelectorAll('#patchgroup > div > div')];
+    this.prints.forEach(el=>{ el.style.animation='none'; el.style.opacity='0'; });
+    const easeOut=(t)=>1-Math.pow(1-t,3);
+    this._fly=(u,dir)=>{
+      const U=u*100;
+      const S={top:[-50,-250,1.12],bottom:[-50,230,1.13],left:[-360,-50,1.13],right:[280,-50,1.13]}[dir];
+      if(U>=7) return [0,-50,-53,1.015];
+      if(U<3){ const e=easeOut(U/3); return [Math.min(1,U/1.5), S[0]+(-50-S[0])*e, S[1]+(-50-S[1])*e, S[2]+(1.015-S[2])*e]; }
+      if(U<4){ const e=U-3; return [1,-50,-50,1.015+(-0.019)*e]; }
+      if(U<5){ const e=U-4; return [1,-50,-50,0.996+0.004*e]; }
+      if(U<6) return [1,-50,-50,1];
+      const e=U-6; return [1-e,-50,-50-4*e,1+0.015*e];
+    };
+    const s1 = document.getElementById('sheet1') || Object.assign(new Image(),{src:'assets/tee-fr1.jpg'});
+    const s2 = document.getElementById('sheet2') || Object.assign(new Image(),{src:'assets/tee-fr2.jpg'});
+    const t0 = performance.now();
+    const cent = (idx)=>{
+      const i0=Math.floor(idx), i1=Math.min(this.N-1,i0+1), f=idx-i0, a=this.cents[i0], b=this.cents[i1];
+      return [a[0]+f*(b[0]-a[0]), a[1]+f*(b[1]-a[1])];
+    };
+    const tile = (ctx, cv, fi, al)=>{
+      const s = fi < this.split ? s1 : s2;
+      if(!s.complete || !s.naturalWidth) return;
+      const li = fi < this.split ? fi : fi - this.split;
+      const col = li % this.cols, row = Math.floor(li / this.cols);
+      ctx.globalAlpha = al;
+      ctx.drawImage(s, col*this.TW, row*this.TH, this.TW, this.TH, 0,0, cv.width, cv.height);
+    };
+    const tick = ()=>{
+      const cv=document.getElementById('teecanvas'), gi=document.getElementById('inkgroup'), gp=document.getElementById('patchgroup');
+      const fwd=(this.N-1)*this.frameDur, cycle=fwd*2;
+      let tt=((performance.now()-t0)/1000)%cycle;
+      let idx = tt<=fwd ? tt/this.frameDur : (this.N-1)-(tt-fwd)/this.frameDur;
+      if(idx<0) idx=0; else if(idx>this.N-1) idx=this.N-1;
+      if(cv && performance.now()-(this._lastDraw||0) > 32){
+        this._lastDraw=performance.now();
+        const ctx=cv.getContext('2d');
+        const i0=Math.floor(idx), i1=Math.min(this.N-1,i0+1), f=idx-i0;
+        tile(ctx, cv, i0, 1);
+        if(f>0.02 && i1!==i0) tile(ctx, cv, i1, f);
+        ctx.globalAlpha=1;
+      }
+      if(gi){
+        const p=cent(idx), W=gi.offsetWidth||1, H=gi.offsetHeight||1;
+        const tf='translate('+(this.damp*(p[0]-refx)*W).toFixed(2)+'px,'+(this.damp*(p[1]-refy)*H).toFixed(2)+'px)';
+        gi.style.transform=tf; if(gp) gp.style.transform=tf;
+      }
+      if(this.prints){
+        const now=performance.now()/1000, C=this.CYCLE, L=this.prints.length;
+        if(!this._pk) this._pk=new Array(L).fill(false);
+        for(let k=0;k<L;k++){
+          const el=this.prints[k]; if(!el) continue;
+          let lt=((now - k*(C/L))%C + C)%C, u=lt/C;
+          if(u*100>=7){ if(!this._pk[k]){ el.style.opacity='0'; this._pk[k]=true; } continue; }
+          this._pk[k]=false;
+          const r=this._fly(u, this.DIRS[k]);
+          el.style.opacity=(r[0]*0.92).toFixed(3);
+          el.style.transform='translate('+r[1].toFixed(2)+'%,'+r[2].toFixed(2)+'%) scale('+r[3].toFixed(4)+')';
+          if(k<12){ const U=u*100, sf=U<3?(3-U)/3:0; el.style.filter = sf>0.01 ? 'blur(0.2px) drop-shadow(0 '+(11*sf).toFixed(1)+'px '+(3+13*sf).toFixed(1)+'px rgba(28,20,12,'+(0.28*sf).toFixed(3)+'))' : 'blur(0.2px)'; }
+        }
+      }
+      this._raf=requestAnimationFrame(tick);
+    };
+    this._raf=requestAnimationFrame(tick);
+  }
+  componentWillUnmount(){ if(this._raf) cancelAnimationFrame(this._raf); }
+}
+</script>
+</body>
+</html>

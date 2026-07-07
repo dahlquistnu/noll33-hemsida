@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:#FAFAF7; }
+  :root{ --bg:#FAFAF7; --surface:#FFFFFF; --plate:#FFFFFF; --border:#E3DECF; --accent:#B8860B; --cta-ink:#14181A; --cta-bg:#14181A; --cta-fg:#FAFAF7; --pill-bg:#14181A; --pill-fg:#FFFFFF; --radius-card:14px; --head-font:'Albert Sans',sans-serif; --head-weight:600; }
+  .theme-c{ --bg:#EEF2F2; --surface:#FFFFFF; --plate:#FFFFFF; --border:#DBE2E2; --accent:#23416E; --cta-ink:#FFFFFF; --cta-bg:#23416E; --cta-fg:#FFFFFF; --pill-bg:#23416E; --pill-fg:#FFFFFF; --radius-card:16px; --head-font:'Hanken Grotesk',sans-serif; --head-weight:800; }
+  .theme-d{ --bg:#F4EFE4; --surface:#FCFBF8; --plate:#FFFFFF; --border:#E4DDCB; --accent:#8A4650; --cta-ink:#FFFFFF; --cta-bg:#8A4650; --cta-fg:#FFFFFF; --pill-bg:#2A211F; --pill-fg:#FFFFFF; --radius-card:4px; --head-font:'Hanken Grotesk',sans-serif; --head-weight:800; }
+  ::selection{ background:var(--accent); color:var(--cta-ink); }
+  .pgrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(248px,1fr)); gap:clamp(20px,2.2vw,34px); }
+  .pgrid-compact{ grid-template-columns:repeat(auto-fill,minmax(202px,1fr)); gap:16px; }
+  @media (max-width:640px){ .pgrid{ grid-template-columns:repeat(2,1fr); gap:14px; } }
+  .pcard .pc-back{ opacity:0; }
+  .pcard:hover .pc-back{ opacity:1; }
+  .pcard .pc-img{ transition:transform .6s cubic-bezier(.2,.7,.2,1), opacity .45s ease; }
+  .pcard:hover .pc-img{ transform:scale(1.05); }
+  .pfade{ opacity:0; transform:translateY(16px); }
+  .pfade.in{ opacity:1; transform:none; transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1); }
+  .pdrawer{ position:fixed; inset:0; z-index:3000; pointer-events:none; }
+  .pdrawer-open{ pointer-events:auto; }
+  .pdrawer-back{ opacity:0; transition:opacity .42s ease; }
+  .pdrawer-open .pdrawer-back{ opacity:1; }
+  .pdrawer-panel{ transform:translateX(100%); transition:transform .44s cubic-bezier(.2,.7,.2,1); }
+  .pdrawer-open .pdrawer-panel{ transform:translateX(0); }
+  @media (max-width:640px){ .pdrawer-panel{ width:100%!important; } }
+  @media (prefers-reduced-motion:reduce){
+    .pcard:hover .pc-img{ transform:none; }
+    .pfade{ opacity:1; transform:none; }
+    .pdrawer-panel{ transition:none; }
+  }
+</style>
+<script src="katalog-data.js"></script>
+</helmet>
+
+<div class="{{ themeClass }}" style="min-height:100vh; background:var(--bg); font-family:'Hanken Grotesk',sans-serif; color:#14181A; -webkit-font-smoothing:antialiased;">
+
+
+  <div style="max-width:1320px; margin:0 auto; padding:clamp(30px,4vw,60px) clamp(20px,4vw,44px) clamp(60px,8vw,110px);">
+
+    <!-- Header -->
+    <h1 style="font-family:var(--head-font); font-weight:var(--head-weight); font-size:clamp(34px,5vw,64px); line-height:1; letter-spacing:-.03em; margin:0 0 18px;">Plagg att förädla</h1>
+    <p style="font-size:17px; line-height:1.6; color:#5A615C; margin:0; max-width:56ch;">Bläddra bland basplagg från ledande varumärken, designa med tryck, brodyr och vävda märken och beställ direkt.</p>
+
+    <!-- Toolbar -->
+    <div style="margin:clamp(28px,4vw,44px) 0 clamp(22px,3vw,32px);">
+      <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
+        <sc-for list="{{ mainChips }}" as="c" hint-placeholder-count="4">
+          <button onClick="{{ c.on }}" style="border:1px solid {{ c.border }}; background:{{ c.bg }}; color:{{ c.fg }}; padding:10px 17px; border-radius:999px; font-weight:700; font-size:13.5px; cursor:pointer; white-space:nowrap; font-family:inherit; display:inline-flex; align-items:center; gap:7px;">{{ c.name }}<span style="opacity:.5; font-weight:600; font-size:12px;">{{ c.count }}</span></button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ hasSubs }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:16px; padding:13px 16px; background:rgba(20,24,26,.035); border-radius:14px;"><span style="font-weight:700; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:#9A9486; margin-right:4px;">Filtrera</span>
+          <sc-for list="{{ subChips }}" as="c" hint-placeholder-count="4">
+            <button onClick="{{ c.on }}" style="border:1px solid {{ c.border }}; background:{{ c.bg }}; color:{{ c.fg }}; padding:7px 13px; border-radius:999px; font-weight:600; font-size:12.5px; cursor:pointer; white-space:nowrap; font-family:inherit; display:inline-flex; align-items:center; gap:6px;">{{ c.name }}<span style="opacity:.5; font-weight:600; font-size:11.5px;">{{ c.count }}</span></button>
+          </sc-for>
+        </div>
+      </sc-if>
+      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:18px;">
+        <select onChange="{{ onBrand }}" value="{{ brand }}" style="appearance:none; border:1px solid var(--border); background:var(--surface); color:#14181A; padding:10px 34px 10px 15px; border-radius:999px; font-weight:600; font-size:13px; cursor:pointer; font-family:inherit; background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 12 12%22><path d=%22M2 4l4 4 4-4%22 fill=%22none%22 stroke=%22%235A615C%22 stroke-width=%221.5%22/></svg>'); background-repeat:no-repeat; background-position:right 14px center;">
+          <sc-for list="{{ brandOptions }}" as="b" hint-placeholder-count="5">
+            <option value="{{ b.value }}">{{ b.label }}</option>
+          </sc-for>
+        </select>
+        <div style="display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:10px 16px;">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex:none;"><circle cx="7" cy="7" r="5" stroke="#9A9486" stroke-width="1.5"></circle><path d="M11 11l3 3" stroke="#9A9486" stroke-width="1.5" stroke-linecap="round"></path></svg>
+          <input value="{{ q }}" onInput="{{ onQ }}" placeholder="Sök plagg eller varumärke" style="border:none; outline:none; background:transparent; font-size:13.5px; width:clamp(120px,18vw,210px); color:#14181A; font-family:inherit;">
+        </div>
+        <span style="font-size:12.5px; color:#6A6F69; white-space:nowrap;">{{ count }} plagg</span>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <sc-if value="{{ hasCards }}" hint-placeholder-val="{{ true }}">
+    <div class="pgrid {{ gridCls }}">
+      <sc-for list="{{ cards }}" as="p" hint-placeholder-count="8">
+        <div class="pcard pfade" style="position:relative; display:flex; flex-direction:column; cursor:pointer;">
+          <a href="#" onClick="{{ p.open }}" style="position:relative; display:block; aspect-ratio:4/5; border-radius:var(--radius-card); overflow:hidden; background:var(--plate);">
+            <img class="pc-img pc-face" src="{{ p.face }}" alt="{{ p.name }}" loading="lazy" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; padding:9%;">
+            <sc-if value="{{ p.hasBack }}" hint-placeholder-val="{{ false }}">
+              <img class="pc-img pc-back" src="{{ p.back }}" alt="" loading="lazy" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; padding:9%;">
+            </sc-if>
+          </a>
+          <div style="padding:13px 2px 0; display:flex; flex-direction:column; gap:7px;">
+            <div onClick="{{ p.brandOn }}" title="Visa endast {{ p.brand }}" style="font-weight:600; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#9A9486; cursor:pointer; width:max-content;" style-hover="color:#14181A;">{{ p.brand }}</div>
+            <a href="#" onClick="{{ p.open }}" style="font-weight:700; font-size:15.5px; line-height:1.25; letter-spacing:-.01em; color:#14181A;">{{ p.name }}</a>
+            <div style="display:flex; align-items:center; gap:6px; min-height:15px; margin-top:1px;">
+              <sc-for list="{{ p.dots }}" as="d" hint-placeholder-count="4">
+                <span style="width:13px; height:13px; border-radius:50%; background:{{ d.hex }}; border:1px solid rgba(0,0,0,.16);"></span>
+              </sc-for>
+              <sc-if value="{{ p.hasExtra }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px; color:#9A9486; margin-left:2px;">{{ p.extraLabel }}</span></sc-if>
+            </div>
+            <div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-top:2px;">
+              <span style="font-weight:700; font-size:14px; color:#14181A;">{{ p.priceLabel }}</span>
+              <span style="font-size:12.5px; color:#6A6F69;">{{ p.span }}</span>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <!-- Empty -->
+    <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+    <div style="text-align:center; padding:clamp(50px,9vw,120px) 20px;">
+      <div style="font-weight:700; font-size:20px; letter-spacing:-.01em; margin-bottom:10px;">{{ emptyTitle }}</div>
+      <div style="font-size:14.5px; color:#6A6F69; margin-bottom:24px;">Prova en annan kategori, varumärke eller sökning.</div>
+      <button onClick="{{ clearFilters }}" style="border:1px solid var(--pill-bg); background:transparent; color:#14181A; padding:12px 24px; border-radius:999px; font-weight:700; font-size:14px; cursor:pointer; font-family:inherit;">Rensa filter</button>
+    </div>
+    </sc-if>
+
+  </div>
+
+  <!-- Detail drawer -->
+  <div class="pdrawer {{ drawerCls }}">
+    <div class="pdrawer-back" onClick="{{ closeDrawer }}" style="position:absolute; inset:0; background:rgba(20,20,16,.42);"></div>
+    <div class="pdrawer-panel" style="position:absolute; top:0; right:0; height:100%; width:min(560px,92vw); background:var(--bg); box-shadow:-30px 0 80px -40px rgba(0,0,0,.5); overflow-y:auto;">
+      <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:clamp(20px,3vw,34px);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <span style="font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent);">{{ d.category }}</span>
+          <button onClick="{{ closeDrawer }}" aria-label="Stäng" style="width:40px; height:40px; border-radius:50%; border:1px solid var(--border); background:var(--surface); color:#14181A; font-size:18px; line-height:1; cursor:pointer; font-family:inherit;">✕</button>
+        </div>
+        <div style="width:100%; aspect-ratio:1/1; border-radius:var(--radius-card); overflow:hidden; background:var(--plate); margin-bottom:12px;">
+          <img data-role="big" alt="{{ d.name }}" style="width:100%; height:100%; object-fit:contain; padding:8%;">
+        </div>
+        <div style="display:flex; gap:10px; margin-bottom:24px;">
+          <button onClick="{{ d.setFace }}" style="width:66px; height:66px; border-radius:10px; overflow:hidden; background:var(--plate); border:2px solid {{ d.faceBorder }}; cursor:pointer; padding:0;">
+            <img data-role="face" alt="Framsida" style="width:100%; height:100%; object-fit:contain; padding:8%;">
+          </button>
+          <sc-if value="{{ d.hasBack }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ d.setBack }}" style="width:66px; height:66px; border-radius:10px; overflow:hidden; background:var(--plate); border:2px solid {{ d.backBorder }}; cursor:pointer; padding:0;">
+              <img data-role="back" alt="Baksida" style="width:100%; height:100%; object-fit:contain; padding:8%;">
+            </button>
+          </sc-if>
+        </div>
+        <div style="font-weight:600; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#9A9486; margin-bottom:9px;">{{ d.brand }}</div>
+        <h2 style="font-family:var(--head-font); font-weight:var(--head-weight); font-size:clamp(24px,3vw,32px); line-height:1.06; letter-spacing:-.02em; margin:0 0 16px;">{{ d.name }}</h2>
+        <div style="font-weight:800; font-size:22px; margin-bottom:6px;">{{ d.priceLabel }}</div>
+        <div style="font-size:13px; line-height:1.55; color:#6A6F69; margin-bottom:26px; max-width:44ch;">Publikt listpris. Ditt pris med förädling lämnas i offert.</div>
+
+        <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:12px;">
+          <span style="font-weight:700; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:#8A8576;">Färg</span>
+          <span style="font-size:13px; color:#5A615C;">{{ d.colorName }}</span>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:26px;">
+          <sc-for list="{{ d.colors }}" as="c" hint-placeholder-count="5">
+            <button onClick="{{ c.on }}" title="{{ c.name }}" style="width:30px; height:30px; border-radius:50%; background:{{ c.hex }}; cursor:pointer; border:1px solid rgba(0,0,0,.18); box-shadow:{{ c.ring }}; padding:0;"></button>
+          </sc-for>
+        </div>
+
+        <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:12px;">
+          <span style="font-weight:700; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:#8A8576;">Antal per storlek</span>
+          <span style="font-size:12.5px; color:#6A6F69;">{{ d.totalLabel }}</span>
+        </div>
+        <div style="display:flex; flex-direction:column; margin-bottom:24px;">
+          <sc-for list="{{ d.sizes }}" as="s" hint-placeholder-count="6">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 2px; border-bottom:1px solid var(--border);">
+              <span style="font-weight:700; font-size:14.5px; color:#14181A; min-width:52px;">{{ s.label }}</span>
+              <div style="display:flex; align-items:center; gap:15px;">
+                <button onClick="{{ s.dec }}" aria-label="Minska" style="width:32px; height:32px; border-radius:50%; border:1px solid var(--border); background:var(--surface); color:#14181A; font-size:18px; line-height:1; cursor:pointer; font-family:inherit; padding:0;">−</button>
+                <span style="min-width:24px; text-align:center; font-weight:700; font-size:15px; color:{{ s.countColor }};">{{ s.count }}</span>
+                <button onClick="{{ s.inc }}" aria-label="Öka" style="width:32px; height:32px; border-radius:50%; border:1px solid var(--cta-bg); background:var(--cta-bg); color:var(--cta-fg); font-size:18px; line-height:1; cursor:pointer; font-family:inherit; padding:0;">+</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ d.canProceed }}" hint-placeholder-val="{{ false }}">
+          <button style="width:100%; background:var(--cta-bg); color:var(--cta-fg); border:none; padding:17px; border-radius:999px; font-weight:800; font-size:15.5px; cursor:pointer; font-family:inherit;">Gå vidare till Design Studio →</button>
+        </sc-if>
+        <sc-if value="{{ d.cannotProceed }}" hint-placeholder-val="{{ true }}">
+          <button disabled style="width:100%; background:var(--plate); color:#B7B1A2; border:1px solid var(--border); padding:17px; border-radius:999px; font-weight:800; font-size:15.5px; cursor:not-allowed; font-family:inherit;">Välj antal för att fortsätta</button>
+        </sc-if>
+        <div style="text-align:center; margin-top:14px; font-size:12px; color:#9A9486;">Art.nr {{ d.id }} · {{ d.family }}</div>
+      </div>
+      </sc-if>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1320, &quot;height&quot;: 900 },
+  &quot;concept&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Atelier&quot;, &quot;Kollektion&quot;, &quot;Magasin&quot;], &quot;default&quot;: &quot;Atelier&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Koncept&quot;, &quot;label&quot;: &quot;Koncept-tema&quot; },
+  &quot;density&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Luftig&quot;, &quot;Kompakt&quot;], &quot;default&quot;: &quot;Luftig&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Layout&quot;, &quot;label&quot;: &quot;Täthet&quot; },
+  &quot;hoverFlip&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Layout&quot;, &quot;label&quot;: &quot;Visa baksida vid hover&quot; }
+}">
+class Component extends DCLogic {
+  state = { products: [], loaded: false, mainCat: 'Alla', subCat: 'Alla', brand: 'Alla', q: '',
+            openId: null, colorIdx: 0, view: 'face', qty: {} };
+
+  componentDidMount(){
+    let tries = 0;
+    const load = () => {
+      if (window.NOLL33_PRODUCTS && Array.isArray(window.NOLL33_PRODUCTS)) {
+        this.setState({ products: window.NOLL33_PRODUCTS, loaded: true });
+      } else if (tries++ < 120) { setTimeout(load, 40); }
+      else { this.setState({ loaded: true }); }
+    };
+    load();
+    var _im=this.props.initialMain, _is=this.props.initialSub;
+    if((_im&&_im!=='Alla')||(_is&&_is!=='Alla')){ this.setState({ mainCat:_im||'Alla', subCat:_is||'Alla' }); }
+    this._onKey = (e) => { if (e.key === 'Escape' && this.state.openId) this.setState({ openId: null }); };
+    document.addEventListener('keydown', this._onKey);
+  }
+  componentDidUpdate(){
+    this._observe();
+    const d = this._d;
+    if (d) {
+      const set = (role, url) => {
+        const el = document.querySelector('.pdrawer-panel img[data-role="' + role + '"]');
+        if (!el) return;
+        if (url) { if (el.getAttribute('src') !== url) el.setAttribute('src', url); }
+        else { el.removeAttribute('src'); }
+      };
+      set('big', d.bigImg); set('face', d.face); set('back', d.back);
+    }
+  }
+  componentWillUnmount(){ if (this._onKey) document.removeEventListener('keydown', this._onKey); if (this._io) this._io.disconnect(); }
+
+  _observe(){
+    if (typeof IntersectionObserver === 'undefined') { document.querySelectorAll('.pfade').forEach(e => e.classList.add('in')); return; }
+    if (!this._io) {
+      this._io = new IntersectionObserver((ents) => {
+        ents.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); this._io.unobserve(en.target); } });
+      }, { rootMargin: '0px 0px -6% 0px' });
+    }
+    document.querySelectorAll('.pfade:not(.in)').forEach(e => this._io.observe(e));
+  }
+
+  // ---- Smart categorisation: derive a fine-grained category from the product name ----
+  categoryOf(p){
+    const n = (p.name || '').toLowerCase();
+    const has = (re) => re.test(n);
+    // bags (fine-grained)
+    if (has(/keyholder|key ?ring|lanyard/)) return 'Nyckelband & smått';
+    if (has(/backpack|rucksack|roll-?top/)) return 'Ryggsäckar';
+    if (has(/tote|shopper|shoulder bag/)) return 'Totes & shoppers';
+    if (has(/gym ?sac|drawstring|string bag|gymsac/)) return 'Gympapåsar';
+    if (has(/holdall|duffel|duffle|barrel|travel bag|weekend/)) return 'Resväskor';
+    if (has(/pouch|vanity|wash ?bag|toiletry|\bcase\b|pencil|accessory bag|organiser/)) return 'Necessärer & fodral';
+    // headwear + accessories FIRST — so materials like "softshell" in gloves/caps/beanies don't fall into Jackor
+    if (has(/\bcap\b|5-panel|snapback|trucker|visor/)) return 'Kepsar';
+    if (has(/beanie|\bhat\b|bucket|headband|head ?wear|bobble/)) return 'Mössor & hattar';
+    if (has(/glove|mitten|scarf|snood|patch|\bbelt|\bsock|apron|bandana|\btie\b|braces|umbrella|wristband|cufflink/)) return 'Accessoarer';
+    // clothing
+    if (has(/t-?shirt|\btee\b|tank|vest top|singlet/)) return 'T-shirts & linnen';
+    if (has(/polo|piqu/)) return 'Pikéer';
+    if (has(/hood/)) return 'Hoodies';
+    if (has(/sweat(?!pant)|crew ?neck sweat|college/)) return 'Sweatshirts';
+    if (has(/jogger|trouser|\bpant|chino|\bshort|legging|jean/)) return 'Byxor & shorts';
+    if (has(/jacket|bomber|gilet|body ?warmer|parka|\bcoat|softshell|wind ?breaker|windbreaker|fleece|anorak/)) return 'Jackor & ytterplagg';
+    if (has(/dress|smock|skirt|tunic|pinafore|jumpsuit/)) return 'Klänningar & kjolar';
+    if (has(/\bshirt|blouse/)) return 'Skjortor & blusar';
+    // fallbacks
+    if (p.family === 'Väskor') return 'Övriga väskor';
+    if (p.family === 'Huvudbonader & Accessoarer') return 'Accessoarer';
+    if (has(/\bbag\b|satchel|messenger|sacoche/)) return 'Övriga väskor';
+    return 'Övriga plagg';
+  }
+
+  set(k, v){ return () => this.setState({ [k]: v }); }
+  onBrand = (e) => this.setState({ brand: e.target.value });
+  onQ = (e) => this.setState({ q: e.target.value });
+  clearFilters = () => this.setState({ mainCat: 'Alla', subCat: 'Alla', brand: 'Alla', q: '' });
+  setMain(f){ return () => this.setState({ mainCat: f, subCat: 'Alla' }); }
+  openProduct(id){ return (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ openId: id, colorIdx: 0, view: 'face', qty: {} }); }; }
+  closeDrawer = (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ openId: null }); };
+  pickColor(idx){ return () => this.setState({ colorIdx: idx, view: 'face', qty: {} }); }
+  incQty(size){ return () => this.setState(s => ({ qty: Object.assign({}, s.qty, { [size]: (s.qty[size] || 0) + 1 }) })); }
+  decQty(size){ return () => this.setState(s => { const q = Object.assign({}, s.qty); const n = Math.max(0, (q[size] || 0) - 1); if (n === 0) delete q[size]; else q[size] = n; return { qty: q }; }); }
+
+  span(sizes){ if (!sizes || !sizes.length) return ''; if (sizes.length === 1) return sizes[0]; return sizes[0] + '-' + sizes[sizes.length - 1]; }
+  uniq(arr){ return arr.filter((v, i) => arr.indexOf(v) === i); }
+
+  renderVals(){
+    const S = this.state;
+    const all = S.products || [];
+    const hoverFlip = this.props.hoverFlip ?? true;
+    const gridCls = (this.props.density === 'Kompakt') ? 'pgrid-compact' : '';
+    const concept = this.props.concept || 'Atelier';
+    const themeClass = concept === 'Kollektion' ? 'theme-c' : (concept === 'Magasin' ? 'theme-d' : '');
+
+    const brands = this.uniq(all.map(p => p.brand)).sort((a, b) => a.localeCompare(b, 'sv'));
+    const brandOptions = [{ value: 'Alla', label: 'Alla varumärken' }].concat(brands.map(b => ({ value: b, label: b })));
+
+    // base = brand + search filtered (category counts computed against this)
+    const ql = S.q.trim().toLowerCase();
+    const base = all.filter(p =>
+      (S.brand === 'Alla' || p.brand === S.brand) &&
+      (!ql || (p.name + ' ' + p.brand + ' ' + p.id).toLowerCase().indexOf(ql) !== -1)
+    );
+    const chipStyle = (active) => ({ bg: active ? 'var(--pill-bg)' : 'var(--surface)', fg: active ? 'var(--pill-fg)' : '#3A403C', border: active ? 'var(--pill-bg)' : 'var(--border)' });
+
+    // ---- Main categories (from product family) ----
+    const mainOrder = ['Kläder', 'Huvudbonader & Accessoarer', 'Väskor'];
+    const mainLabel = { 'Kläder': 'Kläder', 'Huvudbonader & Accessoarer': 'Huvudbonader', 'Väskor': 'Väskor' };
+    const mainCounts = {};
+    base.forEach(p => { const m = p.family || 'Övrigt'; mainCounts[m] = (mainCounts[m] || 0) + 1; });
+    const mainsPresent = mainOrder.filter(m => mainCounts[m] > 0).concat(Object.keys(mainCounts).filter(m => mainOrder.indexOf(m) === -1));
+    const effMain = (S.mainCat !== 'Alla' && mainCounts[S.mainCat]) ? S.mainCat : 'Alla';
+    const mainChips = [Object.assign({ name: 'Alla', count: base.length, on: this.setMain('Alla') }, chipStyle(effMain === 'Alla'))]
+      .concat(mainsPresent.map(m => Object.assign({ name: mainLabel[m] || m, count: mainCounts[m], on: this.setMain(m) }, chipStyle(effMain === m))));
+
+    // ---- Sub categories (within selected main) ----
+    const inMain = base.filter(p => effMain === 'Alla' || p.family === effMain);
+    const subOrder = ['T-shirts & linnen', 'Pikéer', 'Sweatshirts', 'Hoodies', 'Skjortor & blusar', 'Jackor & ytterplagg', 'Byxor & shorts', 'Klänningar & kjolar', 'Kepsar', 'Mössor & hattar', 'Accessoarer', 'Ryggsäckar', 'Totes & shoppers', 'Gympapåsar', 'Resväskor', 'Necessärer & fodral', 'Nyckelband & smått', 'Övriga väskor', 'Övriga plagg'];
+    const subCounts = {};
+    inMain.forEach(p => { const c = this.categoryOf(p); subCounts[c] = (subCounts[c] || 0) + 1; });
+    const subsPresent = subOrder.filter(c => subCounts[c] > 0).concat(Object.keys(subCounts).filter(c => subOrder.indexOf(c) === -1));
+    const effSub = (S.subCat !== 'Alla' && subCounts[S.subCat]) ? S.subCat : 'Alla';
+    const hasSubs = effMain !== 'Alla' && subsPresent.length > 1;
+    const subChips = hasSubs
+      ? [Object.assign({ name: 'Alla', count: inMain.length, on: this.set('subCat', 'Alla') }, chipStyle(effSub === 'Alla'))]
+          .concat(subsPresent.map(c => Object.assign({ name: c, count: subCounts[c], on: this.set('subCat', c) }, chipStyle(effSub === c))))
+      : [];
+
+    const list = inMain.filter(p => effSub === 'Alla' || this.categoryOf(p) === effSub);
+
+    const cards = list.map(p => {
+      const c0 = (p.colors && p.colors[0]) || {};
+      const back = hoverFlip ? (c0.back || null) : null;
+      const dots = (p.colors || []).slice(0, 6).map(c => ({ hex: c.hex || '#CCC7BB' }));
+      const extra = Math.max(0, (p.colors || []).length - 6);
+      return {
+        id: p.id, name: p.name, brand: p.brand,
+        face: c0.face || p.image, back, hasBack: !!back,
+        dots, extra, extraLabel: extra > 0 ? '+' + extra : '', hasExtra: extra > 0,
+        priceLabel: (p.priceFrom != null) ? ('från ' + p.priceFrom + ' kr') : 'Pris i offert',
+        span: this.span(c0.sizes || []),
+        open: this.openProduct(p.id), brandOn: this.set('brand', p.brand)
+      };
+    });
+
+    const sel = all.find(p => p.id === S.openId) || null;
+    let d = null;
+    if (sel) {
+      const colors = sel.colors || [];
+      const ci = Math.max(0, Math.min(S.colorIdx, colors.length - 1));
+      const col = colors[ci] || {};
+      const face = col.face || sel.image;
+      const back = col.back || null;
+      const bigImg = (S.view === 'back' && back) ? back : face;
+      d = {
+        id: sel.id, name: sel.name, brand: sel.brand, family: sel.family, category: this.categoryOf(sel),
+        bigImg, face, back, hasBack: !!back,
+        faceBorder: (S.view === 'face' || !back) ? 'var(--pill-bg)' : 'transparent',
+        backBorder: (S.view === 'back') ? 'var(--pill-bg)' : 'transparent',
+        setFace: () => this.setState({ view: 'face' }),
+        setBack: () => this.setState({ view: 'back' }),
+        priceLabel: (sel.priceFrom != null) ? ('från ' + sel.priceFrom + ' kr') : 'Pris i offert',
+        colorName: col.name || '',
+        colors: colors.map((c, idx) => ({ name: c.name, hex: c.hex || '#CCC7BB', on: this.pickColor(idx), ring: idx === ci ? '0 0 0 2px var(--bg), 0 0 0 4px var(--pill-bg)' : 'none' })),
+        sizes: (col.sizes || []).map(s => { const n = (S.qty && S.qty[s]) || 0; return { label: s, count: n, countColor: n > 0 ? '#14181A' : '#B7B1A2', inc: this.incQty(s), dec: this.decQty(s) }; })
+      };
+      const totalQty = (col.sizes || []).reduce((a, s) => a + ((S.qty && S.qty[s]) || 0), 0);
+      d.totalQty = totalQty;
+      d.totalLabel = totalQty > 0 ? (totalQty + ' plagg valda') : 'Inga valda än';
+      d.canProceed = totalQty > 0;
+      d.cannotProceed = totalQty === 0;
+    }
+
+    this._d = d ? { bigImg: d.bigImg, face: d.face, back: d.back } : null;
+    return {
+      themeClass, showMast: concept === 'Magasin',
+      mainChips, subChips, hasSubs, brandOptions, brand: S.brand, q: S.q, onBrand: this.onBrand, onQ: this.onQ,
+      count: list.length, cards, gridCls,
+      hasCards: list.length > 0,
+      isEmpty: S.loaded && list.length === 0,
+      emptyTitle: all.length === 0 ? 'Kunde inte ladda sortimentet' : 'Inga produkter matchar',
+      clearFilters: this.clearFilters,
+      drawerCls: sel ? 'pdrawer-open' : '',
+      hasSel: !!sel, d: d || {}, closeDrawer: this.closeDrawer
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    html,body{margin:0;padding:0;}
+    body{background:#E7E3DA;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  </style>
+</helmet>
+
+<div style="min-height:100vh;background:#E7E3DA;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:52px 24px;box-sizing:border-box;font-family:'Hanken Grotesk',sans-serif;">
+
+  <div style="text-align:center;">
+    <div style="font:700 11px/1 'Hanken Grotesk',sans-serif;letter-spacing:.26em;text-transform:uppercase;color:#9A927F;margin-bottom:11px;">Noll33 · Mockup</div>
+    <h1 style="font:800 clamp(24px,3vw,34px)/1.04 'Hanken Grotesk',sans-serif;letter-spacing:-.025em;color:#26231E;margin:0;">Screentryck på bröstet</h1>
+  </div>
+
+  <div style="position:relative;width:min(980px,100%);aspect-ratio:16 / 9;border-radius:14px;overflow:hidden;background:#d8cfc2;box-shadow:0 34px 74px -26px rgba(40,34,26,.5),0 1px 0 rgba(255,255,255,.45) inset;">
+    <video src="uploads/6787106-uhd_3840_2160_30fps.mp4" autoplay muted loop playsinline ref="{{ videoRef }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;"></video>
+    <canvas ref="{{ canvasRef }}" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas>
+  </div>
+
+  <div style="font:500 13px/1.6 'Hanken Grotesk',sans-serif;color:#9A927F;text-align:center;max-width:56ch;">Trycket komponeras på duk med multiply-blandning, så tygets veck och skuggor syns igenom som på ett riktigt screentryck. Justera text, storlek, färg och placering i Tweaks.</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;printText&quot;: {&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;noll33&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Tryck&quot;},
+  &quot;showSub&quot;: {&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Tryck&quot;},
+  &quot;subText&quot;: {&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;BORÅS&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Tryck&quot;},
+  &quot;inkColor&quot;: {&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#24211C&quot;,&quot;options&quot;:[&quot;#24211C&quot;,&quot;#111111&quot;,&quot;#7C3A47&quot;,&quot;#2E4A54&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Tryck&quot;},
+  &quot;printScale&quot;: {&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:13,&quot;min&quot;:6,&quot;max&quot;:28,&quot;step&quot;:0.5,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Placering&quot;},
+  &quot;posX&quot;: {&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:37.4,&quot;min&quot;:15,&quot;max&quot;:60,&quot;step&quot;:0.1,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Placering&quot;},
+  &quot;posY&quot;: {&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:38,&quot;min&quot;:20,&quot;max&quot;:62,&quot;step&quot;:0.1,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Placering&quot;},
+  &quot;blend&quot;: {&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;multiply&quot;,&quot;options&quot;:[&quot;multiply&quot;,&quot;normal&quot;,&quot;overlay&quot;,&quot;darken&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Placering&quot;},
+  &quot;opacity&quot;: {&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.9,&quot;min&quot;:0.3,&quot;max&quot;:1,&quot;step&quot;:0.05,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Placering&quot;}
+}">
+class Component extends DCLogic {
+  canvasRef = (n) => { this._canvas = n; };
+
+  videoRef = (n) => {
+    if (!n) return;
+    this._video = n;
+    const KEY = 'n33mockup_t';
+    const restore = () => {
+      try {
+        const t = parseFloat(localStorage.getItem(KEY) || '0');
+        if (t > 0 && isFinite(n.duration) && t < n.duration - 0.1) n.currentTime = t;
+      } catch (e) {}
+      const p = n.play && n.play();
+      if (p && p.catch) p.catch(() => {});
+    };
+    if (n.readyState >= 1) restore();
+    else n.addEventListener('loadedmetadata', restore, { once: true });
+    if (!n._tbound) {
+      n._tbound = true;
+      n.addEventListener('timeupdate', () => {
+        try { localStorage.setItem(KEY, String(n.currentTime)); } catch (e) {}
+      });
+    }
+  };
+
+  componentDidMount() {
+    const begin = () => {
+      this._resize();
+      if (!this._ro && this._canvas && window.ResizeObserver) {
+        this._ro = new ResizeObserver(() => this._resize());
+        this._ro.observe(this._canvas);
+      }
+      this._loop();
+    };
+    if (document.fonts && document.fonts.load) {
+      Promise.race([
+        document.fonts.load('800 64px "Hanken Grotesk"').then(() => document.fonts.ready),
+        new Promise((r) => setTimeout(r, 1500)),
+      ]).then(begin, begin);
+    } else begin();
+  }
+
+  componentWillUnmount() {
+    if (this._raf) cancelAnimationFrame(this._raf);
+    if (this._ro) this._ro.disconnect();
+  }
+
+  _resize() {
+    const c = this._canvas;
+    if (!c) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = c.clientWidth, h = c.clientHeight;
+    if (!w || !h) return;
+    c.width = Math.round(w * dpr);
+    c.height = Math.round(h * dpr);
+    this._dpr = dpr; this._cssW = w; this._cssH = h;
+  }
+
+  _loop() {
+    this._raf = requestAnimationFrame(() => this._loop());
+    this._draw();
+  }
+
+  _draw() {
+    const c = this._canvas, v = this._video;
+    if (!c) return;
+    const ctx = c.getContext('2d');
+    const dpr = this._dpr || 1;
+    const W = this._cssW || c.clientWidth, H = this._cssH || c.clientHeight;
+    if (!W || !H) return;
+    ctx.save();
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+
+    // video, cover-fit
+    if (v && v.videoWidth) {
+      const vr = v.videoWidth / v.videoHeight, cr = W / H;
+      let dw, dh, dx, dy;
+      if (vr > cr) { dh = H; dw = H * vr; dx = (W - dw) / 2; dy = 0; }
+      else { dw = W; dh = W / vr; dx = 0; dy = (H - dh) / 2; }
+      try { ctx.drawImage(v, dx, dy, dw, dh); } catch (e) {}
+    } else {
+      ctx.fillStyle = '#d8cfc2'; ctx.fillRect(0, 0, W, H);
+    }
+
+    // print
+    const p = this.props || {};
+    const text = p.printText != null ? p.printText : 'noll33';
+    const ink = p.inkColor || '#24211C';
+    const scale = p.printScale != null ? p.printScale : 13;
+    const px = (p.posX != null ? p.posX : 37.4) / 100 * W;
+    const py = (p.posY != null ? p.posY : 38) / 100 * H;
+    const op = p.opacity != null ? p.opacity : 0.9;
+    const blendMap = { multiply: 'multiply', normal: 'source-over', overlay: 'overlay', darken: 'darken' };
+    const gco = blendMap[p.blend || 'multiply'] || 'multiply';
+    const boxW = W * scale / 100;
+    const fontSize = boxW * 0.2;
+
+    ctx.globalAlpha = op;
+    ctx.globalCompositeOperation = gco;
+    ctx.fillStyle = ink;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    try { ctx.letterSpacing = (-fontSize * 0.03) + 'px'; } catch (e) {}
+    ctx.font = '800 ' + fontSize + 'px "Hanken Grotesk", sans-serif';
+    ctx.fillText(text, px, py);
+
+    if (p.showSub) {
+      const sub = p.subText != null ? p.subText : 'BORÅS';
+      const ruleW = boxW * 0.44;
+      const ruleY = py + fontSize * 0.44;
+      ctx.fillRect(px - ruleW / 2, ruleY, ruleW, Math.max(1, fontSize * 0.05));
+      const sf = fontSize * 0.24;
+      try { ctx.letterSpacing = (sf * 0.4) + 'px'; } catch (e) {}
+      ctx.font = '700 ' + sf + 'px "Hanken Grotesk", sans-serif';
+      ctx.textBaseline = 'top';
+      ctx.fillText(sub, px + sf * 0.2, ruleY + fontSize * 0.2);
+    }
+    try { ctx.letterSpacing = '0px'; } catch (e) {}
+    ctx.restore();
+  }
+
+  renderVals() {
+    return { videoRef: this.videoRef, canvasRef: this.canvasRef };
+  }
+}
+</script>
+</body>
+</html>
