@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Noll33 — Textilförädling, tryck &amp; brodyr i Borås</title>
+<meta name="description" content="Hållbar textilförädling som stärker ditt varumärke. GOTS-certifierat tryck och brodyr, white-label till återförsäljare. Borås sedan 2007.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css?v=d43">
+</head>
+<body data-page="home">
+
+<!-- ==================== DELAD HEADER ==================== -->
+<header class="site-header">
+  <div class="wrap bar">
+    <a href="#" data-gohome aria-label="noll33 – startsida" class="wordmark"><span class="g">NOLL</span>33<span class="g">.</span></a>
+    <nav class="site-nav">
+      <a href="#" class="uline" data-nav="catalog">Sortiment</a>
+      <a href="#" class="uline" data-nav="apply">Design Studio</a>
+      <a href="#" class="uline" data-nav="foradling">Förädling</a>
+      <a href="#" class="uline" data-nav="hallbarhet">Hållbarhet</a>
+      <a href="#" class="uline" data-nav="kontakt">Kontakt</a>
+      <a href="#" class="uline" data-nav="about">Om oss</a>
+    </nav>
+    <div class="header-actions">
+      <a href="#" class="pill pill-outline desktop-only" style="font-size:14.5px;letter-spacing:.02em;padding:9px 20px;" data-nav="login">Logga in</a>
+      <a href="#" class="pill pill-ink desktop-only" style="padding:9px 20px;font-size:14.5px;letter-spacing:.02em;" data-nav="ansok">Ansökan</a>
+      <button class="burger" aria-label="Öppna meny">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
+      </button>
+    </div>
+  </div>
+  <!-- Inline sök i headern (öppnas av "Sök"). Rent fält + resultat-dropdown. -->
+  <div class="hdr-search" id="hdrSearch">
+    <div class="wrap hdr-search-in">
+      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.6"></circle><path d="M14 14l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+      <input id="ssInput" type="search" placeholder="Sök i sortimentet…" aria-label="Sök i sortimentet" autocomplete="off">
+      <button class="hdr-search-close" data-search-close aria-label="Stäng sök">✕</button>
+    </div>
+    <div class="hdr-search-results" id="ssResults"></div>
+  </div>
+</header>
+
+<!-- ==================== MOBIL-DRAWER ==================== -->
+<div class="mobile-nav" id="mobileNav">
+  <button class="close" id="mobileNavClose" aria-label="Stäng meny">×</button>
+  <a href="#" data-nav="catalog">Sortiment</a>
+  <a href="#" data-nav="apply">Design Studio</a>
+  <a href="#" data-nav="foradling">Förädling</a>
+  <a href="#" data-nav="hallbarhet">Hållbarhet</a>
+  <a href="#" data-nav="about">Om oss</a>
+  <a href="#" data-nav="kontakt">Kontakt</a>
+  <a href="#" data-nav="login">Logga in</a>
+  <a href="#" data-nav="ansok">Ansökan</a>
+</div>
+
+<main>
+
+<!-- ==================== STARTSIDA ==================== -->
+<div class="page active" data-page="home">
+
+  <!-- Hero -->
+  <section class="hero">
+    <!-- Tygrippel: inline SVG-filter, desktop-only. Fingret trycker in tyget
+         (feDisplacementMap driven av dimple-map2 + edge-mask). -->
+    <svg width="0" height="0" aria-hidden="true" style="position:absolute;width:0;height:0;pointer-events:none;"><filter id="n33-ripple" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB"><feFlood flood-color="rgb(128,128,128)" result="flat"></feFlood><feImage data-bump href="uploads/dimple-map2.png" x="-9999" y="-9999" width="512" height="512" preserveAspectRatio="none" result="bump"></feImage><feComposite in="bump" in2="flat" operator="over" result="map0"></feComposite><feImage data-emask href="uploads/edge-mask.png" x="0" y="0" width="512" height="512" preserveAspectRatio="none" result="emask"></feImage><feComposite in="map0" in2="emask" operator="arithmetic" k1="1" k2="0" k3="-0.5" k4="0.5" result="map"></feComposite><feDisplacementMap data-disp in="SourceGraphic" in2="map" scale="0" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter></svg>
+    <div class="hero-media" data-hero-fab>
+      <img src="assets/noll33-wide.jpg" alt="noll33 tryck på tyg">
+      <img class="swapB" src="assets/din-design-wide.jpg" alt="" aria-hidden="true">
+      <img class="swapC" src="assets/gots-fabric.jpg" alt="" aria-hidden="true">
+    </div>
+    <div class="hero-veil"></div>
+    <div class="wrap hero-body">
+      <div style="max-width:38ch;">
+        <div class="hero-eyebrow">Textilförädling · Borås</div>
+        <h1>Ditt varumärke.<br>Vårt hantverk.</h1>
+        <p class="hero-lead">Tryck och brodyr av högsta klass — GOTS-certifierat och alltid white-label till återförsäljare.</p>
+        <div class="hero-cta">
+          <a href="#" class="pill pill-ink mo-btn" data-label="Utforska sortimentet" data-nav="catalog"><span class="mo-btn-in">Utforska sortimentet</span></a>
+          <a href="#" class="gold-link" data-nav="ansok">Bli återförsäljare →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust-ticker -->
+  <div style="background:var(--panel);" class="ticker-mask">
+    <div class="ticker" data-ticker>
+      <div style="display:flex;" data-ticker-half>
+        <span class="ticker-item">Tryck &amp; brodyr<span class="ticker-dot"></span></span>
+        <span class="ticker-item">Borås sedan 2007<span class="ticker-dot"></span></span>
+        <span class="ticker-item">GOTS-certifierat<span class="ticker-dot"></span></span>
+        <span class="ticker-item">Endast till återförsäljare<span class="ticker-dot"></span></span>
+        <span class="ticker-item">Sex metoder under ett tak<span class="ticker-dot"></span></span>
+      </div>
+      <div style="display:flex;" aria-hidden="true">
+        <span class="ticker-item">Tryck &amp; brodyr<span class="ticker-dot"></span></span>
+        <span class="ticker-item">Borås sedan 2007<span class="ticker-dot"></span></span>
+        <span class="ticker-item">GOTS-certifierat<span class="ticker-dot"></span></span>
+        <span class="ticker-item">Endast till återförsäljare<span class="ticker-dot"></span></span>
+        <span class="ticker-item">Sex metoder under ett tak<span class="ticker-dot"></span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Editorial rows -->
+  <section class="editorial">
+    <div class="ed-row">
+      <div class="ed-media ed-slide ed-left"><video autoplay muted loop playsinline preload="metadata" src="assets/header-uw-longer.webm" style="object-position:72% center;"></video></div>
+      <div class="ed-text pad-l ed-slide ed-right">
+        <div class="eyebrow">Ett enkelt löfte</div>
+        <h3>Vi säljer endast till återförsäljare.</h3>
+        <p>Du behöver aldrig oroa dig för oönskad konkurrens — vi levererar bara till återförsäljare, aldrig direkt till slutkund. Vi sköter förädlingen, du äger kundrelationen.</p>
+        <p>Vår uppgift är att göra plaggen så bra att de bär ditt namn med stolthet. Allt vi levererar går ut neutralt och white-label, utan spår av oss, och vi ser varje order som en förlängning av ditt varumärke. Det är så vi bygger långsiktiga samarbeten — genom att alltid låta din affär stå i centrum.</p>
+        <a href="#" class="gold-link" data-nav="ansok">Bli kund →</a>
+      </div>
+    </div>
+    <div class="ed-row">
+      <div class="ed-text pad-r ed-slide ed-left">
+        <div class="eyebrow">Grönt genom hela ledet</div>
+        <h3>GOTS-certifierat, i varje steg.</h3>
+        <p>Det räcker inte med ett grönt tryck. Med GOTS-certifierad produktion är hela kedjan godkänd — miljöhänsyn, ansvarsfull kemikaliehantering, spårbarhet och socialt ansvar hela vägen.</p>
+        <p>Allt tillverkas under kollektivavtalade villkor, så du står stark även i upphandlingar med höga hållbarhetskrav. Vi erbjuder certifierade basplagg och material när projektet kräver det, med dokumentation som håller för granskning hos kommuner, regioner och större företag. Hållbarhet blir ett argument du kan sälja på — inte bara ett löfte.</p>
+        <a href="#" class="gold-link" data-nav="hallbarhet">Om vårt hållbarhetsarbete →</a>
+      </div>
+      <div class="ed-media ed-slide ed-right" style="background:#EBE7DC;"><img src="assets/gots-certifierat.jpg" alt="GOTS-certifierad t-shirt"></div>
+    </div>
+    <div class="ed-row">
+      <div class="ed-media ed-slide ed-left"><video data-rate="1.8" autoplay muted loop playsinline preload="metadata" poster="assets/ds-still.jpg" src="assets/editorial-studio.mp4"></video></div>
+      <div class="ed-text pad-l ed-slide ed-right">
+        <div class="eyebrow">Design Studio</div>
+        <h3>Designa, förhandsgranska, beställ.</h3>
+        <p>Välj plagg, ladda upp loggan och se din design direkt på plagget. Justera tryckmetod, placering, färg och antal — och slutför köpet i studion, utan att vänta på korrektur.</p>
+        <p>Det du ser är det du får. Studion räknar fram pris och tryckyta i realtid, föreslår rätt metod för motivet och sparar dina projekt så att du snabbt kan beställa om. Från första idé till lagd order på några minuter — helt utan mejlkorrektur fram och tillbaka.</p>
+        <a href="#" class="gold-link" data-nav="apply">Öppna Design Studio →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fyrstegsprocess -->
+  <section class="section-panel"><div class="section">
+    <div class="eyebrow" style="margin-bottom:16px;">Så går det till</div>
+    <h2 class="h-statement" style="max-width:20ch;margin-bottom:clamp(30px,4vw,48px);">Från idé till levererat plagg</h2>
+    <div class="steps4">
+      <div class="step"><div class="num">01</div><h3 class="h-mini">Välj plagg</h3><p>Bläddra i sortimentet och välj basplagg från ledande varumärken.</p></div>
+      <div class="step"><div class="num">02</div><h3 class="h-mini">Designa</h3><p>Ladda upp loggan och placera tryck eller brodyr direkt i Design Studio.</p></div>
+      <div class="step"><div class="num">03</div><h3 class="h-mini">Korrektur direkt</h3><p>Se ett digitalt korrektur på sekunder — ingen väntetid.</p></div>
+      <div class="step"><div class="num">04</div><h3 class="h-mini">Beställ &amp; få levererat</h3><p>Vi förädlar, packar och skickar — fritt till dig som återförsäljare.</p></div>
+    </div>
+  </div></section>
+
+  <!-- Sortiment -->
+  <section class="section">
+    <div class="section-head reveal">
+      <div>
+        <div class="eyebrow" style="margin-bottom:16px;">Sortiment</div>
+        <h2 class="h-statement" style="max-width:18ch;">Plaggen vi förädlar</h2>
+      </div>
+      <a href="#" class="gold-link" data-nav="catalog">Hela sortimentet →</a>
+    </div>
+    <div class="cat-grid">
+      <a href="#" class="cat-card" data-cat-sub="Pikéer"><div class="thumb"><img class="fit-full" src="https://cdn.toptex.com/pictures/K2025-8_2026.jpg" alt="Pikéer"></div><div class="cap"><span class="name">Pikéer</span><span class="go">Designa →</span></div></a>
+      <a href="#" class="cat-card" data-cat-sub="Sweatshirts &amp; hoodies"><div class="thumb"><img class="fit-full" src="https://cdn.toptex.com/pictures/NS408-4_2025.jpg" alt="Sweatshirts &amp; hoodies"></div><div class="cap"><span class="name">Sweatshirts &amp; hoodies</span><span class="go">Designa →</span></div></a>
+      <a href="#" class="cat-card" data-cat-sub="T-shirts"><div class="thumb"><img class="fit-full" src="https://cdn.toptex.com/pictures/K3052IC-9_2025.jpg" alt="T-shirts"></div><div class="cap"><span class="name">T-shirts</span><span class="go">Designa →</span></div></a>
+      <a href="#" class="cat-card" data-cat-fam="Väskor"><div class="thumb"><img class="fit-full" src="https://cdn.toptex.com/pictures/NS110-1_2025.jpg" alt="Väskor"></div><div class="cap"><span class="name">Väskor</span><span class="go">Designa →</span></div></a>
+      <a href="#" class="cat-card" data-cat-sub="Skjortor &amp; blusar"><div class="thumb"><img class="fit-full" src="https://cdn.toptex.com/pictures/K551-4_2026.jpg" alt="Skjortor &amp; blusar"></div><div class="cap"><span class="name">Skjortor &amp; blusar</span><span class="go">Designa →</span></div></a>
+      <a href="#" class="cat-card" data-cat-sub="Jackor &amp; ytterplagg"><div class="thumb"><img class="fit-full" src="https://cdn.toptex.com/pictures/K427-12_2025.jpg" alt="Jackor &amp; ytterplagg"></div><div class="cap"><span class="name">Jackor &amp; ytterplagg</span><span class="go">Designa →</span></div></a>
+    </div>
+    <p class="prose" style="color:var(--muted2);margin-top:30px;">Ett urval ur sortimentet — vi förädlar 65 000+ basplagg från ledande varumärken. <a href="#" class="gold-link" style="font-size:14px;" data-nav="catalog">Utforska hela katalogen →</a></p>
+  </section>
+
+  <!-- Om oss / hantverk + statrad -->
+  <section class="section-bg"><div class="section">
+    <div class="hant">
+      <div class="hant-media"><img src="assets/screentryck-person.jpg" alt="Hantverket bakom varje plagg — förädling i Borås" style="filter:grayscale(1);"></div>
+      <div class="hant-body">
+        <div class="eyebrow" style="margin-bottom:18px;">Om oss</div>
+        <h2 class="h-statement" style="max-width:18ch;margin-bottom:20px;">Stor nog att leverera. Nära nog att bry sig.</h2>
+        <p class="lead" style="margin-bottom:16px;max-width:54ch;">Familjeägd textilförädlare i Borås sedan 2007. Vi samlar produktion, lager och logistik under ett tak — och ser oss som en långsiktig affärspartner, inte bara en leverantör.</p>
+        <p class="lead" style="margin-bottom:24px;max-width:54ch;">Från råplagg till färdig profil förädlar vi textil med tryck och brodyr i egen verkstad — sex metoder under ett tak, alltid white-label. Vi står för hantverket, du äger kundrelationen.</p>
+        <a href="#" class="gold-link" style="align-self:flex-start;font-size:14px;" data-nav="about">Läs mer om oss →</a>
+      </div>
+    </div>
+    <div class="stats4 reveal">
+      <div class="stat"><div class="big">Sedan 2007</div><div class="cap">Familjeägt i Borås</div></div>
+      <div class="stat"><div class="big">2 600 m²</div><div class="cap">Produktion &amp; logistik</div></div>
+      <div class="stat"><div class="big">380 000</div><div class="cap">T-shirts under en säsong</div></div>
+      <div class="stat"><div class="big">Hundratals</div><div class="cap">Återförsäljare</div></div>
+    </div>
+  </div></section>
+
+  <!-- Förädlingsmetoder -->
+  <section class="section-bg"><div class="section">
+    <div class="section-head" style="margin-bottom:clamp(30px,4vw,48px);">
+      <div>
+        <div class="eyebrow" style="margin-bottom:16px;">Förädling</div>
+        <h2 class="h-statement" style="max-width:20ch;margin-bottom:14px;">Sex metoder under ett tak</h2>
+        <p class="lead" style="color:rgba(28,23,18,.6);max-width:52ch;">Rätt teknik för rätt plagg och upplaga. Klicka på en metod för att läsa mer.</p>
+      </div>
+      <a href="#" class="gold-link" style="font-size:13.5px;flex:none;" data-nav="foradling">Alla förädlingsmetoder →</a>
+    </div>
+    <div class="metod-grid">
+      <a href="#" class="metod-card" data-nav="foradling"><img class="metod-bg" src="assets/m6-brodyr.jpg" alt="" aria-hidden="true" loading="lazy"><div class="inner"><div class="top"><span class="n">01</span><h3>Brodyr</h3></div><p>Sytt motiv med garn — exklusiv, slitstark finish för logotyper och märken.</p><div class="arrow">→</div></div></a>
+      <a href="#" class="metod-card" data-nav="foradling"><img class="metod-bg" src="assets/mnew13.jpg" alt="" aria-hidden="true" loading="lazy"><div class="inner"><div class="top"><span class="n">02</span><h3>Screentryck</h3></div><p>Klassiskt tryck med hög täckning — mest kostnadseffektivt vid stora upplagor.</p><div class="arrow">→</div></div></a>
+      <a href="#" class="metod-card" data-nav="foradling"><img class="metod-bg" src="assets/m4-dtf.jpg" alt="" aria-hidden="true" loading="lazy"><div class="inner"><div class="top"><span class="n">03</span><h3>Digitaltransfer</h3></div><p>Fullfärgstryck utan färgbegränsning — perfekt för fotorealistiska motiv.</p><div class="arrow">→</div></div></a>
+      <a href="#" class="metod-card" data-nav="foradling"><img class="metod-bg" src="assets/mnew7.jpg" alt="" aria-hidden="true" loading="lazy"><div class="inner"><div class="top"><span class="n">04</span><h3>Screentransfer</h3></div><p>Tryckt transfer med screenkvalitet — stark och tvättålig, även mindre serier.</p><div class="arrow">→</div></div></a>
+      <a href="#" class="metod-card" data-nav="foradling"><img class="metod-bg" src="assets/m3-dtg.jpg" alt="" aria-hidden="true" loading="lazy"><div class="inner"><div class="top"><span class="n">05</span><h3>Digitaltryck (DTG)</h3></div><p>Trycks direkt på plagget — obegränsade färger, idealiskt för små upplagor.</p><div class="arrow">→</div></div></a>
+      <a href="#" class="metod-card" data-nav="foradling"><img class="metod-bg" src="assets/Print/vavt%20marke.jpg" alt="" aria-hidden="true" loading="lazy"><div class="inner"><div class="top"><span class="n">06</span><h3>Vävt märke</h3></div><p>Vävd etikett med skarpa detaljer — premiumkänsla för varumärkesmärkning.</p><div class="arrow">→</div></div></a>
+    </div>
+  </div></section>
+
+  <!-- Varumärken -->
+  <section class="section-bg" style="overflow:hidden;">
+    <div style="padding:80px 0 60px;">
+      <div class="eyebrow" style="color:#9A9486;text-align:center;margin-bottom:34px;">Varumärken vi förädlar</div>
+      <div class="brand-marquee"><div class="brand-track" id="brandTrack"></div></div>
+    </div>
+  </section>
+
+  <!-- Manifest -->
+  <section class="section-panel"><div class="section" style="padding-top:clamp(64px,7vw,120px);padding-bottom:clamp(64px,7vw,120px);">
+    <div class="split2 reveal">
+      <div>
+        <div class="eyebrow eyebrow-gold" style="color:var(--ink);margin-bottom:16px;">Vår roll</div>
+        <h2 class="h-statement" style="max-width:14ch;">Vi hjälper återförsäljare att växa.</h2>
+      </div>
+      <div class="col-text">
+        <p>En riktigt bra produktionspartner gör mer än att förädla textilier — den skapar förutsättningar att växa. Genom en av Sveriges mest kompletta produktionsanläggningar, modern logistik, dokumenterad kvalitet och specialistkompetens hjälper vi våra kunder att ta större affärer, möta högre krav och leverera med större trygghet.</p>
+        <p>Vi förenklar vardagen genom att samla produktion, lagerhållning, 3PL och logistik under ett tak. Färre leverantörer, kortare ledtider, en effektivare affär — från första offert till färdig leverans. Vi ser oss inte som en leverantör, utan som en långsiktig affärspartner.</p>
+        <p class="emph">Hundratals återförsäljare väljer Noll33 — inte bara för det vi producerar, utan för det vi gör möjligt.</p>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- Varumärkesbyggande -->
+  <section class="section-bg"><div class="section" style="padding-top:clamp(64px,7vw,120px);padding-bottom:clamp(64px,7vw,120px);">
+    <div class="split2 reveal">
+      <div>
+        <div class="eyebrow" style="margin-bottom:16px;">Varumärkesbyggande</div>
+        <h2 class="h-statement" style="max-width:14ch;">Dina kunder bedömer inte vår kvalitet. De bedömer din.</h2>
+      </div>
+      <div class="col-text">
+        <p>Därför ser vi varje uppdrag som en förlängning av ditt varumärke. Textilförädling är ett hantverk där erfarenhet, precision och ansvar avgör slutresultatet — misstag får aldrig bli en del av kulturen.</p>
+        <p>Genom dokumenterade arbetsprocesser, kontinuerliga investeringar och ett systematiskt kvalitetsarbete håller vi en reklamationsnivå bland de absolut lägsta i branschen. Vi nöjer oss inte med rätt produkt — vi arbetar varje dag för att stärka förtroendet för ditt företag.</p>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- CTA-band -->
+  <section class="section-panel" style="overflow:hidden;">
+    <div class="ctaband">
+      <div class="media"><img src="assets/mnew2.jpg" alt="Brodyr i närbild — nål och tråd på mörkt tyg" loading="lazy"></div>
+      <div class="body">
+        <div class="eyebrow eyebrow-gold" style="color:var(--ink);margin-bottom:18px;">Bli återförsäljare</div>
+        <h2 class="h-statement" style="max-width:16ch;margin-bottom:18px;">Redo att börja sälja?</h2>
+        <p class="lead" style="max-width:44ch;margin-bottom:36px;">Bli återförsäljare och kom igång på minuter — du säljer vidare, vi förädlar bakom kulisserna.</p>
+        <div style="display:flex;gap:16px 30px;align-items:center;flex-wrap:wrap;">
+          <a href="#" class="pill pill-ink mo-btn" style="padding:16px 30px;font-size:14.5px;" data-label="Bli återförsäljare" data-nav="ansok"><span class="mo-btn-in">Bli återförsäljare</span></a>
+          <a href="#" class="gold-link" style="font-size:13.5px;" data-nav="kontakt">Kontakta oss →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /home -->
+
+<!-- ==================== KATALOG (D4 — start→kategori→plaggtyp→lista→produktsida + offertkorg) ==================== -->
+<div class="page" data-page="catalog"><div id="catalogRoot" class="kx"></div></div>
+
+<!-- ==================== DESIGN STUDIO ==================== -->
+<div class="page" data-page="apply"><div class="sub">
+  <div class="sub-grid" style="align-items:center;margin-bottom:clamp(52px,7vw,96px);">
+    <div>
+      <div class="eyebrow eyebrow-gold" style="color:var(--ink);margin-bottom:20px;">Design Studio</div>
+      <h1 class="h-statement" style="max-width:16ch;margin-bottom:18px;">Designa live — se resultatet direkt.</h1>
+      <p class="prose" style="line-height:1.7;max-width:46ch;">Ladda upp din logga eller skapa en text, välj tryckmetod och placering och se din design direkt på plagget. Justera antal, färg och storlek — och beställ när allt sitter. Studion är öppen för godkända återförsäljare.</p>
+      <div style="display:flex;gap:16px 24px;align-items:center;flex-wrap:wrap;margin-top:32px;">
+        <a href="https://prntr.dahlquist.se/?from=noll33" target="_blank" rel="noopener" class="pill pill-ink">Logga in →</a>
+        <a href="#" class="gold-link" data-nav="ansok">Bli återförsäljare →</a>
+      </div>
+    </div>
+    <div style="background:#14181A;border-radius:2px;overflow:hidden;box-shadow:0 24px 60px rgba(20,22,20,.16);">
+      <div style="aspect-ratio:16/10;"><video data-rate="1.6" autoplay muted loop playsinline preload="metadata" poster="assets/ds-still.jpg" src="assets/editorial-studio.mp4" style="width:100%;height:100%;object-fit:cover;"></video></div>
+    </div>
+  </div>
+  <div class="bleed section-panel" style="margin-top:clamp(48px,6vw,84px);"><div class="wrap" style="padding-top:clamp(44px,5vw,76px);padding-bottom:clamp(44px,5vw,76px);">
+    <div class="eyebrow eyebrow-gold" style="color:var(--ink);margin-bottom:clamp(24px,3vw,40px);">Så funkar det</div>
+    <div class="steps4" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr));">
+      <div class="step"><div class="num">01</div><h3 class="h-mini">Välj plagg</h3><p>Bläddra i sortimentet och välj basplagg från ledande varumärken.</p></div>
+      <div class="step"><div class="num">02</div><h3 class="h-mini">Ladda upp logga</h3><p>Placera logga eller text, välj tryckmetod och position.</p></div>
+      <div class="step"><div class="num">03</div><h3 class="h-mini">Se live på plagget</h3><p>Din design renderas direkt på plagget — inget korrektur att vänta på.</p></div>
+      <div class="step"><div class="num">04</div><h3 class="h-mini">Beställ direkt</h3><p>Justera antal och storlek och lägg ordern på plats.</p></div>
+    </div>
+  </div></div>
+</div></div>
+
+<!-- ==================== FÖRÄDLING ==================== -->
+<div class="page" data-page="foradling"><div class="sub">
+  <div class="eyebrow eyebrow-gold" style="color:var(--ink);margin-bottom:20px;">Förädling</div>
+  <h1 class="h-statement" style="max-width:15ch;margin-bottom:20px;">Sex metoder under ett tak.</h1>
+  <p class="lead" style="max-width:64ch;margin-bottom:clamp(30px,3.4vw,44px);">Rätt teknik för rätt plagg och upplaga — vi rådger och förädlar allt in-house, från enstaka prov till stora serier. Med produktion, logistik och kundservice några meter från varandra blir beslutsvägarna korta: snabbare besked, högre kvalitet och en tryggare affär.</p>
+  <div class="bleed section-panel" style="margin-bottom:0;"><div class="wrap" style="padding-top:clamp(44px,5vw,72px);padding-bottom:clamp(44px,5vw,72px);">
+    <div class="split2">
+      <div><div class="eyebrow" style="margin-bottom:16px;">Kapacitet</div><h2 class="h-statement" style="max-width:14ch;">Kapacitet som skapar trygghet</h2></div>
+      <div class="col-text">
+        <p>Vi har byggt en av de mest omfattande anläggningarna i Sverige inom textilförädling för profilkläder, arbetskläder, merchandise och sport. Det gör att vi kan hantera allt från enstaka on-demand-order till mycket stora produktionsvolymer — med samma fokus på kvalitet, leveranssäkerhet och service.</p>
+        <p>Under en begränsad period producerade vi över 380 000 t-shirts till Color Obstacle Rush-evenemang runt om i Europa, samtidigt som vår ordinarie produktion fortsatte utan avbrott. Stor kapacitet handlar inte om att producera mest — utan om tryggheten att veta att vi alltid kan leverera när det verkligen gäller.</p>
+      </div>
+    </div>
+  </div></div>
+  <div class="bleed" style="height:clamp(320px,40vw,540px);overflow:hidden;background:#EBE7DC;margin-bottom:0;"><img src="assets/screentryck-maskin.gif" alt="Screentryckmaskin i verkstaden — Borås" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+  <div class="tfp-band" style="margin-top:0;padding:clamp(44px,5vw,80px) 0;">
+    <div class="tfp-grid">
+      <div class="tfp-lead">
+        <div class="eyebrow" style="margin-bottom:16px;">Tryckt Färdig Produkt</div>
+        <h2 class="h-sub" style="max-width:18ch;margin-bottom:16px;">Vald metod är bara början.</h2>
+        <p class="prose">När tekniken är vald sköter vi resten. Genom konceptet Tryckt Färdig Produkt samlar vi plagg, förädling, lager och logistik till en komplett leverans — så du slipper koordinera flera leverantörer.</p>
+      </div>
+      <div class="tfp-list" style="display:flex;flex-direction:column;">
+        <div style="display:flex;gap:22px;align-items:baseline;padding:20px 0;border-top:1px solid var(--line2);"><span style="font-weight:600;font-size:13.5px;color:var(--gold);min-width:26px;">01</span><div><div style="font-weight:700;font-size:18px;margin-bottom:6px;letter-spacing:-.01em;">En kontakt</div><div class="prose">Genom hela uppdraget.</div></div></div>
+        <div style="display:flex;gap:22px;align-items:baseline;padding:20px 0;border-top:1px solid var(--line2);"><span style="font-weight:600;font-size:13.5px;color:var(--gold);min-width:26px;">02</span><div><div style="font-weight:700;font-size:18px;margin-bottom:6px;letter-spacing:-.01em;">En leverans</div><div class="prose">Plagg, förädling och logistik samlat.</div></div></div>
+        <div style="display:flex;gap:22px;align-items:baseline;padding:20px 0;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);"><span style="font-weight:600;font-size:13.5px;color:var(--gold);min-width:26px;">03</span><div><div style="font-weight:700;font-size:18px;margin-bottom:6px;letter-spacing:-.01em;">En samlad faktura</div><div class="prose">När ordern är färdiglevererad.</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div id="metodGrid" class="metod-grid" style="align-items:stretch;margin-top:clamp(48px,6vw,76px);"></div>
+  <div style="margin-top:clamp(48px,5vw,76px);">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px;">
+      <h3 class="h-sub" style="font-size:clamp(18px,1.8vw,24px);">Jämför metoderna</h3>
+      <span class="prose swipe-hint" style="color:rgba(28,23,18,.5);">Svep i sidled →</span>
+    </div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table class="metod-table" id="metodTable"><thead><tr>
+      <th>Metod</th><th>Bäst för</th><th>Volym</th><th>Färger</th><th>Tålighet</th><th>Känsla</th>
+    </tr></thead><tbody></tbody></table></div>
+  </div>
+</div></div>
+
+<!-- ==================== HÅLLBARHET ==================== -->
+<div class="page" data-page="hallbarhet"><div class="sub">
+  <div class="eyebrow eyebrow-gold" style="color:var(--ink);margin-bottom:20px;">Hållbarhet</div>
+  <h1 class="h-statement" style="max-width:18ch;margin-bottom:20px;">När hållbarhet avgör affären.</h1>
+  <p class="lead" style="max-width:56ch;margin-bottom:clamp(40px,5vw,60px);">Fler upphandlingar och inköp ställer idag krav på dokumenterad hållbarhet, spårbarhet och socialt ansvar. Därför erbjuder vi GOTS-certifierad produktion när uppdraget kräver det — ett starkare erbjudande i affärer där valet av produktionspartner kan vara avgörande.</p>
+  <div class="bleed" style="aspect-ratio:21/9;overflow:hidden;background:#EEEBE2;margin-bottom:0;"><img src="assets/noplanetb.png" alt="Ekocertifierade plagg" style="width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block;"></div>
+  <div class="bleed section-panel" style="margin-bottom:clamp(36px,5vw,56px);"><div class="wrap" style="padding-top:clamp(44px,5vw,80px);padding-bottom:clamp(44px,5vw,80px);">
+    <div class="eyebrow" style="margin-bottom:16px;">GOTS-certifierad produktion</div>
+    <h2 class="h-sub" style="max-width:24ch;margin-bottom:18px;">En konkurrensfördel för dig som återförsäljare</h2>
+    <div class="split2" style="margin-bottom:clamp(22px,3vw,32px);">
+      <p class="prose" style="line-height:1.7;">Som återförsäljare ska du kunna erbjuda mer än en produkt — du ska kunna erbjuda trygghet. GOTS (Global Organic Textile Standard) är en av världens mest erkända textilcertifieringar och omfattar hela produktionskedjan, med höga krav på miljöhänsyn, ansvarsfull kemikaliehantering, spårbarhet och socialt ansvar.</p>
+      <div>
+        <p class="prose" style="line-height:1.7;margin:0;">Det ger dig ett starkt argument i upphandlingar hos kommuner, regioner, statliga myndigheter, fackliga organisationer och större företag — där dokumenterad hållbarhet blir allt viktigare. Våra GOTS-produkter tillverkas i Sverige av personal som arbetar under svenska kollektivavtalade villkor, i en trygg och transparent produktionskedja.</p>
+        <p class="h-mini" style="max-width:40ch;margin:clamp(22px,3vw,30px) 0 0;">För oss är GOTS inte ett marknadsföringsargument — det är ett verktyg som hjälper våra återförsäljare att vinna affärer med större trygghet.</p>
+      </div>
+    </div>
+  </div></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:clamp(28px,3.4vw,60px);margin-top:clamp(40px,5vw,60px);">
+    <div><span style="display:block;width:32px;height:2px;background:var(--gold);margin-bottom:18px;"></span><div class="h-sub" style="margin-bottom:8px;">Certifierade material</div><div class="prose">GOTS- och Oeko-Tex-certifierade basplagg när projektet kräver det.</div></div>
+    <div><span style="display:block;width:32px;height:2px;background:var(--gold);margin-bottom:18px;"></span><div class="h-sub" style="margin-bottom:8px;">Mindre svinn</div><div class="prose">White-label och tryck vid behov betyder färre leveranser och mindre överproduktion.</div></div>
+    <div><span style="display:block;width:32px;height:2px;background:var(--gold);margin-bottom:18px;"></span><div class="h-sub" style="margin-bottom:8px;">Nära produktion</div><div class="prose">Förädling i Borås ger kortare transporter och full kontroll på kvaliteten.</div></div>
+  </div>
+  <div style="margin-top:clamp(30px,4vw,44px);display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-weight:600;font-size:13px;"><span class="eyebrow" style="color:#9A9486;">Certifieringar</span><span style="color:var(--gold);">GOTS</span><span style="color:var(--gold);">Oeko-Tex</span><span style="color:var(--gold);">Fairtrade</span></div>
+</div></div>
+
+<!-- ==================== OM OSS ==================== -->
+<div class="page" data-page="about"><div class="sub">
+  <div class="eyebrow eyebrow-gold" style="color:var(--ink);margin-bottom:22px;letter-spacing:.28em;">Om oss</div>
+  <h1 class="h-statement" style="margin-bottom:clamp(44px,6vw,80px);">Vi förädlar.<br>Ni äger kunden.</h1>
+  <div class="bleed" style="height:clamp(320px,42vw,580px);overflow:hidden;background:#EEEBE2;margin-bottom:0;"><img src="assets/_m7.jpg" alt="Screentryck i produktionen — Borås" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+  <div class="bleed section-panel" style="margin-bottom:clamp(44px,6vw,84px);"><div class="wrap split2" style="padding-top:clamp(44px,5vw,84px);padding-bottom:clamp(44px,5vw,84px);gap:clamp(36px,5vw,90px);">
+    <div>
+      <h2 class="h-sub" style="margin-bottom:18px;">Din relation med kunden är din.</h2>
+      <p class="prose" style="line-height:1.75;">noll33 är en textilförädlare i Borås som trycker, broderar och märker plagg åt återförsäljare — aldrig direkt till slutkund, så din relation med kunden förblir din. Vår uppgift är att göra plaggen så bra att de bär ditt namn med stolthet; du säljer vidare och vi står för hantverket bakom. Under ett och samma tak samlar vi sex förädlingsmetoder, sömnad, lager och logistik, och i vår designstudio ser du resultatet direkt på plagget innan du beställer. Sedan 2007 har vi förenat traditionellt hantverk med digital precision — nära dig i besluten, snabba i beskeden och trygga hela vägen från första offert till färdig leverans.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;">
+      <div style="display:flex;gap:22px;align-items:baseline;padding:20px 0;border-top:1px solid var(--line2);"><span style="font-weight:600;font-size:13.5px;color:var(--gold);min-width:26px;">01</span><div><div style="font-weight:700;font-size:18px;margin-bottom:6px;letter-spacing:-.01em;">Endast återförsäljare</div><div class="prose">Vi konkurrerar aldrig med dig om slutkunden.</div></div></div>
+      <div style="display:flex;gap:22px;align-items:baseline;padding:20px 0;border-top:1px solid var(--line2);"><span style="font-weight:600;font-size:13.5px;color:var(--gold);min-width:26px;">02</span><div><div style="font-weight:700;font-size:18px;margin-bottom:6px;letter-spacing:-.01em;">Hantverk möter teknik</div><div class="prose">Traditionellt hantverk, digital precision via PRNTR.</div></div></div>
+      <div style="display:flex;gap:22px;align-items:baseline;padding:20px 0;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);"><span style="font-weight:600;font-size:13.5px;color:var(--gold);min-width:26px;">03</span><div><div style="font-weight:700;font-size:18px;margin-bottom:6px;letter-spacing:-.01em;">Hållbara plagg</div><div class="prose">GOTS- och Oeko-Tex-certifierade basplagg när du vill.</div></div></div>
+    </div>
+  </div></div>
+  <div class="split2" style="margin-bottom:clamp(44px,6vw,84px);">
+    <div><div class="eyebrow" style="margin-bottom:16px;">Marknadsledare · familjeföretag</div><h2 class="h-statement" style="max-width:14ch;">Kompetensen hos en marknadsledare. Närheten hos ett familjeföretag.</h2></div>
+    <div class="col-text">
+      <p>Under snart två decennier har vi byggt en verksamhet med kapacitet att leverera till några av Nordens mest krävande kunder. Samtidigt har vi behållit det som alltid gjort Noll33 annorlunda — närheten.</p>
+      <p>Hos oss möts du av människor som känner ditt företag, förstår dina utmaningar och tar personligt ansvar för varje affär. Besluten fattas nära produktionen, kommunikationen är rak och hjälpen finns aldrig längre bort än ett telefonsamtal. Långsiktiga samarbeten byggs på förtroende — inte på organisationsscheman.</p>
+    </div>
+  </div>
+  <div class="stats4" style="margin-bottom:clamp(44px,6vw,80px);">
+    <div class="stat"><div class="big">20 år</div><div class="cap">I samma lokaler (2027)</div></div>
+    <div class="stat"><div class="big">2 600 m²</div><div class="cap">Produktion &amp; logistik</div></div>
+    <div class="stat"><div class="big">380 000</div><div class="cap">T-shirts under en säsong</div></div>
+    <div class="stat"><div class="big">Hundratals</div><div class="cap">Återförsäljare</div></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;padding-top:8px;">
+    <div class="h-sub" style="font-size:clamp(22px,2.4vw,30px);">Redo att bli återförsäljare?</div>
+    <a href="#" class="pill pill-ink" data-nav="ansok">Bli återförsäljare →</a>
+  </div>
+</div></div>
+
+<!-- ==================== KONTAKT ==================== -->
+<div class="page" data-page="kontakt"><div class="sub">
+  <div class="eyebrow eyebrow-gold" style="color:var(--ink);margin-bottom:20px;">Kontakt</div>
+  <h1 class="h-statement" style="margin-bottom:20px;">Hör av dig.</h1>
+  <p class="lead" style="max-width:50ch;margin-bottom:clamp(40px,5vw,56px);">Frågor om förädling, sortiment eller att bli återförsäljare? Vi svarar snabbt.</p>
+  <div class="split2" style="align-items:start;">
+    <div>
+      <div style="padding:14px 0;"><div class="eyebrow" style="color:#9A9486;margin-bottom:7px;">Besök &amp; post</div><div style="font-weight:600;font-size:14.5px;line-height:1.5;">Noll33 Tryck &amp; Brodyr AB<br>Hållingsgatan 15, 504 35 Borås</div></div>
+      <div style="padding:14px 0;"><div class="eyebrow" style="color:#9A9486;margin-bottom:7px;">Telefon</div><a href="tel:+4633129110" style="font-weight:600;font-size:14.5px;">033-129110</a></div>
+      <div style="padding:14px 0;"><div class="eyebrow" style="color:#9A9486;margin-bottom:7px;">Öppettider</div><div style="font-weight:600;font-size:14.5px;">Mån–fre 08–17</div></div>
+    </div>
+    <div>
+      <div class="h-sub" style="margin-bottom:10px;">Mejla oss direkt</div>
+      <p class="lead" style="max-width:38ch;margin-bottom:26px;">Skriv några rader om ert projekt så återkommer vi inom en arbetsdag.</p>
+      <a href="mailto:info@noll33.se" style="display:inline-block;font-weight:600;font-size:16px;border-bottom:2px solid var(--gold);padding-bottom:4px;">info@noll33.se</a>
+    </div>
+  </div>
+  <div style="margin-top:clamp(36px,5vw,64px);">
+    <div class="eyebrow" style="color:#9A9486;margin-bottom:14px;">Hitta hit</div>
+    <div style="position:relative;overflow:hidden;border:1px solid var(--line2);background:#F1EFEA;aspect-ratio:21/9;min-height:340px;">
+      <iframe title="Karta Borås — Hållingsgatan 15" loading="lazy" style="position:absolute;top:0;left:0;width:100%;height:calc(100% + 34px);border:0;filter:grayscale(1) contrast(.95) brightness(1.03);" src="https://www.openstreetmap.org/export/embed.html?bbox=12.9167%2C57.7154%2C12.9237%2C57.7170&layer=mapnik&marker=57.7162%2C12.9202"></iframe>
+      <div style="position:absolute;left:clamp(14px,2vw,26px);top:clamp(14px,2vw,26px);background:var(--bg);border:1px solid var(--line2);box-shadow:0 10px 30px rgba(20,22,20,.14);padding:18px 22px;max-width:min(320px,72vw);">
+        <div style="position:relative;border-top:1px solid #D9D2BF;padding-top:12px;"><span style="position:absolute;top:-1px;left:0;width:32px;height:2px;background:var(--gold);"></span>
+          <div style="font-weight:600;font-size:15px;margin-bottom:5px;">Noll33 Tryck &amp; Brodyr AB</div>
+          <div class="prose">Hållingsgatan 15, 504 35 Borås<br>Besökare: ingång C, våning 2</div>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=H%C3%A5llingsgatan%2015%2C%20504%2035%20Bor%C3%A5s" target="_blank" rel="noopener" class="gold-link" style="margin-top:12px;">Vägbeskrivning →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- ==================== ANSÖKAN ==================== -->
+<div class="page" data-page="ansok"><div class="sub">
+  <div id="ansokForm" class="sub-grid" style="align-items:stretch;">
+    <div>
+      <div class="eyebrow eyebrow-gold" style="color:var(--ink);margin-bottom:20px;">Endast för återförsäljare</div>
+      <h1 class="h-statement" style="max-width:16ch;margin-bottom:20px;">Bli återförsäljare hos noll33.</h1>
+      <p class="prose" style="line-height:1.7;max-width:44ch;margin-bottom:34px;">Ansök om att bli återförsäljare — så får du tillgång till hela sortimentet, Design Studio och beställning direkt. Vi säljer bara till återförsäljare, aldrig till slutkund.</p>
+      <div>
+        <div style="display:flex;gap:18px;align-items:baseline;padding:16px 0;border-top:1px solid var(--line2);"><span style="font-weight:600;font-size:13.5px;color:var(--gold);min-width:22px;">01</span><div><div style="font-weight:600;font-size:18px;margin-bottom:5px;letter-spacing:-.01em;">Skicka ansökan</div><div class="prose">Fyll i uppgifterna.</div></div></div>
+        <div style="display:flex;gap:18px;align-items:baseline;padding:16px 0;border-top:1px solid var(--line2);"><span style="font-weight:600;font-size:13.5px;color:var(--gold);min-width:22px;">02</span><div><div style="font-weight:600;font-size:18px;margin-bottom:5px;letter-spacing:-.01em;">Vi godkänner</div><div class="prose">Besked inom 1–2 arbetsdagar.</div></div></div>
+        <div style="display:flex;gap:18px;align-items:baseline;padding:16px 0;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);"><span style="font-weight:600;font-size:13.5px;color:var(--gold);min-width:22px;">03</span><div><div style="font-weight:600;font-size:18px;margin-bottom:5px;letter-spacing:-.01em;">Designa &amp; beställ</div><div class="prose">Logga in i Design Studio och kör.</div></div></div>
+      </div>
+    </div>
+    <form class="sub-form" data-ansok-form style="width:100%;background:var(--panel);border:1px solid var(--line2);padding:clamp(26px,3vw,40px);gap:19px;">
+      <div class="eyebrow eyebrow-gold" style="color:var(--ink);margin:0 0 4px;">Din ansökan</div>
+      <label>Företagsnamn<input required type="text" placeholder="Ert företag AB"></label>
+      <label>Org.nr<input required type="text" placeholder="556000-0000"></label>
+      <label>Kontaktperson<input required type="text" placeholder="För- och efternamn"></label>
+      <label>E-post<input required type="email" placeholder="namn@foretag.se"></label>
+      <label>Telefon<input required type="tel" placeholder="070-000 00 00"></label>
+      <button type="submit" class="pill pill-ink" style="margin-top:6px;align-self:flex-start;border:none;cursor:pointer;">Skicka ansökan →</button>
+      <p class="prose" style="margin:auto 0 0;padding-top:18px;border-top:1px solid var(--line2);font-size:12px;color:var(--muted2);">Endast företag med F-skatt. Vi behandlar uppgifterna enligt vår integritetspolicy och säljer aldrig vidare dem.</p>
+    </form>
+  </div>
+  <div id="ansokThanks" style="display:none;max-width:560px;margin:clamp(24px,7vw,90px) auto;text-align:center;">
+    <div style="width:74px;height:74px;border-radius:50%;margin:0 auto 28px;background:var(--gold);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:34px;">✓</div>
+    <h1 class="h-statement" style="margin-bottom:16px;">Tack för din ansökan!</h1>
+    <p class="prose" style="max-width:44ch;margin:0 auto 32px;">Vi granskar din ansökan och återkommer inom 1–2 arbetsdagar med inloggning till Design Studio.</p>
+    <a href="#" class="pill pill-ink" data-gohome>Till startsidan →</a>
+  </div>
+</div></div>
+
+<!-- ==================== LOGGA IN ==================== -->
+<div class="page" data-page="login"><div class="sub">
+  <div style="max-width:420px;margin:clamp(20px,6vw,80px) auto;">
+    <div class="eyebrow eyebrow-gold" style="color:var(--ink);margin-bottom:16px;">Återförsäljare</div>
+    <h1 class="h-statement" style="font-size:clamp(24px,3vw,35px);margin-bottom:10px;">Logga in</h1>
+    <p class="prose" style="margin-bottom:30px;">Logga in för att designa och beställa i Design Studio.</p>
+    <form class="sub-form" data-login-form>
+      <label>E-post<input required type="email" placeholder="namn@foretag.se"></label>
+      <label>Lösenord<input required type="password" placeholder="••••••••"></label>
+      <a href="#" style="align-self:flex-end;font-weight:500;font-size:12.5px;color:var(--muted2);">Glömt lösenordet?</a>
+      <button type="submit" class="pill pill-ink" style="margin-top:6px;align-self:flex-start;border:none;cursor:pointer;">Logga in →</button>
+    </form>
+    <div style="margin-top:30px;padding-top:22px;border-top:1px solid var(--line2);font-size:13.5px;color:var(--body);">Inte återförsäljare än? <a href="#" class="gold-link" style="font-size:13.5px;" data-nav="ansok">Ansök här →</a></div>
+  </div>
+</div></div>
+
+<!-- Metod-modal (förädling) -->
+<div id="metodModal" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(18,20,18,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:clamp(20px,6vw,80px);"></div>
+
+</main>
+
+<!-- ==================== DELAD FOOTER ==================== -->
+<footer class="site-footer">
+  <div class="wrap cols">
+    <div>
+      <a href="#" data-gohome aria-label="noll33"><img src="assets/resurs-1.png" alt="noll33" style="height:56px;width:56px;"></a>
+      <p class="prose" style="color:var(--muted);margin-top:18px;max-width:30ch;">Komplett textilförädling och tryck till återförsäljare. Hållbart, enkelt och till bra priser.</p>
+    </div>
+    <div>
+      <div class="col-title">Utforska</div>
+      <div class="links"><a href="#" data-nav="catalog">Sortiment</a><a href="#" data-nav="apply">Design Studio</a><a href="#" data-nav="kontakt">Snabboffert</a><a href="#" data-nav="foradling">Prislista</a></div>
+    </div>
+    <div>
+      <div class="col-title">Info</div>
+      <div class="links"><a href="#" data-nav="about">Om oss</a><a href="#" data-nav="foradling">Förädlingsmetoder</a><a href="#" data-nav="hallbarhet">Hållbarhet</a><a href="#" data-nav="kontakt">FAQ</a></div>
+    </div>
+    <div>
+      <div class="col-title">Kontakt</div>
+      <div class="prose" style="color:var(--muted);line-height:1.7;">Noll33 Tryck &amp; Brodyr AB<br>Hållingsgatan 15, 504 35 Borås<br>033-129110<br><a href="mailto:info@noll33.se" style="color:var(--ink);border-bottom:1px solid var(--gold);">info@noll33.se</a></div>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    <span>© 2026 Noll33 Tryck &amp; Brodyr — Org.nr 559456-8874. Alla priser ex. moms. Karta © OpenStreetMap.</span>
+    <span style="display:flex;gap:20px;"><a href="#">Cookies</a><a href="#">Integritet</a></span>
+  </div>
+</footer>
+
+<script src="katalog-data.js"></script>
+<script src="site.js?v=d33"></script>
+</body>
+</html>

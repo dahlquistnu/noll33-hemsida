@@ -1,0 +1,940 @@
+/* Noll33 — Atelier Motion. Sidväxling + fullt motion-lager (portat ur design_handoff,
+   ren vanilla utan dc-runtime). */
+(function () {
+  'use strict';
+
+  var PAGES = ['home', 'catalog', 'apply', 'foradling', 'hallbarhet', 'kontakt', 'about', 'ansok', 'login'];
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var touch = window.matchMedia && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
+
+  /* ============ Sidväxling ============ */
+  function goto(page, opts) {
+    if (PAGES.indexOf(page) === -1) page = 'home';
+    document.querySelectorAll('.page').forEach(function (el) { el.classList.toggle('active', el.dataset.page === page); });
+    document.querySelectorAll('[data-nav]').forEach(function (a) { a.classList.toggle('active', a.dataset.nav === page); });
+    document.body.dataset.page = page;
+    if ((location.hash.slice(1) || 'home') !== page) history.replaceState(null, '', page === 'home' ? location.pathname : '#' + page);
+    if (!opts || !opts.keepScroll) window.scrollTo(0, 0);
+    closeMobileNav();
+    // Ny vy → tagga + avslöja dess element
+    moInit(); edObserve(true); setRates();
+    // Katalogen monteras EFTER moInit (så dess noder inte auto-taggas/döljs).
+    if (page === 'catalog') CAT.mount();
+  }
+  window.NOLL33_goto = goto;
+
+  /* ============ Mobil-meny ============ */
+  function openMobileNav() { var m = document.getElementById('mobileNav'); if (m) m.classList.add('open'); }
+  function closeMobileNav() { var m = document.getElementById('mobileNav'); if (m) m.classList.remove('open'); }
+
+  /* ============ Header-scroll + scroll-reaktiv ticker ============ */
+  var lastY = null;
+  function onScrollHeader() {
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    var de = document.documentElement;
+    if (y > 100) de.setAttribute('data-mo-scrolled', ''); else de.removeAttribute('data-mo-scrolled');
+    document.querySelectorAll('[data-ticker]').forEach(function (tk) {
+      var up = (lastY != null) && (y < lastY);
+      tk.style.animationDirection = up ? 'reverse' : 'normal';
+    });
+    lastY = y;
+  }
+
+  /* ============ mo-reveal: auto-tagga + avslöja (systemisk motion) ============ */
+  var moSecMap = new WeakMap(), moSecN = 0;
+  function moInit() {
+    if (reduceMotion) return;
+    // hero-text + cta rullar upp
+    document.querySelectorAll('.page.active .hero h1, .page.active .hero .hero-eyebrow, .page.active .hero .hero-lead, .page.active .hero .hero-cta').forEach(function (el) {
+      if (!el.__mo) { el.__mo = true; el.setAttribute('data-mo-up', ''); }
+    });
+    // bilder → data-mo-img (a–e per sektion), länk-omslutna → zoom
+    document.querySelectorAll('.page.active img').forEach(function (img) {
+      if (img.__mo) return; img.__mo = true;
+      if (img.closest('.ed-slide,.hero-media,.brand-track,header,.site-header,.mobile-nav,.metod-card')) return;
+      var s = img.getAttribute('src') || ''; if (/tile\.openstreetmap|\/logos\//i.test(s)) return;
+      var box = img.parentElement; if (!box) return;
+      var cs = getComputedStyle(box), ics = getComputedStyle(img);
+      if (!(cs.overflow === 'hidden' || box.style.aspectRatio || ics.objectFit === 'cover' || ics.position === 'absolute')) return;
+      var sec = box.closest('section') || box.parentElement;
+      if (!moSecMap.has(sec)) { moSecMap.set(sec, ['a', 'b', 'c', 'd', 'e'][moSecN % 5]); moSecN++; }
+      if (!box.hasAttribute('data-mo-img')) box.setAttribute('data-mo-img', moSecMap.get(sec));
+      var link = img.closest('a'); if (link) link.setAttribute('data-mo-zoom', '');
+    });
+    // rubriker rullar upp
+    document.querySelectorAll('.page.active h2, .page.active h3').forEach(function (el) {
+      if (el.__mo) return; el.__mo = true;
+      if (el.closest('.metod-card, .cat-card')) return;
+      el.setAttribute('data-mo-up', '');
+    });
+    // textlänkar (ej pill/underline/bild) → mo-link underline
+    document.querySelectorAll('.page.active a').forEach(function (a) {
+      if (a.__mo) return; a.__mo = true;
+      if (a.closest('header, .site-header, .brand-track, .mobile-nav')) return;
+      if (a.classList.contains('pill') || a.classList.contains('gold-link')) return;
+      if (a.querySelector('img,svg')) return;
+      if (!(a.textContent || '').trim()) return;
+      a.setAttribute('data-mo-link', '');
+    });
+    moReveal();
+  }
+  function moReveal() {
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    document.querySelectorAll('[data-mo-img]:not([data-mo-in]), [data-mo-up]:not([data-mo-in])').forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      if (r.width === 0 && r.height === 0) return;
+      if (r.top < vh * 0.86 && r.bottom > 4) {
+        var idx = el.parentElement ? Array.prototype.indexOf.call(el.parentElement.children, el) : 0;
+        el.style.transitionDelay = (Math.min(idx, 6) * 0.11) + 's';
+        el.setAttribute('data-mo-in', '');
+      }
+    });
+    // enkel fade-up för .reveal-block (section-head, statrad, manifest)
+    document.querySelectorAll('.reveal:not(.in)').forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      if (r.top < vh * 0.92 && r.bottom > 0) el.classList.add('in');
+    });
+  }
+
+  /* ============ Editorial slide-in ============ */
+  var edIO = null, edSeen = new WeakSet();
+  function edObserve(immediate) {
+    var els = document.querySelectorAll('.page.active .ed-slide');
+    if (!els.length) return;
+    if (reduceMotion || touch) { els.forEach(function (el) { el.classList.add('ed-in'); }); return; }
+    if (!edIO) {
+      edIO = new IntersectionObserver(function (ents) {
+        ents.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('ed-in'); edSeen.add(en.target); edIO.unobserve(en.target); } });
+      }, { threshold: 0.35, rootMargin: '0px 0px -25% 0px' });
+    }
+    els.forEach(function (el) { if (edSeen.has(el)) el.classList.add('ed-in'); else edIO.observe(el); });
+  }
+
+  /* ============ Video: playbackRate + autoplay + IO-paus ============ */
+  function setRates() {
+    document.querySelectorAll('video').forEach(function (v) {
+      var r = parseFloat(v.getAttribute('data-rate')) || 1;
+      v.muted = true; v.defaultMuted = true; v.playsInline = true; v.loop = true;
+      try { v.playbackRate = r; } catch (e) {}
+      if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+      if (!v._io && 'IntersectionObserver' in window) {
+        v._io = new IntersectionObserver(function (es) {
+          es.forEach(function (e) {
+            if (e.isIntersecting) { if (v.paused) { var q = v.play(); if (q && q.catch) q.catch(function () {}); } }
+            else if (!v.paused) { try { v.pause(); } catch (_) {} }
+          });
+        }, { threshold: 0.05 });
+        v._io.observe(v);
+      }
+    });
+  }
+
+  /* ============ Varumärkes-marquee: drift + scroll-momentum ============ */
+  var BRAND_LOGOS = ['gildan','bella-canvas','fruit-of-the-loom','russell','kariban','bandc','lee','wrangler','napapijri','timberland','puma-workwear','dickies','beechfield','flexfit','result','premier','front-row','native-spirit','build-your-brand','mumbles','bagbase','westford-mill','towel-city','yoko'];
+  var LOGO_EXT = { 'brook-taverner':'jpg', buff:'jpg', cat:'jpg', 'cg-international':'jpg', henbury:'jpg', quadra:'jpg', result:'jpg', spiro:'jpg', tombo:'jpg', yoko:'jpg' };
+  var mqX = 0, mqVel = 0, mqLast = 0;
+  function buildBrandMarquee() {
+    var track = document.getElementById('brandTrack');
+    if (!track) return;
+    function cell(name) {
+      var ext = LOGO_EXT[name] || 'png';
+      var label = name.replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+      return '<span class="cell"><img loading="lazy" src="assets/logos/' + name + '.' + ext + '" alt="' + label + '"></span>';
+    }
+    var half = BRAND_LOGOS.map(cell).join('');
+    track.setAttribute('data-marquee', '');
+    track.style.animation = 'none';
+    track.innerHTML = '<span style="display:flex;align-items:center;">' + half + '</span>'
+      + '<span aria-hidden="true" style="display:flex;align-items:center;">' + half + '</span>';
+  }
+  function mqTick() {
+    var track = document.getElementById('brandTrack');
+    if (track && track.firstElementChild) {
+      mqX -= 0.5 + Math.max(-14, Math.min(mqVel * 0.14, 14));
+      mqVel *= 0.88;
+      var groupW = track.firstElementChild.offsetWidth;
+      if (groupW > 0) { while (-mqX >= groupW) mqX += groupW; while (mqX > 0) mqX -= groupW; }
+      track.style.transform = 'translate3d(' + mqX.toFixed(1) + 'px,0,0)';
+    }
+    requestAnimationFrame(mqTick);
+  }
+
+  /* ============ Hero-tygrippel (desktop, spring-fysik ur design_handoff) ============ */
+  function heroRipple() {
+    if (reduceMotion || touch) return;
+    var host = document.querySelector('.page[data-page="home"] .hero');
+    var bump = document.querySelector('[data-bump]');
+    var disp = document.querySelector('[data-disp]');
+    var emask = document.querySelector('[data-emask]');
+    var fab = document.querySelector('[data-hero-fab]');
+    if (!host || !bump || !disp || !fab) return;
+    host.style.cursor = 'none';
+    var p = { mw: 0, mh: 0, filtered: false, tx: -9999, ty: -9999, cx: -9999, cy: -9999, px: -9999, py: -9999, on: false, down: false, push: 0, depth: 0, dv: 0, graze: 0.55 };
+    function move(e) {
+      var t = e.touches && e.touches[0];
+      var cx = t ? t.clientX : e.clientX, cy = t ? t.clientY : e.clientY;
+      var tgt = t ? document.elementFromPoint(cx, cy) : e.target;
+      if (tgt && tgt.closest && tgt.closest('header, nav, .site-header')) { p.on = false; return; }
+      var r = host.getBoundingClientRect();
+      var x = cx - r.left, y = cy - r.top;
+      if (r.width > 0 && x >= -40 && y >= -40 && x <= r.width + 40 && y <= r.height + 40) {
+        if (!p.on) { p.cx = x; p.cy = y; p.px = x; p.py = y; p.depth = 0; p.dv = 0; p.graze = 0.55; }
+        p.tx = x; p.ty = y; p.on = true;
+      } else { p.on = false; }
+    }
+    window.addEventListener('mousemove', move, { passive: true });
+    function off() { p.on = false; p.down = false; }
+    document.documentElement.addEventListener('mouseleave', off);
+    window.addEventListener('blur', off);
+    window.addEventListener('mousedown', function (e) { if (e.button === 0) p.down = true; }, { passive: true });
+    window.addEventListener('mouseup', function () { p.down = false; }, { passive: true });
+    function tick() {
+      requestAnimationFrame(tick);
+      if (p.on) { p.cx += (p.tx - p.cx) * 0.22; p.cy += (p.ty - p.cy) * 0.22; }
+      var spd = 0;
+      if (p.on && p.px !== -9999) spd = Math.hypot(p.cx - p.px, p.cy - p.py);
+      p.px = p.cx; p.py = p.cy;
+      var gT = p.on ? Math.max(0.34, Math.min(1, 1 - spd / 30)) : 1;
+      p.graze += (gT - p.graze) * (gT < p.graze ? 0.3 : 0.05);
+      p.push += (((p.on && p.down) ? 1 : 0) - p.push) * 0.16;
+      var target = p.on ? (0.42 + 0.58 * Math.max(p.graze, p.push)) * (1 + 0.42 * p.push) : 0;
+      p.dv += (target - p.depth) * (0.135 + 0.09 * p.push);
+      p.dv *= (0.74 + 0.1 * Math.min(1, p.push));
+      p.depth += p.dv;
+      var active = p.on || Math.abs(p.depth) > 0.012 || Math.abs(p.dv) > 0.006;
+      if (active) {
+        if (!p.filtered) { p.filtered = true; fab.style.filter = 'url(#n33-ripple)'; }
+        var hw = host.clientWidth, hh = host.clientHeight, m = 60;
+        if (emask && (p.mw !== hw || p.mh !== hh)) { p.mw = hw; p.mh = hh; emask.setAttribute('width', hw); emask.setAttribute('height', hh); }
+        var bx = Math.max(m, Math.min(hw - m, p.cx)), by = Math.max(m, Math.min(hh - m, p.cy));
+        var sz = 360 * (0.86 + 0.2 * Math.min(1.4, Math.max(0, p.depth)));
+        bump.setAttribute('x', (bx - sz / 2).toFixed(1));
+        bump.setAttribute('y', (by - sz / 2).toFixed(1));
+        bump.setAttribute('width', sz.toFixed(1));
+        bump.setAttribute('height', sz.toFixed(1));
+        var EDGE = 130;
+        var edgeF = Math.max(0, Math.min(1, Math.min(p.cx, p.cy, hw - p.cx, hh - p.cy) / EDGE));
+        disp.setAttribute('scale', (-60 * p.depth * edgeF).toFixed(2));
+      } else if (p.filtered) {
+        p.filtered = false; p.depth = 0; p.dv = 0; p.push = 0; p.cx = p.cy = p.px = p.py = -9999;
+        fab.style.filter = 'none';
+        bump.setAttribute('x', '-9999'); bump.setAttribute('y', '-9999');
+        disp.setAttribute('scale', '0');
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /* ============ Förädlingsmetoder (kort + tabell + modal) ============ */
+  // Ordning + bilder följer startsidans metodkort (startsidan = referens).
+  var METODER = [
+    { n: '01', name: 'Brodyr', img: 'assets/m6-brodyr.jpg', what: 'Motivet sys med tråd.', colors: 'max 15', bestFor: 'Loggor på pikéer, kepsar, arbetskläder', priceWhen: 'Rimlig storlek, återkommande', lessGood: 'Stora ytor, fina detaljer, foto', feel: 'Upphöjd tråd, gedigen', volume: 'Liten–medel, återkommande', durability: 'Mycket hög' },
+    { n: '02', name: 'Screentryck', img: 'assets/mnew13.jpg', what: 'Färgen trycks genom en schablon, ett lager per färg.', colors: 'max 8', bestFor: 'Solida färger, stora serier', priceWhen: 'Hög volym, få färger', lessGood: 'Små upplagor, foto, gradienter', feel: 'Ovanpå tyget, matt', volume: 'Stora serier', durability: 'Mycket hög' },
+    { n: '03', name: 'Digitaltransfer (DTF)', img: 'assets/m4-dtf.jpg', what: 'Motivet skrivs på film och pressas på.', colors: 'Full färg', bestFor: 'Full färg på nästan alla material', priceWhen: 'Små–medel upplagor, blandade material', lessGood: 'Mycket stora upplagor, stora heltäckande ytor', feel: 'Tunt lager ovanpå', volume: 'Små–medel', durability: 'Hög' },
+    { n: '04', name: 'Screentransfer', img: 'assets/mnew7.jpg', what: 'Screentryckt motiv på film som värmepressas på.', colors: 'max 7', bestFor: 'Samma motiv på begäran, namn/nummer', priceWhen: 'Återkommande motiv, mindre serier', lessGood: 'Unika lågvolymsmotiv, färgrika bilder', feel: 'Slät, lätt blank, ovanpå', volume: 'Små–medel, återkommande', durability: 'Hög' },
+    { n: '05', name: 'Digitaltryck (DTG)', img: 'assets/m3-dtg.jpg', what: 'Bläck skrivs direkt in i plaggets fibrer.', colors: 'Full färg', bestFor: 'Foto, detaljer, små serier', priceWhen: 'Liten–medel upplaga, komplext motiv', lessGood: 'Stora upplagor, polyester och mörka plagg', feel: 'Mjuk, i tyget', volume: 'Liten–medel', durability: 'Medel' },
+    { n: '06', name: 'Vävt märke', img: 'assets/Print/vavt%20marke.jpg', what: 'Motivet vävs som ett separat märke och sys på.', colors: 'max 10', bestFor: 'Fina detaljer, skarpa loggor, märken', priceWhen: 'Volym, återkommande', lessGood: 'Låg volym, stora ytor', feel: 'Platt vävt textilmärke', volume: 'Medel–hög', durability: 'Mycket hög' },
+  ];
+  var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+  function buildMetoder() {
+    var grid = document.getElementById('metodGrid');
+    if (grid && !grid.dataset.built) {
+      grid.dataset.built = '1';
+      grid.innerHTML = METODER.map(function (m, i) {
+        return '<div class="metod-card" data-metod="' + i + '"><img class="metod-bg" src="' + esc(m.img) + '" alt="" aria-hidden="true" loading="lazy"><div class="inner">'
+          + '<div class="top"><span class="n">' + m.n + '</span><h3>' + esc(m.name) + '</h3></div>'
+          + '<p>' + esc(m.what) + '</p>'
+          + '<div class="mfields"><div><div class="k">Bäst för</div><div class="v">' + esc(m.bestFor) + '</div></div>'
+          + '<div><div class="k">Färger</div><div class="v">' + esc(m.colors) + '</div></div></div>'
+          + '<div class="arrow" style="text-align:right;">→</div></div></div>';
+      }).join('');
+    }
+    var tb = document.querySelector('#metodTable tbody');
+    if (tb && !tb.dataset.built) {
+      tb.dataset.built = '1';
+      tb.innerHTML = METODER.map(function (m) {
+        return '<tr><th scope="row"><span class="mn">' + m.n + '</span><span class="mname">' + esc(m.name) + '</span></th>'
+          + '<td>' + esc(m.bestFor) + '</td><td>' + esc(m.volume) + '</td><td>' + esc(m.colors) + '</td><td>' + esc(m.durability) + '</td><td>' + esc(m.feel) + '</td></tr>';
+      }).join('');
+    }
+  }
+  function openMetodModal(i) {
+    var m = METODER[i]; if (!m) return;
+    var host = document.getElementById('metodModal');
+    host.innerHTML = '<div class="metod-modal-panel" role="dialog" aria-modal="true" aria-label="' + esc(m.name) + '">'
+      + '<button class="close" aria-label="Stäng">✕</button>'
+      + '<div style="aspect-ratio:16/9;overflow:hidden;background:#EBE7DC;"><img src="' + m.img + '" alt="" style="width:100%;height:100%;object-fit:cover;"></div>'
+      + '<div style="padding:clamp(24px,3.5vw,40px);">'
+      + '<div style="display:flex;align-items:baseline;gap:12px;"><span style="font-weight:700;font-size:14px;letter-spacing:.04em;color:var(--gold);">' + m.n + '</span>'
+      + '<h3 class="h-sub" style="margin:0;">' + esc(m.name) + '</h3></div>'
+      + '<p style="font-size:14px;line-height:1.55;color:rgba(28,23,18,.66);margin:14px 0 0;">' + esc(m.what) + '</p>'
+      + '<div class="mgrid">'
+      + field('Bäst för', m.bestFor) + field('Färger', m.colors) + field('Volym', m.volume)
+      + field('Tålighet', m.durability) + field('Prisvärt när', m.priceWhen) + field('Mindre bra för', m.lessGood)
+      + '<div style="grid-column:1 / -1;">' + fieldInner('Känsla', m.feel) + '</div>'
+      + '</div></div></div>';
+    host.style.display = 'flex';
+    function field(k, v) { return '<div>' + fieldInner(k, v) + '</div>'; }
+    function fieldInner(k, v) { return '<div class="k">' + k + '</div><div class="v">' + esc(v) + '</div>'; }
+  }
+  function closeMetodModal() { var h = document.getElementById('metodModal'); if (h) { h.style.display = 'none'; h.innerHTML = ''; } }
+
+  /* ============================================================
+     KATALOG (D4) — reproducerar Noll33 Katalog.dc.html i vanilla.
+     Ett val i taget: start → kön/kategori → plaggtyp → lista →
+     produktsida + offertkorg. Läser window.NOLL33_*. Egen state,
+     full re-render av kropp/overlay; sök-fältet är persistent (behåller
+     fokus). Data-k-attribut + delegering styr allt.
+     ============================================================ */
+  var CAT = (function () {
+    var GORDER = ['Dam', 'Herr', 'Barn', 'Unisex'];
+    var PAGE = 48;
+    // Kanonisk plaggtyps-ordning (samma i Herr/Dam/Unisex-menyerna för delade kategorier).
+    var SUB_ORDER = ['T-shirts', 'Pikéer', 'Skjortor & blusar', 'Sweatshirts & hoodies', 'Stickat', 'Linnen', 'Byxor & jeans', 'Shorts', 'Klänningar & kjolar', 'Jackor & ytterplagg', 'Västar', 'Rockar & tunikor', 'Overaller', 'Förkläden', 'Sportkläder', 'Badkläder'];
+    function subRank(s) { var i = SUB_ORDER.indexOf(s); return i < 0 ? 900 : i; }
+    // "Sport & bad" + felklassade "Baby" delas per produkt: swim → Badkläder, annars Sportkläder.
+    function normalizeSub(p) {
+      var s = p.sub || '';
+      if (s === 'Sport & bad' || s === 'Baby') return /swim/i.test(p.name || '') ? 'Badkläder' : 'Sportkläder';
+      return s;
+    }
+    // Könsanpassat visningsnamn: Herr/Unisex döljer kvinnliga ord.
+    function subLabel(sub, gender) {
+      if (gender === 'Herr' || gender === 'Unisex') {
+        if (sub === 'Skjortor & blusar') return 'Skjortor';
+        if (sub === 'Rockar & tunikor') return 'Rockar';
+      }
+      return sub;
+    }
+    var ENDPOINT = 'https://lpumzlgmlhtaihbroxqg.supabase.co/functions/v1/noll33-inquiry';
+    var root = null, bound = false, io = null, safetyTimer = null, data = null;
+    var st = { family: '', gender: '', sub: '', brand: '', q: '', shown: 48, showAll: false,
+      detailId: null, dcolor: 0, dview: 0, menu: null, sort: 'pop',
+      cartOpen: false, panelQty: false, cartMsg: '', cartErr: '', cartKind: 'quote',
+      cartSent: null, cartBusy: false, form: null, _retry: false };
+
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function top() { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } }
+
+    function ensureData() {
+      if (data) return true;
+      var P = window.NOLL33_PRODUCTS;
+      if (!P || !P.length) return false;
+      P.forEach(function (p) { p.sub = normalizeSub(p); });  // rätta plaggtyps-namn (split sport/bad + baby)
+      var byId = {}, brands = [];
+      P.forEach(function (p) { byId[p.id] = p; if (p.brand && brands.indexOf(p.brand) < 0) brands.push(p.brand); });
+      brands.sort(function (a, b) { return a.localeCompare(b, 'sv'); });
+      data = { P: P, FEAT: window.NOLL33_FEATURED || [], CATS: window.NOLL33_CATEGORIES || [], byId: byId, brands: brands };
+      return true;
+    }
+
+    /* --- urval / härledning --- */
+    function passes(p, skipG, skipS) {
+      if (st.family && p.family !== st.family) return false;
+      if (!skipG && st.gender && p.gender !== st.gender) return false;
+      if (!skipS && st.sub && p.sub !== st.sub) return false;
+      if (st.brand && p.brand !== st.brand) return false;
+      if (st.q) { var hay = (p.name + ' ' + (p.brand || '') + ' ' + p.id).toLowerCase(); if (hay.indexOf(st.q) < 0) return false; }
+      return true;
+    }
+    function mode() {
+      if (st.detailId && data && data.byId[st.detailId]) return 'product';
+      if (st.q) return 'products';
+      if (!st.family) return 'start';
+      if (!st.sub && !st.showAll) return 'category';
+      return 'products';
+    }
+    function colorSort(colors) {
+      function rank(c) {
+        var hex = (((c && c.hex) || '') + '').replace('#', ''); if (hex.length === 3) hex = hex.replace(/./g, '$&$&');
+        var n = parseInt(hex, 16); if (hex.length !== 6 || isNaN(n)) return 1.5;
+        var R = (n >> 16 & 255) / 255, G = (n >> 8 & 255) / 255, B = (n & 255) / 255;
+        var mx = Math.max(R, G, B), mn = Math.min(R, G, B), d = mx - mn, l = (mx + mn) / 2, s = (d === 0) ? 0 : d / (1 - Math.abs(2 * l - 1));
+        if (s < 0.16) return (1 - l);
+        var hh = 0; if (mx === R) hh = ((G - B) / d) % 6; else if (mx === G) hh = (B - R) / d + 2; else hh = (R - G) / d + 4;
+        hh *= 60; if (hh < 0) hh += 360; return 2 + hh / 360;
+      }
+      return (colors || []).map(function (c, i) { return { c: c, i: i, r: rank(c) }; })
+        .sort(function (a, b) { return (a.r - b.r) || (a.i - b.i); }).map(function (x) { return x.c; });
+    }
+    function sizeSpan(p) {
+      var all = []; (p.colors || []).forEach(function (c) { (c.sizes || []).forEach(function (sz) { if (all.indexOf(sz) < 0) all.push(sz); }); });
+      if (!all.length) return ''; if (all.length === 1) return all[0]; return all[0] + '-' + all[all.length - 1];
+    }
+    function priceLabel(p) { return (p.priceFrom != null) ? ('från ' + p.priceFrom + ' kr') : 'Pris i offert'; }
+    function subCountsSorted() {
+      var counts = {}; data.P.forEach(function (p) { if (passes(p, false, true) && p.sub) counts[p.sub] = (counts[p.sub] || 0) + 1; });
+      var keys = Object.keys(counts).sort(function (a, b) { if (a === 'Övrigt' || a === 'Ovrigt') return 1; if (b === 'Övrigt' || b === 'Ovrigt') return -1; return (subRank(a) - subRank(b)) || (counts[b] - counts[a]); });
+      return keys.map(function (k) { return { sub: k, n: counts[k] }; });
+    }
+    function typeImage(sub) {
+      var packshot = null;
+      for (var i = 0; i < data.P.length; i++) { var p = data.P[i]; if (p.sub === sub && passes(p, false, true)) {
+        if (p.imagePhoto && p.image) return { src: p.image, photo: true };
+        if (!packshot) { var f = (p.colors && p.colors[0] && p.colors[0].face) || p.image; if (f) packshot = { src: f, photo: false }; }
+      } }
+      return packshot || { src: '', photo: false };
+    }
+    function studioUrl(p, col) { return 'https://prntr.dahlquist.se/?from=noll33&garment_id=' + encodeURIComponent(p.id) + '&color=' + encodeURIComponent((col && col.name) || '') + '&qty=50'; }
+    // Kuraterade kategoribilder (valda av kund) — vinner över auto-valet.
+    var CAT_IMG = {
+      'Klädaccessoarer': 'https://cdn.toptex.com/pictures/K861-2_2026.jpg',   // burgundy satin-halsduk
+      'Hemtextil': 'https://cdn.toptex.com/pictures/GI18900_2025.jpg',        // vikta fleeceplädar på stol
+      'Underkläder': 'https://cdn.toptex.com/pictures/K800-4_2025.jpg'        // herrkalsong
+    };
+    // Kategoribild: kuraterad → modellfoto i förstahand (första produkt i kategorin med imagePhoto) → packshot.
+    function catImage(cat, fallback) {
+      if (CAT_IMG[cat]) return { src: CAT_IMG[cat], photo: true };
+      for (var i = 0; i < data.P.length; i++) { var p = data.P[i]; if (p.family === cat && p.imagePhoto && p.image) return { src: p.image, photo: true }; }
+      return { src: fallback || '', photo: false };
+    }
+
+    /* --- korg (localStorage) --- */
+    function loadCart() { try { var a = JSON.parse(localStorage.getItem('noll33_cart_v1')); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+    function saveCart(c) { try { localStorage.setItem('noll33_cart_v1', JSON.stringify(c)); } catch (e) {} }
+    function clientKey() { try { var k = localStorage.getItem('noll33_cart_key_v1'); if (!k) { k = 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10); localStorage.setItem('noll33_cart_key_v1', k); } return k; } catch (e) { return 'c_' + Date.now(); } }
+    function cartLines() { return loadCart().length; }
+    function detailCtx() {
+      var p = data.byId[st.detailId]; if (!p) return null;
+      var colors = colorSort(p.colors || []);
+      var ci = Math.min(st.dcolor, Math.max(0, colors.length - 1));
+      var col = colors[ci] || {};
+      var photoViews = (p.gallery || []).slice(0, 4).map(function (g) { return { src: g, photo: true }; });
+      var packViews = [col.face, col.back, col.side].filter(Boolean).map(function (x) { return { src: x, photo: false }; });
+      var views = packViews.concat(photoViews); if (!views.length) views = [{ src: p.image, photo: false }];
+      var vi = Math.min(st.dview || 0, views.length - 1);
+      return { p: p, colors: colors, ci: ci, col: col, views: views, vi: vi };
+    }
+
+    /* --- navigering --- */
+    function setState(patch) { if (st.cartOpen) snapshotForm(); Object.assign(st, patch); renderAll(); }
+    function goCategory(name, gender) { setState({ family: name, gender: gender || '', sub: '', showAll: false, brand: '', q: '', shown: 48, detailId: null }); top(); }
+    function setSub(sub) { setState({ sub: sub, showAll: false, shown: 48 }); top(); }
+    function showAllProducts() { setState({ showAll: true, sub: '', shown: 48 }); top(); }
+    function goBack() {
+      if (st.q) { setState({ q: '', shown: 48 }); top(); return; }
+      if (st.sub || st.showAll) { setState({ sub: '', showAll: false, shown: 48 }); top(); return; }
+      setState({ family: '', gender: '', shown: 48 }); top();
+    }
+    function clearFilters() { setState({ q: '', family: '', gender: '', sub: '', brand: '', showAll: false, shown: 48 }); }
+    function openDetail(id) { setState({ detailId: id, dcolor: 0, dview: 0, panelQty: false, cartMsg: '' }); top(); }
+    function closeDetail() { setState({ detailId: null }); }
+    function stepView(dir) { var c = detailCtx(); if (c && c.views.length > 1) setState({ dview: (c.vi + dir + c.views.length) % c.views.length }); }
+
+    /* --- korg-åtgärder --- */
+    function addToCart() {
+      if (!st.panelQty) { setState({ panelQty: true, cartMsg: '' }); return; }
+      var c = detailCtx(); if (!c) return; var col = c.col;
+      var sizes = {}; root.querySelectorAll('[data-qtysize]').forEach(function (inp) { var n = parseInt(inp.value, 10); if (!inp.disabled && n > 0) sizes[inp.getAttribute('data-qtysize')] = n; });
+      if (!Object.keys(sizes).length) { setState({ cartMsg: 'Ange antal för minst en storlek.' }); return; }
+      var cart = loadCart(), ex = null;
+      cart.forEach(function (r) { if (r.productId === c.p.id && r.color === (col.name || '')) ex = r; });
+      if (ex) { Object.keys(sizes).forEach(function (sz) { ex.sizes[sz] = (ex.sizes[sz] || 0) + sizes[sz]; }); }
+      else cart.push({ productId: c.p.id, productName: c.p.name, brand: c.p.brand || '', color: col.name || '', hex: col.hex || '', sizes: sizes, priceFrom: (c.p.priceFrom != null ? c.p.priceFrom : null), image: col.face || c.p.image || null });
+      saveCart(cart);
+      setState({ panelQty: false, cartMsg: 'Tillagd i korgen ✓' });
+    }
+    function removeRow(idx) { var c = loadCart(); c.splice(idx, 1); saveCart(c); setState({}); }
+    function onCartQty(t) {
+      snapshotForm();
+      var idx = Number(t.getAttribute('data-cartidx')), sz = t.getAttribute('data-cartsize'), n = parseInt(t.value, 10);
+      var c = loadCart(), r = c[idx]; if (!r) return;
+      if (n > 0) r.sizes[sz] = n; else delete r.sizes[sz];
+      c = c.filter(function (x) { return Object.keys(x.sizes).length > 0; });
+      saveCart(c); renderAll();
+    }
+    function snapshotForm() { var f = st.form || {}; ['name', 'company', 'email', 'phone', 'message'].forEach(function (k) { var el = document.getElementById('k-cart-' + k); if (el) f[k] = el.value; }); st.form = f; }
+    function submitCart() {
+      if (st.cartBusy) return;
+      var cart = loadCart();
+      if (!cart.length) { setState({ cartErr: 'Korgen är tom.' }); return; }
+      function val(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+      var name = val('k-cart-name'), email = val('k-cart-email');
+      if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setState({ cartErr: 'Fyll i namn och en giltig e-postadress.' }); return; }
+      var kind = st.cartKind === 'order' ? 'order' : 'quote';
+      var payload = { client_key: clientKey(), kind: kind, customer: { name: name, company: val('k-cart-company'), email: email, phone: val('k-cart-phone') }, message: val('k-cart-message'), items: cart.map(function (r) { return { productId: r.productId, productName: r.productName, brand: r.brand, color: r.color, sizes: r.sizes, priceFrom: r.priceFrom }; }) };
+      snapshotForm(); st.cartBusy = true; st.cartErr = ''; renderAll();
+      fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+        .then(function (res) { return res.json().then(function (b) { return { status: res.status, body: b }; }); })
+        .then(function (r) {
+          if (r.status === 200 && r.body && r.body.ok) { saveCart([]); try { localStorage.removeItem('noll33_cart_key_v1'); } catch (e) {} st.form = null; setState({ cartBusy: false, cartSent: { nr: r.body.request_number, kind: kind } }); }
+          else { setState({ cartBusy: false, cartErr: (r.body && r.body.error) || 'Något gick fel. Försök igen.' }); }
+        })
+        .catch(function () { setState({ cartBusy: false, cartErr: 'Kunde inte nå servern. Försök igen.' }); });
+    }
+
+    /* --- karusell "Köp ihop med" --- */
+    function relMove(dir) {
+      var vp = root.querySelector('.k-related-grid'); var tr = vp && vp.querySelector('.k-related-track'); if (!tr) return;
+      var max = tr.scrollWidth - vp.clientWidth; if (max < 0) max = 0;
+      var cur = parseFloat(vp.getAttribute('data-off') || '0'); var step = Math.round(vp.clientWidth * 0.8);
+      var next = cur + dir * step; if (next > 0) next = 0; if (next < -max) next = -max;
+      vp.setAttribute('data-off', next); tr.style.transition = 'transform .45s cubic-bezier(.16,1,.3,1)'; tr.style.transform = 'translateX(' + next + 'px)';
+    }
+    function attachRelWheel() {
+      var g = root.querySelector('.k-related-grid'); if (!g || g.__mw) return; g.__mw = 1;
+      g.addEventListener('wheel', function (e) {
+        var tr = g.querySelector('.k-related-track'); if (!tr) return;
+        var max = tr.scrollWidth - g.clientWidth; if (max <= 0) return;
+        if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+        var cur = parseFloat(g.getAttribute('data-off') || '0'); var next = cur - e.deltaY * 3.2;
+        if (next > 0) next = 0; if (next < -max) next = -max;
+        g.setAttribute('data-off', next); tr.style.transition = 'none'; tr.style.transform = 'translateX(' + next + 'px)'; e.preventDefault();
+      }, { passive: false });
+    }
+
+    /* --- rendering --- */
+    function renderNavBtns() {
+      var present = {}; data.P.forEach(function (p) { if (p.family === 'Kläder') present[p.gender] = 1; });
+      var keys = GORDER.filter(function (g) { return present[g]; }).concat(['Sortiment']);
+      return keys.map(function (k) {
+        var open = st.menu === k;
+        return '<button class="k-navbtn' + (open ? ' is-open' : '') + '" data-k="toggleMenu" data-menu="' + esc(k) + '" aria-haspopup="true" aria-expanded="' + (open ? 'true' : 'false') + '">' + esc(k) + '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></button>';
+      }).join('');
+    }
+    function renderFly() {
+      if (!st.menu) return '';
+      var inner;
+      if (st.menu === 'Sortiment') {
+        inner = '<div class="k-fly-h">Kategorier</div><div class="k-fly-list">' +
+          data.CATS.map(function (c) { return '<button class="k-fly-link" data-k="flyCat" data-cat="' + esc(c.name) + '">' + esc(c.name) + '</button>'; }).join('') + '</div>';
+      } else {
+        var mg = st.menu, subc = {};
+        data.P.forEach(function (p) { if (p.family === 'Kläder' && p.gender === mg && p.sub) subc[p.sub] = (subc[p.sub] || 0) + 1; });
+        var mk = Object.keys(subc).sort(function (a, b) { if (a === 'Övrigt' || a === 'Ovrigt') return 1; if (b === 'Övrigt' || b === 'Ovrigt') return -1; return (subRank(a) - subRank(b)) || (subc[b] - subc[a]); });
+        inner = '<div class="k-fly-h">Plagg för ' + esc(mg) + '</div><div class="k-fly-list">' +
+          mk.map(function (sub) { return '<button class="k-fly-link" data-k="flySub" data-gender="' + esc(mg) + '" data-sub="' + esc(sub) + '">' + esc(subLabel(sub, mg)) + '</button>'; }).join('') +
+          '</div><button class="k-fly-all" data-k="flyAll" data-gender="' + esc(mg) + '">Visa alla ' + esc(mg.toLowerCase()) + 'plagg</button>';
+      }
+      return '<div class="k-fly"><div class="k-fly-inner">' + inner + '</div></div>';
+    }
+    function renderStart() {
+      function findImg(g) {
+        for (var i = 0; i < data.P.length; i++) { var p = data.P[i]; if (p.family === 'Kläder' && p.gender === g && p.imagePhoto && p.image) return { src: p.image, photo: true }; }
+        for (var j = 0; j < data.P.length; j++) { var q = data.P[j]; if (q.family === 'Kläder' && q.gender === g) { var f = (q.colors && q.colors[0] && q.colors[0].face) || q.image; if (f) return { src: f, photo: false }; } }
+        return { src: '', photo: false };
+      }
+      var present = {}; data.P.forEach(function (p) { if (p.family === 'Kläder') present[p.gender] = 1; });
+      var DISCOVER_IMG = {
+        Herr: 'https://cdn.toptex.com/pictures/SP504-17_2025.jpg',    // Spasso Men's linen shirt
+        Dam: 'https://cdn.toptex.com/pictures/SP5008_2025.jpg',       // Spasso Ladies' linen dress shirt
+        Unisex: 'https://cdn.toptex.com/pictures/K497-24_2024.jpg',   // Kariban Unisex teddy fleece jacket
+        Barn: 'https://cdn.toptex.com/pictures/CGTK002_2025.jpg'      // B&C Kids t-shirt #E190
+      };
+      var discover = [['Herr', 'Utforska herrsortimentet'], ['Dam', 'Utforska damsortimentet'], ['Barn', 'Utforska barnsortimentet'], ['Unisex', 'Utforska unisexsortimentet']]
+        .filter(function (x) { return present[x[0]]; })
+        .map(function (x) {
+          if (DISCOVER_IMG[x[0]]) return { g: x[0], sub: x[1], img: DISCOVER_IMG[x[0]], photo: true };
+          var r = findImg(x[0]); return { g: x[0], sub: x[1], img: r.src, photo: r.photo };
+        });
+      var discoverHtml = discover.map(function (c) {
+        return '<button class="k-dcard k-reveal" data-k="category" data-cat="Kläder" data-gender="' + esc(c.g) + '" aria-label="' + esc(c.g + ', ' + c.sub) + '">' +
+          (!c.photo ? '<span class="k-ph">Lifestylebild kommer</span>' : '') +
+          '<img class="' + (c.photo ? 'photo' : '') + '" src="' + esc(c.img) + '" alt="' + esc(c.g) + '">' +
+          '<span class="k-dcard-grad"></span>' +
+          '<span class="k-dcard-txt"><span class="k-dcard-h">' + esc(c.g) + '</span><span class="k-dcard-sub">' + esc(c.sub) + '</span></span></button>';
+      }).join('');
+      var catsHtml = data.CATS.map(function (c) {
+        var ci = catImage(c.name, c.image);
+        return '<div class="k-tile k-reveal"><button class="k-plate" data-k="flyCat" data-cat="' + esc(c.name) + '" aria-label="' + esc(c.name) + '"><img class="' + (ci.photo ? 'photo' : '') + '" src="' + esc(ci.src) + '" alt="' + esc(c.name) + '"></button><div class="k-tile-name">' + esc(c.name) + '</div><div class="k-tile-count">' + esc((c.count || 0) + ' produkter') + '</div></div>';
+      }).join('');
+      var feat = data.FEAT.map(function (id) { return data.byId[id]; }).filter(Boolean).slice(0, 10).map(function (p) {
+        var img = p.image || (p.colors && p.colors[0] && p.colors[0].face) || '';
+        return '<button class="k-featcard" data-k="open" data-id="' + esc(p.id) + '" aria-label="' + esc(p.name) + '"><span class="k-plate"><img class="' + (p.imagePhoto ? 'photo' : '') + '" src="' + esc(img) + '" alt="' + esc(p.name) + '" loading="lazy"></span><div class="k-tile-name">' + esc(p.name) + '</div><div class="k-tile-count">' + esc(priceLabel(p)) + '</div></button>';
+      }).join('');
+      var story = '<div class="k-story"><h3 class="k-story-h">Sortiment byggt för förädling</h3>' +
+        '<p class="k-story-lead" style="margin-bottom:14px">Ett kurerat sortiment av basplagg, arbetskläder, sport och accessoarer från ledande varumärken — B&amp;C, Kariban, Native Spirit, Result med flera. Vi väljer plagg som bär tryck, brodyr och vävda märken väl: jämn yta att trycka på, passform som sitter serie efter serie och färger som klarar tvätten. Det mesta finns i hela storleksregistret och ett brett färgspann, så en beställning kan hålla ihop från barnstorlek till 5XL.</p>' +
+        '<p class="k-story-lead">Vi trycker, broderar och märker åt återförsäljare — alltid white-label. Du säljer vidare i ditt eget namn, vi står för hantverket. Från enstaka prov till serier i tusental, med samma folk och maskiner genom hela kedjan.</p>' +
+        '<div class="k-story-grid">' +
+        '<div class="k-story-item"><h4>Brett sortiment</h4><p>Basplagg, arbetskläder, sport, accessoarer och profiltextil — samlade hos en leverantör. Fyll på samma modell om ett år, färgerna och passformen sitter kvar.</p></div>' +
+        '<div class="k-story-item"><h4>Sex metoder</h4><p>Screentryck, screentransfer, DTG, DTF, brodyr och vävda märken — allt in-house. Vi väljer metod efter plagg, motiv och upplaga, inte tvärtom.</p></div>' +
+        '<div class="k-story-item"><h4>Hållbarhet</h4><p>GOTS- och Oeko-Tex-certifierade basplagg när projektet kräver det, och vattenbaserade färger i trycket. Vi förädlar mot order snarare än lager — det håller nere överproduktion och svinn.</p></div>' +
+        '</div></div>';
+      return '<div class="k-wrap">' +
+        '<div class="k-head"><div class="k-eyebrow">Sortiment</div><h1 class="k-h1">Plagg att förädla</h1><p class="k-lead">Basplagg från ledande varumärken, redo för tryck, brodyr och vävda märken. Välj kön eller kategori i menyn ovan, eller börja med en ingång nedan.</p></div>' +
+        '<div class="k-sec k-sec-first"><div class="k-discover">' + discoverHtml + '</div></div>' +
+        '<div class="k-sec"><div class="k-sec-h">Bläddra efter kategori</div><div class="k-tiles">' + catsHtml + '</div></div>' +
+        (feat ? '<div class="k-sec k-featured"><div class="k-sec-h">Mest populära</div><div class="k-featrow">' + feat + '</div></div>' : '') +
+        story + '<div class="k-footpad"></div></div>';
+    }
+    function renderCategory() {
+      var subs = subCountsSorted();
+      var tiles = subs.map(function (o) { var ti = typeImage(o.sub); var lbl = subLabel(o.sub, st.gender); return '<div class="k-tile k-reveal"><button class="k-plate" data-k="setSub" data-sub="' + esc(o.sub) + '" aria-label="' + esc(lbl) + '"><img class="' + (ti.photo ? 'photo' : '') + '" src="' + esc(ti.src) + '" alt="' + esc(lbl) + '" loading="lazy"></button><div class="k-tile-name">' + esc(lbl) + '</div><div class="k-tile-count">' + esc(o.n + ' produkter') + '</div></div>'; }).join('');
+      var total = 0; data.P.forEach(function (p) { if (passes(p, false, true)) total++; });
+      return '<div class="k-wrap"><div class="k-crumb"><button class="k-back" data-k="goBackAll">‹ Alla kategorier</button>' +
+        (st.gender ? '<div class="k-ctx">' + esc(st.gender) + '</div>' : '') +
+        '<h2 class="k-h2">' + esc(st.family) + '</h2></div>' +
+        '<div class="k-tiles">' + tiles + '</div>' +
+        '<div class="k-showall"><button data-k="showAll">Visa alla ' + total + ' produkter</button></div>' +
+        '<div class="k-footpad"></div></div>';
+    }
+    function renderCard(p) {
+      var c0 = p.colors && p.colors[0];
+      var isPhoto = !!p.imagePhoto;
+      var face = p.image || (c0 && c0.face) || '';
+      var backRaw = isPhoto ? ((p.gallery && p.gallery[1]) || null) : ((c0 && c0.back) || (c0 && c0.side) || null);
+      var hasBack = !!backRaw;
+      var shown = colorSort(p.colors || []).slice(0, 6);
+      var dots = shown.map(function (c) { return '<span class="k-swatch" style="background:' + esc(c.hex || '#ccc') + '"></span>'; }).join('');
+      var moreCount = (p.colors || []).length - shown.length;
+      var span = sizeSpan(p);
+      return '<button class="k-card k-reveal' + (hasBack ? ' k-hasback' : '') + '" data-k="open" data-id="' + esc(p.id) + '" aria-label="' + esc(p.name + (p.brand ? ', ' + p.brand : '')) + '">' +
+        '<span class="k-card-img"><img class="k-face' + (isPhoto ? ' photo' : '') + '" src="' + esc(face) + '" alt="' + esc(p.name) + '" loading="lazy">' +
+        (hasBack ? '<img class="k-backimg' + (isPhoto ? ' photo' : '') + '" src="' + esc(backRaw) + '" alt="" loading="lazy">' : '') + '</span>' +
+        '<div class="k-brand">' + esc(p.brand || '') + '</div><div class="k-name">' + esc(p.name) + '</div>' +
+        '<div class="k-swatches">' + dots + (moreCount > 0 ? '<span class="k-more">+' + moreCount + '</span>' : '') + '</div>' +
+        '<div class="k-meta">' + esc(priceLabel(p) + (span ? (' · ' + span) : '')) + '</div></button>';
+    }
+    function renderProducts() {
+      var all = data.P.filter(function (p) { return passes(p, false, false); });
+      if (st.sort === 'price-asc') all.sort(function (a, b) { return (a.priceFrom == null ? 1e9 : a.priceFrom) - (b.priceFrom == null ? 1e9 : b.priceFrom); });
+      else if (st.sort === 'price-desc') all.sort(function (a, b) { return (b.priceFrom == null ? -1 : b.priceFrom) - (a.priceFrom == null ? -1 : a.priceFrom); });
+      else if (st.sort === 'name') all.sort(function (a, b) { return String(a.name || '').localeCompare(String(b.name || ''), 'sv'); });
+      var subTitle = st.q ? ('Sökning: ' + st.q) : (st.sub ? subLabel(st.sub, st.gender) : (st.family || 'Alla produkter'));
+      var backLabel = st.q ? '‹ Alla kategorier' : ('‹ ' + (st.family || 'Alla kategorier'));
+      var ctx = (st.gender && !st.q) ? '<div class="k-ctx">' + esc(st.gender) + '</div>' : '';
+      var brandOpts = '<option value="">Alla varumärken</option>' + data.brands.map(function (b) { return '<option value="' + esc(b) + '"' + (st.brand === b ? ' selected' : '') + '>' + esc(b) + '</option>'; }).join('');
+      var sortOpts = [['pop', 'Populärast'], ['price-asc', 'Pris: låg till hög'], ['price-desc', 'Pris: hög till låg'], ['name', 'Namn A-Ö']].map(function (o) { return '<option value="' + o[0] + '"' + (st.sort === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('');
+      var head = '<div class="k-crumb"><button class="k-back" data-k="goBack">' + esc(backLabel) + '</button>' + ctx + '<h2 class="k-h2">' + esc(subTitle) + '</h2></div>';
+      var toolbar = '<div class="k-toolbar"><select class="k-select" id="kSort" aria-label="Sortera">' + sortOpts + '</select><select class="k-select" id="kBrand" aria-label="Filtrera på varumärke">' + brandOpts + '</select><span class="k-count">' + all.length + (all.length === 1 ? ' produkt' : ' produkter') + '</span></div>';
+      if (!all.length) return '<div class="k-wrap">' + head + toolbar + '<div class="k-empty"><div>Inga produkter matchar.</div><button data-k="clearFilters">Rensa filter</button></div><div class="k-footpad"></div></div>';
+      var visible = all.slice(0, st.shown);
+      var grid = visible.map(renderCard).join('');
+      var more = all.length > st.shown ? '<div class="k-morewrap"><span class="k-count">Visar ' + visible.length + ' av ' + all.length + ' produkter</span><button class="k-morebtn" data-k="more">Visa fler</button></div>' : '';
+      return '<div class="k-wrap">' + head + toolbar + '<div class="k-grid">' + grid + '</div>' + more + '<div class="k-footpad"></div></div>';
+    }
+    function renderRelated(p) {
+      var seen = {}; seen[p.id] = 1;
+      var pool = data.P.filter(function (x) { return !seen[x.id] && (x.gender === p.gender || x.gender === 'Unisex') && x.sub && x.sub !== p.sub; });
+      if (pool.length < 8) pool = data.P.filter(function (x) { return !seen[x.id] && x.family === p.family && x.sub && x.sub !== p.sub; });
+      var groups = {}, order = [];
+      pool.forEach(function (x) { if (!groups[x.sub]) { groups[x.sub] = []; order.push(x.sub); } groups[x.sub].push(x); });
+      order.forEach(function (su) { groups[su] = groups[su].filter(function (y) { return y.imagePhoto; }).concat(groups[su].filter(function (y) { return !y.imagePhoto; })); });
+      var picked = [], guard = 0;
+      while (picked.length < 12 && order.length && guard++ < 400) { var su = order[picked.length % order.length]; if (groups[su] && groups[su].length) picked.push(groups[su].shift()); else { var idx = order.indexOf(su); if (idx > -1) order.splice(idx, 1); } }
+      if (picked.length < 12) pool.forEach(function (x) { if (picked.length < 12 && picked.indexOf(x) < 0) picked.push(x); });
+      if (!picked.length) return '';
+      var cards = picked.map(function (x) {
+        var c0 = x.colors && x.colors[0]; var img = x.image || (c0 && c0.face) || ''; var isPhoto = !!x.imagePhoto;
+        return '<button class="k-relcard" data-k="open" data-id="' + esc(x.id) + '" aria-label="' + esc(x.name) + '"><span class="k-card-img"><img class="' + (isPhoto ? 'photo' : '') + '" src="' + esc(img) + '" alt="' + esc(x.name) + '" loading="lazy"></span><div class="k-brand">' + esc(x.brand || '') + '</div><div class="k-name">' + esc(x.name) + '</div><div class="k-meta">' + esc(priceLabel(x)) + '</div></button>';
+      }).join('');
+      return '<div class="k-related"><div class="k-related-head"><div class="k-related-h">Köp ihop med</div><div class="k-relnav"><button data-k="relPrev" aria-label="Föregående">‹</button><button data-k="relNext" aria-label="Nästa">›</button></div></div><div class="k-related-grid" data-off="0"><div class="k-related-track">' + cards + '</div></div></div>';
+    }
+    function renderProduct() {
+      var c = detailCtx(); if (!c) return renderProducts();
+      var p = c.p, col = c.col, colors = c.colors, views = c.views, vi = c.vi, ci = c.ci;
+      var mainV = views[vi];
+      var stage = '<div class="k-prod-stage" data-k="nextView"><img src="' + esc(mainV.src) + '" alt="' + esc(p.name) + '" class="' + (mainV.photo ? 'photo' : '') + '"></div>';
+      var stagenav = views.length > 1 ? '<div class="k-stagenav"><button data-k="prevView" aria-label="Föregående bild">‹</button><button data-k="nextView" aria-label="Nästa bild">›</button></div>' : '';
+      var thumbs = views.length > 1 ? '<div class="k-prod-thumbs">' + views.map(function (v, idx) { return '<button class="k-dthumb' + (idx === vi ? ' is-active' : '') + '" data-k="setView" data-i="' + idx + '"><img src="' + esc(v.src) + '" alt="" class="' + (v.photo ? 'photo' : '') + '"></button>'; }).join('') + '</div>' : '';
+      var colorsHtml = colors.length ? '<div class="k-dlabel">Färg</div><div class="k-dcolors">' + colors.map(function (cc, i) { return '<button class="k-dcolor' + (i === ci ? ' is-active' : '') + '" style="background:' + esc(cc.hex || '#ccc') + '" data-k="setColor" data-i="' + i + '" aria-label="' + esc(cc.name || '') + '"></button>'; }).join('') + '</div><div class="k-dcolorname">' + esc(col.name || '') + '</div>' : '';
+      var sizesArr = col.sizes || [], sizesHtml = '';
+      if (sizesArr.length) {
+        var chips = sizesArr.map(function (sz) { var lvl = col.stock && col.stock[sz]; var cls = lvl === 'order' ? 'order' : (lvl === 'out' ? 'out' : ''); return '<span class="k-size ' + cls + '">' + esc(sz + (lvl === 'order' ? '*' : '')) + '</span>'; }).join('');
+        var stockNote = (function () { if (!col.stock) return ''; var af = false, ao = false; sizesArr.forEach(function (sz) { var l = col.stock[sz]; if (l === 'order') ao = true; else if (l !== 'out') af = true; }); if (!af && !ao) return ''; return (af ? 'I lager hos leverantör — leverans normalt 2–4 dagar. ' : '') + (ao ? '* Beställningsvara — längre leveranstid, bekräftas i offerten.' : ''); })();
+        sizesHtml = '<div class="k-dlabel">Storlekar</div><div class="k-dsizes">' + chips + '</div>' + (stockNote ? '<div class="k-stocknote">' + esc(stockNote) + '</div>' : '');
+      }
+      var specOrder = [['material', 'Material'], ['vikt', 'Vikt'], ['passform', 'Passform'], ['hals', 'Hals'], ['stangning', 'Stängning'], ['etikett', 'Etikett'], ['vattenpelare', 'Vattenpelare'], ['ursprung', 'Ursprung'], ['tryckyta', 'Tryckyta']];
+      var specRows = []; specOrder.forEach(function (r) { var v = p.specs && p.specs[r[0]]; if (v) specRows.push('<tr><td>' + esc(r[1]) + '</td><td>' + esc(v) + '</td></tr>'); });
+      var certs = p.certs || [], datablad = (p.specs && p.specs.datablad) || '';
+      var hasSpecs = specRows.length || certs.length || datablad || p.utgaende;
+      var specsHtml = hasSpecs ? '<div class="k-detailsblock"><div class="k-dlabel">Produktdetaljer</div><table class="k-spectable"><tbody>' + specRows.join('') + '</tbody></table>' + (certs.length ? '<div class="k-certs">' + esc(certs.join(' · ')) + '</div>' : '') + (p.utgaende ? '<div class="k-discont">Utgående modell — begär offert för ersättare.</div>' : '') + '</div>' : '';
+      var databladHtml = datablad ? '<a class="k-doclink k-doclink-bottom" href="' + esc(datablad) + '" target="_blank" rel="noopener">Tekniskt datablad (PDF)</a>' : '';
+      var avail = sizesArr.filter(function (sz) { return !(col.stock && col.stock[sz] === 'out'); });
+      var qtyHtml = '';
+      if (st.panelQty) {
+        var cells = avail.map(function (sz) { var o = col.stock && col.stock[sz] === 'order'; return '<label class="k-qtycell">' + esc(sz + (o ? '*' : '')) + '<input type="number" min="0" step="1" inputmode="numeric" placeholder="0" data-qtysize="' + esc(sz) + '"></label>'; }).join('');
+        var anyOrder = avail.some(function (sz) { return col.stock && col.stock[sz] === 'order'; });
+        qtyHtml = '<div class="k-dlabel">Antal per storlek</div><div class="k-qtygrid">' + cells + '</div>' + (anyOrder ? '<div class="k-stocknote">* Beställningsvara — längre leveranstid, bekräftas i offerten.</div>' : '');
+      }
+      var noAvail = avail.length === 0;
+      var ctaLabel = noAvail ? 'Tillfälligt slut i denna färg' : (st.panelQty ? 'Lägg till i korgen' : 'Lägg i korgen');
+      var cta = '<button class="k-cta" data-k="addToCart"' + (noAvail ? ' disabled style="opacity:.5;cursor:not-allowed"' : '') + '>' + esc(ctaLabel) + '</button>';
+      var cartMsg = st.cartMsg ? '<div class="k-ctanote">' + esc(st.cartMsg) + '</div>' : '';
+      var designbtn = p.designbar ? '<button class="k-designbtn is-soon" type="button" disabled aria-disabled="true">Designa med tryck — kommer snart</button>' : '';
+      var priceHtml = '<div class="k-dprice">' + esc(priceLabel(p)) + '</div><div class="k-dnote">Publikt listpris. Ditt pris med förädling lämnas i offert.</div>';
+      var info = '<div class="k-prod-info"><div class="k-dbrand">' + esc(p.brand || '') + '</div><div class="k-dname">' + esc(p.name) + '</div>' + colorsHtml + sizesHtml + specsHtml + databladHtml + priceHtml + qtyHtml + cta + cartMsg + designbtn + '</div>';
+      var media = '<div class="k-prod-media">' + stage + stagenav + thumbs + '</div>';
+      return '<div class="k-wrap k-prodwrap"><div class="k-crumb"><button class="k-back" data-k="closeDetail">‹ ' + esc(p.sub ? subLabel(p.sub, p.gender) : (p.family || 'Sortiment')) + '</button></div>' +
+        '<div class="k-prod">' + media + info + '</div>' + renderRelated(p) + '<div class="k-footpad"></div></div>';
+    }
+    function renderBody() {
+      var m = mode();
+      if (m === 'start') return renderStart();
+      if (m === 'category') return renderCategory();
+      if (m === 'product') return renderProduct();
+      return renderProducts();
+    }
+    function renderCart() {
+      var cart = loadCart();
+      var count = cart.reduce(function (t, r) { return t + Object.keys(r.sizes).reduce(function (a, k) { return a + (r.sizes[k] || 0); }, 0); }, 0);
+      var head = '<div class="k-carthead"><div class="k-carttitle">Offertkorg</div><button class="k-drawer-close" data-k="closeCart" aria-label="Stäng korgen">✕</button></div>';
+      var inner;
+      if (st.cartSent) {
+        var kind = st.cartSent.kind;
+        inner = '<div class="k-cartsuccess"><div class="k-cartsuccess-h">' + (kind === 'order' ? 'Tack! Din beställning #' : 'Tack! Din offertförfrågan #') + esc(st.cartSent.nr) + ' är mottagen.</div><p>Vi återkommer inom kort till din e-postadress med ' + (kind === 'order' ? 'orderbekräftelse och slutpris.' : 'en offert.') + '</p></div>';
+      } else if (!cart.length) {
+        inner = '<p class="k-cartempty">Korgen är tom. Öppna en produkt och välj antal per storlek.</p>';
+      } else {
+        var f = st.form || {};
+        var rows = cart.map(function (r, idx) {
+          var meta = [r.brand, r.color].filter(Boolean).join(' · ') + (r.priceFrom != null ? (' · från ' + r.priceFrom + ' kr/st') : '');
+          var total = Object.keys(r.sizes).reduce(function (a, sz) { return a + (r.sizes[sz] || 0); }, 0);
+          var sizes = Object.keys(r.sizes).map(function (sz) { return '<label class="k-qtycell">' + esc(sz) + '<input type="number" min="0" step="1" inputmode="numeric" value="' + r.sizes[sz] + '" data-cartidx="' + idx + '" data-cartsize="' + esc(sz) + '"></label>'; }).join('');
+          return '<div class="k-cartrow"><div class="k-cartthumb">' + (r.image ? '<img src="' + esc(r.image) + '" alt="">' : '') + '</div>' +
+            '<div><div class="k-cartrow-name">' + esc(r.productName) + '</div><div class="k-cartrow-meta">' + esc(meta) + '</div><div class="k-cartrow-sizes">' + sizes + '</div><div class="k-cartrow-total">Totalt ' + total + ' plagg</div></div>' +
+            '<button class="k-cartremove" data-k="removeRow" data-idx="' + idx + '">Ta bort</button></div>';
+        }).join('');
+        var qk = st.cartKind !== 'order', ok = st.cartKind === 'order';
+        inner = '<div class="k-cartrows">' + rows + '</div>' +
+          '<div class="k-carttotal">' + count + ' plagg i korgen</div>' +
+          '<div class="k-cartpricenote">Priserna är frånpriser. Slutpris bekräftas i offerten eller orderbekräftelsen.</div>' +
+          '<div class="k-cartform">' +
+            '<div class="k-cartkinds"><label data-k="setKind" data-kind="quote"><input type="radio" name="k-cartkind" ' + (qk ? 'checked' : '') + '> Offert</label><label data-k="setKind" data-kind="order"><input type="radio" name="k-cartkind" ' + (ok ? 'checked' : '') + '> Beställning</label></div>' +
+            (ok ? '<div class="k-cartordernote">Beställningen är bindande och faktureras. Slutpris bekräftas i orderbekräftelsen.</div>' : '') +
+            '<input class="k-cartinput" id="k-cart-name" type="text" placeholder="Namn *" aria-label="Namn" value="' + esc(f.name || '') + '">' +
+            '<input class="k-cartinput" id="k-cart-company" type="text" placeholder="Företag" aria-label="Företag" value="' + esc(f.company || '') + '">' +
+            '<input class="k-cartinput" id="k-cart-email" type="email" placeholder="E-post *" aria-label="E-post" value="' + esc(f.email || '') + '">' +
+            '<input class="k-cartinput" id="k-cart-phone" type="tel" placeholder="Telefon" aria-label="Telefon" value="' + esc(f.phone || '') + '">' +
+            '<textarea class="k-cartinput" id="k-cart-message" rows="3" placeholder="Meddelande (valfritt)" aria-label="Meddelande">' + esc(f.message || '') + '</textarea>' +
+            '<button class="k-cta" data-k="submitCart">' + (st.cartBusy ? 'Skickar…' : 'Skicka') + '</button>' +
+            (st.cartErr ? '<div class="k-carterror">' + esc(st.cartErr) + '</div>' : '') +
+          '</div>';
+      }
+      return '<div class="k-backdrop" data-k="closeCart"></div><aside class="k-cartdrawer" role="dialog" aria-modal="true" aria-label="Offertkorg">' + head + inner + '</aside>';
+    }
+    function catObserve() {
+      var nodes = root.querySelectorAll('.k-reveal:not(.in)');
+      if (!io) { nodes.forEach(function (n) { n.classList.add('in'); }); return; }
+      nodes.forEach(function (n) { io.observe(n); });
+    }
+    function updateBadge() { var b = document.getElementById('kBadge'); if (!b) return; var n = cartLines(); if (n > 0) { b.textContent = n; b.hidden = false; } else b.hidden = true; }
+    function syncSearch() { var inp = document.getElementById('kSearch'); if (inp && document.activeElement !== inp && inp.value !== st.q) inp.value = st.q; }
+    function renderAll() {
+      if (!root) return;
+      var nav = document.getElementById('kNavBtns'); if (nav) nav.innerHTML = renderNavBtns();
+      var fly = document.getElementById('kFly'); if (fly) fly.innerHTML = renderFly();
+      var mb = document.getElementById('kMenuBackdrop'); if (mb) mb.style.display = st.menu ? 'block' : 'none';
+      var body = document.getElementById('kBody'); if (body) body.innerHTML = renderBody();
+      var ov = document.getElementById('kOverlays'); if (ov) ov.innerHTML = st.cartOpen ? renderCart() : '';
+      updateBadge(); syncSearch(); catObserve();
+      if (mode() === 'product') attachRelWheel();
+    }
+    function onClick(e) {
+      var b = e.target.closest('[data-k]'); if (!b || !root.contains(b)) return;
+      var k = b.getAttribute('data-k'), d = b.dataset;
+      switch (k) {
+        case 'category': goCategory(d.cat, d.gender || ''); break;
+        case 'setSub': setSub(d.sub); break;
+        case 'showAll': showAllProducts(); break;
+        case 'goBack': goBack(); break;
+        case 'goBackAll': setState({ family: '', gender: '', shown: 48 }); top(); break;
+        case 'open': openDetail(d.id); break;
+        case 'more': setState({ shown: st.shown + PAGE }); break;
+        case 'clearFilters': clearFilters(); break;
+        case 'closeDetail': closeDetail(); break;
+        case 'toggleMenu': setState({ menu: st.menu === d.menu ? null : d.menu }); break;
+        case 'closeMenu': setState({ menu: null }); break;
+        case 'flyCat': setState({ family: d.cat, gender: '', sub: '', showAll: false, brand: '', q: '', shown: 48, detailId: null, menu: null }); top(); break;
+        case 'flySub': setState({ family: 'Kläder', gender: d.gender, sub: d.sub, showAll: false, shown: 48, detailId: null, menu: null }); top(); break;
+        case 'flyAll': setState({ family: 'Kläder', gender: d.gender, sub: '', showAll: true, shown: 48, detailId: null, menu: null }); top(); break;
+        case 'setColor': setState({ dcolor: +d.i, dview: 0 }); break;
+        case 'setView': setState({ dview: +d.i }); break;
+        case 'nextView': stepView(1); break;
+        case 'prevView': stepView(-1); break;
+        case 'addToCart': addToCart(); break;
+        case 'openCart': setState({ cartOpen: true, cartErr: '', cartSent: null }); break;
+        case 'closeCart': setState({ cartOpen: false }); break;
+        case 'removeRow': removeRow(+d.idx); break;
+        case 'setKind': setState({ cartKind: d.kind }); break;
+        case 'submitCart': e.preventDefault(); submitCart(); break;
+        case 'relPrev': relMove(1); break;
+        case 'relNext': relMove(-1); break;
+      }
+    }
+    function onChange(e) {
+      var t = e.target;
+      if (t.id === 'kSort') { setState({ sort: t.value, shown: 48 }); return; }
+      if (t.id === 'kBrand') { setState({ brand: t.value || '', shown: 48 }); return; }
+      if (t.hasAttribute && t.hasAttribute('data-cartidx')) { onCartQty(t); return; }
+    }
+    function buildShell() {
+      root.innerHTML =
+        '<div class="kx-navrow"><div class="kx-nav">' +
+          '<div class="kx-navbtns" id="kNavBtns"></div>' +
+          '<div class="k-search"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.6"></circle><path d="M14 14l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg><input id="kSearch" type="search" placeholder="Sök i sortimentet" aria-label="Sök i sortimentet"></div>' +
+          '<button class="k-navcart" data-k="openCart" aria-label="Öppna offertkorgen"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.5 8.5h11l-.9 10.2a1.5 1.5 0 0 1-1.5 1.3H8.9a1.5 1.5 0 0 1-1.5-1.3L6.5 8.5Z" stroke="currentColor" stroke-width="1.6"></path><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5" stroke="currentColor" stroke-width="1.6"></path></svg><span class="k-navcart-badge" id="kBadge" hidden></span></button>' +
+        '</div><div id="kFly"></div></div>' +
+        '<div id="kMenuBackdrop" class="k-menu-backdrop" style="display:none" data-k="closeMenu"></div>' +
+        '<div id="kBody"></div>' +
+        '<div id="kOverlays"></div>';
+      root.addEventListener('click', onClick);
+      root.addEventListener('change', onChange);
+      var inp = document.getElementById('kSearch');
+      if (inp) inp.addEventListener('input', function () { st.q = (inp.value || '').trim().toLowerCase(); st.shown = 48; st.detailId = null; st.menu = null; renderAll(); });
+      if (!reduceMotion && 'IntersectionObserver' in window) {
+        io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: 0.08, rootMargin: '0px 0px -6% 0px' });
+      }
+      if (!safetyTimer) safetyTimer = setInterval(function () { if (!root) return; root.querySelectorAll('.k-reveal:not(.in)').forEach(function (n) { var r = n.getBoundingClientRect(); if (r.top < (window.innerHeight || 800) * 1.1) n.classList.add('in'); }); }, 400);
+      document.addEventListener('keydown', function (e) { if (e.key !== 'Escape') return; if (st.cartOpen) setState({ cartOpen: false }); else if (st.detailId) setState({ detailId: null }); else if (st.menu) setState({ menu: null }); });
+    }
+    return {
+      mount: function () {
+        root = document.getElementById('catalogRoot');
+        if (!root) return;
+        if (!ensureData()) {
+          root.innerHTML = '<div class="k-wrap"><div class="k-loading">Laddar sortimentet…</div></div>';
+          if (!st._retry) { st._retry = true; setTimeout(function () { st._retry = false; if (document.body.dataset.page === 'catalog') CAT.mount(); }, 150); }
+          return;
+        }
+        if (!bound) { buildShell(); bound = true; }
+        renderAll();
+      },
+      // Extern styrning från globala söket.
+      ready: function () { return ensureData(); },
+      products: function () { return ensureData() ? data.P : []; },
+      priceLabel: function (p) { return priceLabel(p); },
+      search: function (q) { st.q = (q || '').trim().toLowerCase(); st.shown = 48; st.detailId = null; st.menu = null; st.family = ''; st.gender = ''; st.sub = ''; st.showAll = false; st.brand = ''; if (root && bound) renderAll(); },
+      openProduct: function (id) { st.detailId = id; st.dcolor = 0; st.dview = 0; st.panelQty = false; st.cartMsg = ''; if (root && bound) renderAll(); },
+      // Djuplänk från startsidans sortimentskort → plaggtyp-lista (könsneutral).
+      openSub: function (sub) { st.detailId = null; st.q = ''; st.brand = ''; st.family = 'Kläder'; st.gender = ''; st.sub = sub; st.showAll = false; st.shown = 48; st.menu = null; if (root && bound) renderAll(); },
+      // Djuplänk → hel kategori (family) i katalogen.
+      openFamily: function (fam) { st.detailId = null; st.q = ''; st.brand = ''; st.family = fam; st.gender = ''; st.sub = ''; st.showAll = false; st.shown = 48; st.menu = null; if (root && bound) renderAll(); },
+      // Nollställ till katalogens startsida (header "Sortiment" / "Utforska hela katalogen").
+      reset: function () { st.detailId = null; st.q = ''; st.brand = ''; st.family = ''; st.gender = ''; st.sub = ''; st.showAll = false; st.shown = 48; st.menu = null; if (root && bound) renderAll(); }
+    };
+  })();
+
+  /* ============================================================
+     GLOBAL SÖK — overlay. "Sök" i headern öppnar en sökruta (inte
+     ett sidbyte). Söker produkter live ur katalogdatan; klick → produkt,
+     Enter/"Visa alla" → sortimentsvyn med sökningen.
+     ============================================================ */
+  var SEARCH = (function () {
+    var header = null, input = null, resultsEl = null, bound = false, curQ = '';
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function matches(q) {
+      var P = CAT.products(); if (!P.length || !q) return [];
+      var needle = q.toLowerCase(), out = [];
+      for (var i = 0; i < P.length && out.length < 500; i++) { var p = P[i]; var hay = (p.name + ' ' + (p.brand || '') + ' ' + p.id).toLowerCase(); if (hay.indexOf(needle) >= 0) out.push(p); }
+      return out;
+    }
+    function render(q) {
+      curQ = (q || '').trim();
+      if (!resultsEl) return;
+      var html = '';
+      if (!curQ) html = '';
+      else if (!CAT.ready()) html = '<div class="ss-empty">Laddar sortimentet…</div>';
+      else {
+        var all = matches(curQ);
+        if (!all.length) html = '<div class="ss-empty">Inga träffar för "' + esc(curQ) + '".</div>';
+        else {
+          var rows = all.slice(0, 8).map(function (p) {
+            var c0 = p.colors && p.colors[0]; var img = p.image || (c0 && c0.face) || ''; var isPhoto = !!p.imagePhoto;
+            return '<button class="ss-row" data-search-open data-id="' + esc(p.id) + '">' +
+              '<span class="ss-thumb"><img class="' + (isPhoto ? 'photo' : '') + '" src="' + esc(img) + '" alt=""></span>' +
+              '<span class="ss-meta"><span class="ss-brand">' + esc(p.brand || '') + '</span><span class="ss-name">' + esc(p.name) + '</span><span class="ss-price">' + esc(CAT.priceLabel(p)) + '</span></span>' +
+              '</button>';
+          }).join('');
+          html = '<div class="ss-list">' + rows + '<button class="ss-all" data-search-all>Visa alla <span class="g">' + all.length + '</span> träffar i sortimentet →</button></div>';
+        }
+      }
+      resultsEl.innerHTML = '<div class="ss-inner">' + html + '</div>';
+      resultsEl.classList.toggle('has', !!curQ);
+    }
+    function showAll() { var q = curQ; close(); CAT.search(q); goto('catalog'); }
+    function openProduct(id) { close(); CAT.openProduct(id); goto('catalog'); }
+    function ensure() {
+      if (bound) return;
+      header = document.querySelector('.site-header');
+      input = document.getElementById('ssInput');
+      resultsEl = document.getElementById('ssResults');
+      var hs = document.getElementById('hdrSearch');
+      if (!header || !input || !resultsEl || !hs) return;
+      bound = true;
+      input.addEventListener('input', function () { render(input.value); });
+      input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); showAll(); } else if (e.key === 'Escape') { close(); } });
+      hs.addEventListener('click', function (e) {
+        if (e.target.closest('[data-search-close]')) { e.preventDefault(); close(); return; }
+        var o = e.target.closest('[data-search-open]'); if (o) { e.preventDefault(); openProduct(o.getAttribute('data-id')); return; }
+        if (e.target.closest('[data-search-all]')) { e.preventDefault(); showAll(); return; }
+      });
+      // Klick utanför headern stänger söket.
+      document.addEventListener('click', function (e) {
+        if (!header.classList.contains('searching')) return;
+        if (e.target.closest('.site-header') || e.target.closest('[data-search]')) return;
+        close();
+      });
+    }
+    function open() { ensure(); if (!header) return; header.classList.add('searching'); input.value = curQ; render(curQ); setTimeout(function () { input.focus(); }, 30); }
+    function close() { if (header) header.classList.remove('searching'); if (resultsEl) resultsEl.classList.remove('has'); }
+    return { open: open, close: close };
+  })();
+
+  /* ============ Init ============ */
+  function init() {
+    buildBrandMarquee();
+    buildMetoder();
+    heroRipple();
+
+    document.addEventListener('click', function (e) {
+      // Metod-modal: stäng på bakgrund/kryss, öppna på kort
+      var modalHost = document.getElementById('metodModal');
+      if (modalHost && modalHost.style.display === 'flex') {
+        if (e.target === modalHost || e.target.closest('.metod-modal-panel .close')) { e.preventDefault(); closeMetodModal(); return; }
+        if (e.target.closest('.metod-modal-panel')) return; // klick inuti panelen
+      }
+      var metod = e.target.closest('[data-metod]');
+      if (metod) { e.preventDefault(); openMetodModal(+metod.dataset.metod); return; }
+      if (e.target.closest('[data-search]')) { e.preventDefault(); SEARCH.open(); return; }
+      var catSub = e.target.closest('[data-cat-sub]');
+      if (catSub) { e.preventDefault(); CAT.openSub(catSub.getAttribute('data-cat-sub')); goto('catalog'); return; }
+      var catFam = e.target.closest('[data-cat-fam]');
+      if (catFam) { e.preventDefault(); CAT.openFamily(catFam.getAttribute('data-cat-fam')); goto('catalog'); return; }
+      var nav = e.target.closest('[data-nav]');
+      if (nav) { e.preventDefault(); if (nav.dataset.nav === 'catalog') CAT.reset(); goto(nav.dataset.nav); return; }
+      if (e.target.closest('[data-gohome]')) { e.preventDefault(); goto('home'); return; }
+      if (e.target.closest('.burger')) { e.preventDefault(); openMobileNav(); return; }
+      if (e.target.closest('#mobileNavClose')) { e.preventDefault(); closeMobileNav(); return; }
+    });
+    // Escape stänger metod-modalen + söket
+    window.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeMetodModal(); SEARCH.close(); } });
+    // Ansökan → tackvy; Logga in → hem (demo, ingen backend på formuläret ännu)
+    document.addEventListener('submit', function (e) {
+      if (e.target.closest('[data-ansok-form]')) {
+        e.preventDefault();
+        var f = document.getElementById('ansokForm'), t = document.getElementById('ansokThanks');
+        if (f) f.style.display = 'none'; if (t) t.style.display = 'block'; window.scrollTo(0, 0);
+      } else if (e.target.closest('[data-login-form]')) {
+        e.preventDefault(); goto('home');
+      }
+    });
+
+    var initial = location.hash.slice(1);
+    goto(PAGES.indexOf(initial) !== -1 ? initial : 'home', { keepScroll: true });
+    window.addEventListener('hashchange', function () { goto(location.hash.slice(1) || 'home'); });
+
+    // Reveal-loopar + scroll
+    onScrollHeader();
+    window.addEventListener('scroll', function () { onScrollHeader(); moReveal(); mqVel += (window.scrollY - mqLast); mqLast = window.scrollY; }, { passive: true });
+    window.addEventListener('resize', moReveal, { passive: true });
+    setInterval(moReveal, 220);
+    // Säkerhetsnät: avslöja bara det som nått viewporten (aldrig blank sektion) —
+    // under fold förblir dolt tills man scrollar dit (annars ingen scroll-reveal).
+    setInterval(function () {
+      var vh = window.innerHeight || document.documentElement.clientHeight || 800;
+      // Avslöja allt vid eller ovanför scrollläget (r.top < vh); bara det under fold förblir dolt.
+      document.querySelectorAll('.page.active [data-mo-img]:not([data-mo-in]), .page.active [data-mo-up]:not([data-mo-in])').forEach(function (el) { var r = el.getBoundingClientRect(); if ((r.width || r.height) && r.top < vh) el.setAttribute('data-mo-in', ''); });
+      document.querySelectorAll('.page.active .ed-slide:not(.ed-in)').forEach(function (el) { var r = el.getBoundingClientRect(); if ((r.width || r.height) && r.top < vh * 0.55) el.classList.add('ed-in'); });
+      document.querySelectorAll('.page.active .reveal:not(.in)').forEach(function (el) { var r = el.getBoundingClientRect(); if ((r.width || r.height) && r.top < vh) el.classList.add('in'); });
+    }, 500);
+
+    requestAnimationFrame(mqTick);
+
+    // gestbunden video-start (autoplay-policy)
+    ['pointerdown', 'touchstart', 'keydown', 'wheel', 'scroll'].forEach(function (ev) { window.addEventListener(ev, setRates, { passive: true, once: false }); });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
