@@ -2,7 +2,7 @@
    Tokens ur README: sval off-white, varm beige, ink-text, guld-accent. */
 :root {
   --bg: #FAFAF7;          /* sidbakgrund */
-  --panel: #F1EEE6;       /* varm panel / cta-band */
+  --panel: #F6F4EE;       /* panel / cta-band (ljus, svalt neutral) */
   --plate: #F1EFE9;       /* produktbild-platta */
   --ink: #14181A;         /* primärtext / CTA */
   --body: #5A615C;        /* brödtext */
@@ -67,7 +67,7 @@ h1, h2, h3, p { margin: 0; }
 .site-nav { display: flex; gap: 32px; align-items: center; margin-left: auto; }
 .site-nav a { font-weight: 500; font-size: 14.5px; line-height: 1; letter-spacing: .02em; color: #2A2F2C; white-space: nowrap; }
 .site-nav a.active { color: var(--gold); font-weight: 600; }
-.header-actions { display: flex; align-items: center; gap: 20px; font-weight: 500; font-size: 14.5px; letter-spacing: .02em; color: #2A2F2C; }
+.header-actions { display: flex; align-items: center; gap: 14px; margin-left: clamp(44px, 6vw, 96px); font-weight: 500; font-size: 14.5px; letter-spacing: .02em; color: #2A2F2C; }
 
 /* guld-underline på nav + länkar */
 .uline { position: relative; }
@@ -97,16 +97,18 @@ h1, h2, h3, p { margin: 0; }
 .hero { position: relative; overflow: hidden; background: #EAE7E0; }
 .hero-media { position: absolute; inset: 0; }
 .hero-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 72% 50%; }
-@keyframes n33-swapB { 0%,8%{opacity:0} 14%,42%{opacity:1} 48%,100%{opacity:0} }
-@keyframes n33-swapC { 0%,42%{opacity:0} 48%,84%{opacity:1} 90%,100%{opacity:0} }
-.hero-media .swapB { opacity: 0; animation: n33-swapB 16s ease-in-out infinite; }
-.hero-media .swapC { opacity: 0; animation: n33-swapC 16s ease-in-out infinite; }
+/* 3 bilder, var och en full i 3,5s; 0,8s toning emellan; loop 12,9s.
+   swapB hålls 1 tills swapC täckt (blockar grund-noll33 under din→gots). */
+@keyframes n33-swapB { 0%,27.13%{opacity:0} 33.33%,66.67%{opacity:1} 67.44%,100%{opacity:0} }
+@keyframes n33-swapC { 0%,60.47%{opacity:0} 66.67%,93.8%{opacity:1} 100%{opacity:0} }
+.hero-media .swapB { opacity: 0; animation: n33-swapB 12.9s ease-in-out infinite; }
+.hero-media .swapC { opacity: 0; animation: n33-swapC 12.9s ease-in-out infinite; }
 .hero-veil { position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(90deg, rgba(249,248,244,.96) 0%, rgba(249,248,244,.84) 22%, rgba(249,248,244,.46) 44%, rgba(249,248,244,.10) 62%, transparent 76%); }
 .hero-body { position: relative; min-height: 56vh; display: flex; flex-direction: column; justify-content: center;
   padding-top: 80px; padding-bottom: 80px; }
 .hero-eyebrow { font-weight: 600; font-size: 11px; line-height: 1; letter-spacing: .24em; text-transform: uppercase; color: var(--gold-deep); margin-bottom: 22px; }
-.hero h1 { font-weight: 600; font-size: clamp(26px, 8.5vw, 56px); line-height: 1.05; letter-spacing: -.012em; color: #1A1614; }
+.hero h1 { font-weight: 600; font-size: clamp(30px, 9.2vw, 66px); line-height: 1.05; letter-spacing: -.012em; color: #1A1614; }
 .hero h1 .hl { display: block; white-space: nowrap; }
 .hero-lead { font-weight: 400; font-size: 17px; line-height: 1.55; color: #4C524C; margin-top: 22px; max-width: 42ch; }
 .hero-cta { display: flex; gap: 26px; align-items: center; margin-top: 34px; flex-wrap: wrap; }
@@ -118,9 +120,9 @@ h1, h2, h3, p { margin: 0; }
 .ed-media { position: relative; min-height: clamp(300px, 34vw, 480px); border-radius: 2px; overflow: hidden; background: #1B1B1F; }
 .ed-media img, .ed-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .ed-text { max-width: 56ch; display: flex; flex-direction: column; }
-.ed-text.pad-l { padding-left: clamp(28px, 3vw, 56px); }
-.ed-text.pad-r { max-width: 56ch; margin-left: auto; padding-right: clamp(28px, 3vw, 56px); }
-.ed-text h3 { font-weight: 600; font-size: clamp(24px, 3vw, 40px); line-height: 1.04; letter-spacing: -.01em; color: var(--ink); margin: 18px 0 16px; }
+.ed-text.pad-l { padding-left: clamp(36px, 5vw, 80px); }
+.ed-text.pad-r { max-width: 56ch; margin-left: auto; padding-right: clamp(36px, 5vw, 80px); }
+.ed-text h3 { font-weight: 600; font-size: clamp(26px, 3.3vw, 46px); line-height: 1.04; letter-spacing: -.01em; color: var(--ink); margin: 18px 0 16px; }
 .ed-text p { font-weight: 400; font-size: 17px; line-height: 1.62; color: var(--body); margin: 0 0 18px; }
 .ed-text .gold-link { margin-top: auto; align-self: flex-start; }  /* CTA kant i kant med bildens underkant */
 
@@ -163,7 +165,7 @@ h1, h2, h3, p { margin: 0; }
 .hant { display: grid; grid-template-columns: .92fr 1.08fr; gap: clamp(36px, 5vw, 80px); align-items: stretch; margin-bottom: clamp(44px, 5vw, 68px); }
 .hant-media { position: relative; overflow: hidden; background: #EBE7DC; min-height: clamp(440px, 46vw, 720px); }
 .hant-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.hant-body { display: flex; flex-direction: column; justify-content: center; }
+.hant-body { display: flex; flex-direction: column; justify-content: flex-start; }
 
 /* metodkort */
 .metod-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: clamp(24px, 2.6vw, 40px); }
@@ -202,7 +204,7 @@ h1, h2, h3, p { margin: 0; }
 .split2 { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(36px, 5vw, 80px); align-items: start; }
 .split2 .col-text { display: flex; flex-direction: column; gap: 16px; max-width: 56ch; }
 .split2 .col-text p { font-size: 17px; line-height: 1.7; color: var(--body); margin: 0; }
-.split2 .col-text .emph { font-weight: 600; font-size: clamp(16px, 1.6vw, 21px); line-height: 1.3; letter-spacing: -.015em; color: var(--ink); margin-top: 6px; }
+.split2 .col-text .emph { font-weight: 600; font-size: 19px; line-height: 1.5; letter-spacing: -.01em; color: var(--ink); margin-top: 6px; }
 
 /* cta-band */
 .ctaband { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(36px, 5vw, 80px); align-items: stretch;
@@ -274,8 +276,7 @@ a[data-mo-link]:not(:hover)::after { transform-origin: right center; }
 [data-mo-zoom] img { transition: transform .45s cubic-bezier(.16,1,.3,1); }
 [data-mo-zoom]:hover img { transform: scale(1.08); }
 
-/* Header krymper vid scroll */
-[data-mo-scrolled] .site-header .bar { height: 60px; transition: height .45s cubic-bezier(.83,0,.17,1); }
+/* Header: konstant höjd (ingen hopkrympning vid scroll), bara diskret skugga */
 [data-mo-scrolled] .site-header { box-shadow: 0 6px 24px rgba(20,22,20,.08); }
 
 @media (prefers-reduced-motion: reduce) {

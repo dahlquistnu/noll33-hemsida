@@ -33,10 +33,6 @@
     var y = window.pageYOffset || document.documentElement.scrollTop || 0;
     var de = document.documentElement;
     if (y > 100) de.setAttribute('data-mo-scrolled', ''); else de.removeAttribute('data-mo-scrolled');
-    document.querySelectorAll('[data-ticker]').forEach(function (tk) {
-      var up = (lastY != null) && (y < lastY);
-      tk.style.animationDirection = up ? 'reverse' : 'normal';
-    });
     lastY = y;
   }
 
