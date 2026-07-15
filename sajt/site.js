@@ -36,6 +36,22 @@
     lastY = y;
   }
 
+  /* Kontinuerlig ticker: repetera enheten tills en halva täcker containern, dubblera för sömlös -50%-loop (ingen synlig söm oavsett bredd). */
+  function initTicker() {
+    document.querySelectorAll('[data-ticker]').forEach(function (t) {
+      if (!t.__base) { var h0 = t.querySelector('[data-ticker-half]'); if (!h0) return; t.__base = h0.innerHTML; }
+      var cw = ((t.parentElement || t).getBoundingClientRect().width) || window.innerWidth || 1200;
+      var half = document.createElement('div');
+      half.style.display = 'flex'; half.setAttribute('data-ticker-half', '');
+      half.innerHTML = t.__base;
+      t.innerHTML = ''; t.appendChild(half);
+      var guard = 0;
+      while (half.getBoundingClientRect().width < cw && guard++ < 30) { half.innerHTML += t.__base; }
+      var copy = half.cloneNode(true); copy.setAttribute('aria-hidden', 'true'); copy.removeAttribute('data-ticker-half');
+      t.appendChild(copy);
+    });
+  }
+
   /* ============ mo-reveal: auto-tagga + avslöja (systemisk motion) ============ */
   var moSecMap = new WeakMap(), moSecN = 0;
   function moInit() {
@@ -918,8 +934,9 @@
 
     // Reveal-loopar + scroll
     onScrollHeader();
+    initTicker();
     window.addEventListener('scroll', function () { onScrollHeader(); moReveal(); mqVel += (window.scrollY - mqLast); mqLast = window.scrollY; }, { passive: true });
-    window.addEventListener('resize', moReveal, { passive: true });
+    var _tkRz; window.addEventListener('resize', function () { moReveal(); clearTimeout(_tkRz); _tkRz = setTimeout(initTicker, 200); }, { passive: true });
     setInterval(moReveal, 220);
     // Säkerhetsnät: avslöja bara det som nått viewporten (aldrig blank sektion) —
     // under fold förblir dolt tills man scrollar dit (annars ingen scroll-reveal).
