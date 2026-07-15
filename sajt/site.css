@@ -40,9 +40,12 @@ h1, h2, h3, p { margin: 0; }
 .h-statement { font-weight: 600; font-size: clamp(24px, 3vw, 40px); line-height: 1.05; letter-spacing: -.025em; color: var(--ink); }
 .h-sub { font-weight: 600; font-size: clamp(20px, 2.2vw, 28px); line-height: 1.1; letter-spacing: -.02em; color: var(--ink); }
 .h-mini { font-weight: 600; font-size: clamp(17px, 1.5vw, 22px); line-height: 1.12; letter-spacing: -.02em; color: var(--ink); }
-.lead { font-weight: 400; font-size: 16px; line-height: 1.65; color: var(--body); max-width: 64ch; }
-.prose { font-weight: 400; font-size: 16px; line-height: 1.62; color: var(--body); max-width: 60ch; }
-.gold-link { font-weight: 600; font-size: 13px; letter-spacing: .02em; color: var(--ink); border-bottom: 1.5px solid var(--gold); padding-bottom: 3px; display: inline-block; }
+.lead { font-weight: 400; font-size: 17px; line-height: 1.65; color: var(--body); max-width: 64ch; }
+.prose { font-weight: 400; font-size: 17px; line-height: 1.62; color: var(--body); max-width: 60ch; }
+.gold-link { font-weight: 600; font-size: 15px; letter-spacing: .02em; color: var(--ink); border-bottom: 1.5px solid var(--gold); padding-bottom: 3px; display: inline-block; }
+/* Snyggare radbrytningar: undvik horungar/korta slutrader i brödtext, balansera rubriker */
+.prose, .lead, .ed-text p, .split2 .col-text p, .hero-lead, .k-lead, .k-story-lead { text-wrap: pretty; }
+.h-statement, .h-sub, .ed-text h3, .k-h1, .k-h2, .k-story-h { text-wrap: balance; }
 
 /* ---- Knappar ---- */
 .pill { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border-radius: 999px;
@@ -94,8 +97,8 @@ h1, h2, h3, p { margin: 0; }
 .hero { position: relative; overflow: hidden; background: #EAE7E0; }
 .hero-media { position: absolute; inset: 0; }
 .hero-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 72% 50%; }
-@keyframes n33-swapB { 0%,42%{opacity:0} 50%,88%{opacity:1} 96%,100%{opacity:0} }
-@keyframes n33-swapC { 0%,88%{opacity:0} 96%,100%{opacity:1} }
+@keyframes n33-swapB { 0%,8%{opacity:0} 14%,42%{opacity:1} 48%,100%{opacity:0} }
+@keyframes n33-swapC { 0%,42%{opacity:0} 48%,84%{opacity:1} 90%,100%{opacity:0} }
 .hero-media .swapB { opacity: 0; animation: n33-swapB 16s ease-in-out infinite; }
 .hero-media .swapC { opacity: 0; animation: n33-swapC 16s ease-in-out infinite; }
 .hero-veil { position: absolute; inset: 0; pointer-events: none;
@@ -103,21 +106,22 @@ h1, h2, h3, p { margin: 0; }
 .hero-body { position: relative; min-height: 56vh; display: flex; flex-direction: column; justify-content: center;
   padding-top: 80px; padding-bottom: 80px; }
 .hero-eyebrow { font-weight: 600; font-size: 11px; line-height: 1; letter-spacing: .24em; text-transform: uppercase; color: var(--gold-deep); margin-bottom: 22px; }
-.hero h1 { font-weight: 600; font-size: clamp(30px, 4.4vw, 56px); line-height: 1.05; letter-spacing: -.012em; color: #1A1614; }
-.hero-lead { font-weight: 400; font-size: 16px; line-height: 1.55; color: #4C524C; margin-top: 22px; max-width: 42ch; }
+.hero h1 { font-weight: 600; font-size: clamp(26px, 8.5vw, 56px); line-height: 1.05; letter-spacing: -.012em; color: #1A1614; }
+.hero h1 .hl { display: block; white-space: nowrap; }
+.hero-lead { font-weight: 400; font-size: 17px; line-height: 1.55; color: #4C524C; margin-top: 22px; max-width: 42ch; }
 .hero-cta { display: flex; gap: 26px; align-items: center; margin-top: 34px; flex-wrap: wrap; }
 
 /* ---- Editorial rows ---- */
-.editorial { display: flex; flex-direction: column; gap: clamp(110px, 12vw, 200px);
+.editorial { display: flex; flex-direction: column; gap: clamp(110px, 12vw, 200px); overflow-x: clip;
   padding: clamp(80px, 9vw, 140px) var(--gutter) 80px; max-width: var(--maxw); margin: 0 auto; }
 .ed-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch; }
 .ed-media { position: relative; min-height: clamp(300px, 34vw, 480px); border-radius: 2px; overflow: hidden; background: #1B1B1F; }
 .ed-media img, .ed-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.ed-text { max-width: 44ch; display: flex; flex-direction: column; }
+.ed-text { max-width: 56ch; display: flex; flex-direction: column; }
 .ed-text.pad-l { padding-left: clamp(28px, 3vw, 56px); }
-.ed-text.pad-r { max-width: 44ch; margin-left: auto; padding-right: clamp(28px, 3vw, 56px); }
+.ed-text.pad-r { max-width: 56ch; margin-left: auto; padding-right: clamp(28px, 3vw, 56px); }
 .ed-text h3 { font-weight: 600; font-size: clamp(24px, 3vw, 40px); line-height: 1.04; letter-spacing: -.01em; color: var(--ink); margin: 18px 0 16px; }
-.ed-text p { font-weight: 400; font-size: 16px; line-height: 1.62; color: var(--body); margin: 0 0 18px; }
+.ed-text p { font-weight: 400; font-size: 17px; line-height: 1.62; color: var(--body); margin: 0 0 18px; }
 .ed-text .gold-link { margin-top: auto; align-self: flex-start; }  /* CTA kant i kant med bildens underkant */
 
 /* ---- Sektioner ---- */
@@ -137,9 +141,9 @@ h1, h2, h3, p { margin: 0; }
 @media (prefers-reduced-motion: reduce) { .step:hover::before { animation: none; } }
 .step .num { font-weight: 600; font-size: 13.5px; color: var(--gold); margin-bottom: 14px; }
 .step .h-mini { font-size: 18px; letter-spacing: -.015em; }
-.step p { font-weight: 400; font-size: 16px; line-height: 1.55; color: var(--body); margin: 8px 0 0; max-width: 32ch; }
+.step p { font-weight: 400; font-size: 17px; line-height: 1.55; color: var(--body); margin: 8px 0 0; max-width: 32ch; }
 .stat .big { font-weight: 600; font-size: clamp(26px, 3vw, 40px); letter-spacing: -.02em; color: var(--ink); }
-.stat .cap { font-size: 16px; color: var(--muted2); margin-top: 6px; }
+.stat .cap { font-size: 17px; color: var(--muted2); margin-top: 6px; }
 
 /* sortiment-grid */
 .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(32px, 3.4vw, 60px); margin-top: 60px; }
@@ -183,7 +187,7 @@ h1, h2, h3, p { margin: 0; }
 .metod-card .inner { position: relative; z-index: 1; padding: 18px 20px; }
 .metod-card .top { display: flex; align-items: center; gap: 11px; }
 .metod-card .top .n, .metod-card .top h3 { font-weight: 600; font-size: clamp(17px, 1.5vw, 22px); line-height: 1.12; letter-spacing: -.02em; color: var(--ink); margin: 0; }
-.metod-card p { font-weight: 400; font-size: 16px; line-height: 1.5; color: rgba(28,23,18,.62); margin: 11px 0 0; }
+.metod-card p { font-weight: 400; font-size: 17px; line-height: 1.5; color: rgba(28,23,18,.62); margin: 11px 0 0; }
 .metod-card .arrow { margin-top: 14px; font-weight: 600; font-size: 12.5px; color: var(--ink); }
 
 /* varumärkes-marquee */
@@ -197,7 +201,7 @@ h1, h2, h3, p { margin: 0; }
 /* split-manifest */
 .split2 { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(36px, 5vw, 80px); align-items: start; }
 .split2 .col-text { display: flex; flex-direction: column; gap: 16px; max-width: 56ch; }
-.split2 .col-text p { font-size: 16px; line-height: 1.7; color: var(--body); margin: 0; }
+.split2 .col-text p { font-size: 17px; line-height: 1.7; color: var(--body); margin: 0; }
 .split2 .col-text .emph { font-weight: 600; font-size: clamp(16px, 1.6vw, 21px); line-height: 1.3; letter-spacing: -.015em; color: var(--ink); margin-top: 6px; }
 
 /* cta-band */
@@ -210,9 +214,9 @@ h1, h2, h3, p { margin: 0; }
 
 /* footer */
 .site-footer { background: var(--bg); border-top: 1px solid var(--line); }
-.site-footer .cols { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1.2fr; gap: 40px; padding-top: 80px; padding-bottom: 40px; }
+.site-footer .cols { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1.2fr; gap: 40px; padding-top: clamp(104px, 10vw, 152px); padding-bottom: clamp(52px, 5vw, 76px); }
 .site-footer .col-title { font-weight: 700; font-size: 11px; line-height: 1; letter-spacing: .16em; text-transform: uppercase; color: var(--ink); margin-bottom: 18px; }
-.site-footer .links { display: flex; flex-direction: column; gap: 11px; font-weight: 400; font-size: 14px; color: var(--muted); }
+.site-footer .links { display: flex; flex-direction: column; gap: 13px; font-weight: 400; font-size: 16px; color: var(--muted); }
 .site-footer .links a:hover { color: var(--ink); }
 .site-footer .bottom { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; justify-content: space-between;
   padding-top: 40px; padding-bottom: 40px; border-top: 1px solid var(--line); font-weight: 400; font-size: 12px; line-height: 1.4; color: #9A9486; }
@@ -223,9 +227,9 @@ h1, h2, h3, p { margin: 0; }
 
 /* ================= MOTION-LAGER (reproducerar design_handoff) ================= */
 /* Editorial slide-in */
-.ed-slide { opacity: .34; transition: opacity .9s ease, transform .95s cubic-bezier(.2,.72,.24,1); will-change: opacity, transform; }
-.ed-slide.ed-left  { transform: translateX(-46px); }
-.ed-slide.ed-right { transform: translateX(46px); }
+.ed-slide { opacity: .34; transition: opacity 1s ease, transform 1.15s cubic-bezier(.2,.72,.24,1); will-change: opacity, transform; }
+.ed-slide.ed-left  { transform: translateX(-100px); }
+.ed-slide.ed-right { transform: translateX(100px); }
 .ed-slide.ed-in { opacity: 1; transform: translate(0,0); }
 
 /* Bild-reveal (fem varianter, roteras per sektion av _moInit) */
@@ -316,8 +320,8 @@ a[data-mo-link]:not(:hover)::after { transform-origin: right center; }
 .metod-table tbody th .mname { font-weight: 600; font-size: 14.5px; color: #1C1712; }
 /* metodkort med media (förädlingssidan) */
 .metod-card .mfields { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px 20px; margin-top: 20px; }
-.metod-card .mfields .k { font-weight: 600; font-size: 11px; line-height: 1; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); margin-bottom: 7px; }
-.metod-card .mfields .v { font-weight: 400; font-size: 12.5px; line-height: 1.45; color: #3A342C; }
+.metod-card .mfields .k { font-weight: 600; font-size: 12px; line-height: 1; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); margin-bottom: 7px; }
+.metod-card .mfields .v { font-weight: 400; font-size: 14px; line-height: 1.45; color: #3A342C; }
 /* metod-modal */
 .metod-modal-panel { position: relative; width: 100%; max-width: 600px; max-height: 88vh; overflow-y: auto; background: #FBFAF6; box-shadow: 0 30px 80px rgba(10,12,10,.35); }
 .metod-modal-panel .close { position: absolute; top: 14px; right: 14px; z-index: 2; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border: none; border-radius: 50%; background: rgba(250,250,247,.92); color: var(--ink); font-size: 14.5px; cursor: pointer; box-shadow: 0 2px 10px rgba(10,12,10,.2); }
@@ -330,7 +334,7 @@ a[data-mo-link]:not(:hover)::after { transform-origin: right center; }
 .stub { max-width: var(--maxw); margin: 0 auto; padding: clamp(80px,10vw,160px) var(--gutter); text-align: center; }
 .stub .eyebrow { color: var(--gold-deep); }
 .stub h1 { font-weight: 600; font-size: clamp(28px, 4vw, 48px); letter-spacing: -.02em; color: var(--ink); margin: 16px 0 12px; }
-.stub p { color: var(--body); font-size: 16px; }
+.stub p { color: var(--body); font-size: 17px; }
 
 /* ---- Responsivt ---- */
 @media (max-width: 900px) {
@@ -408,7 +412,7 @@ a[data-mo-link]:not(:hover)::after { transform-origin: right center; }
 .k-head { padding:clamp(26px,4vw,52px) 0 clamp(22px,3vw,38px); }
 .k-eyebrow { font-weight:600; font-size:10.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--k-muted2); margin:0 0 13px; }
 .k-h1 { font-weight:700; font-size:clamp(24px,3.4vw,40px); line-height:1.06; letter-spacing:-.02em; margin:0; }
-.k-lead { font-weight:400; font-size:16px; line-height:1.55; color:var(--k-muted); margin:12px 0 0; max-width:54ch; }
+.k-lead { font-weight:400; font-size:17px; line-height:1.55; color:var(--k-muted); margin:12px 0 0; max-width:54ch; }
 
 /* Bildkort (kategori + plaggtyp) */
 .k-cats { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(18px,2.4vw,40px); }
@@ -489,7 +493,7 @@ a[data-mo-link]:not(:hover)::after { transform-origin: right center; }
 .k-ph { position:absolute; top:14px; left:14px; z-index:2; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--k-muted2); background:rgba(250,250,247,.85); border-radius:0; padding:5px 10px; }
 .k-story { margin:clamp(56px,8vw,110px) 0 0; padding:clamp(36px,5vw,64px) 0 0; border-top:1px solid var(--k-line); }
 .k-story-h { font-weight:700; font-size:clamp(22px,2.6vw,32px); line-height:1.1; letter-spacing:-.02em; margin:0 0 10px; max-width:22ch; }
-.k-story-lead { font-size:16px; line-height:1.6; color:var(--k-muted); margin:0 0 clamp(28px,4vw,44px); max-width:56ch; }
+.k-story-lead { font-size:17px; line-height:1.6; color:var(--k-muted); margin:0 0 clamp(28px,4vw,44px); max-width:56ch; }
 .k-story-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(24px,3vw,48px); }
 .k-story-item { border-top:1px solid var(--k-line); padding-top:16px; }
 .k-story-item h4 { font-weight:600; font-size:16px; margin:0 0 6px; }
