@@ -358,6 +358,12 @@
       if (!all.length) return ''; if (all.length === 1) return all[0]; return all[0] + '-' + all[all.length - 1];
     }
     function priceLabel(p) { return (p.priceFrom != null) ? ('från ' + p.priceFrom + ' kr') : 'Pris i offert'; }
+    // Varumärkesloggor per produkt: slug-matcha brand mot filnamn i assets/logos (hanterar .png/.jpg).
+    var LOGO_FILES = ['bagbase.png','bandc.png','beechfield.png','bella-canvas.png','bombers-original.png','brook-taverner.jpg','buff.jpg','build-your-brand.png','cat.jpg','cg-international.jpg','cherokee.jpg','crocs.png','dickies-medical.png','dickies.png','estex.png','flexfit.png','front-row.png','fruit-of-the-loom.png','gildan.png','henbury.jpg','ideal-basic-brand.png','jsp.png','k-up.png','kariban-premium.png','kariban.png','kimood.png','larkwood.png','lee.png','mumbles.png','napapijri.png','native-spirit.png','onna.png','premier.png','proact.png','puma-workwear.png','quadra.jpg','result.jpg','russell.png','rywan.png','safejawz.png','sf-clothing.png','spasso.png','spiro.jpg','splashmacs.png','tiger-grip.png','timberland.png','tombo.jpg','towel-city.png','u-power.png','westford-mill.png','wk-designed-to-work.png','wrangler.png','yoko.jpg'];
+    var LOGO_INDEX = (function () { var m = {}; LOGO_FILES.forEach(function (f) { m[f.replace(/\.[a-z]+$/, '')] = f; }); return m; })();
+    function brandSlug(b) { return String(b || '').toLowerCase().replace(/&/g, 'and').replace(/[®™]/g, '').replace(/\./g, '').trim().replace(/[+\s]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, ''); }
+    function brandLogoFile(b) { var s = brandSlug(b); return (s && LOGO_INDEX[s]) ? LOGO_INDEX[s] : null; }
+    function brandHtml(b, cls) { var f = brandLogoFile(b); return f ? ('<img class="' + (cls || 'k-blogo') + '" src="assets/logos/' + f + '" alt="' + esc(b) + '" title="' + esc(b) + '" loading="lazy">') : esc(b || ''); }
     function subCountsSorted() {
       var counts = {}; data.P.forEach(function (p) { if (passes(p, false, true) && p.sub) counts[p.sub] = (counts[p.sub] || 0) + 1; });
       var keys = Object.keys(counts).sort(function (a, b) { if (a === 'Övrigt' || a === 'Ovrigt') return 1; if (b === 'Övrigt' || b === 'Ovrigt') return -1; return (subRank(a) - subRank(b)) || (counts[b] - counts[a]); });
@@ -577,7 +583,7 @@
       return '<button class="k-card k-reveal' + (hasBack ? ' k-hasback' : '') + '" data-k="open" data-id="' + esc(p.id) + '" aria-label="' + esc(p.name + (p.brand ? ', ' + p.brand : '')) + '">' +
         '<span class="k-card-img"><img class="k-face' + (isPhoto ? ' photo' : '') + '" src="' + esc(face) + '" alt="' + esc(p.name) + '" loading="lazy">' +
         (hasBack ? '<img class="k-backimg' + (isPhoto ? ' photo' : '') + '" src="' + esc(backRaw) + '" alt="" loading="lazy">' : '') + '</span>' +
-        '<div class="k-brand">' + esc(p.brand || '') + '</div><div class="k-name">' + esc(p.name) + '</div>' +
+        '<div class="k-brand">' + brandHtml(p.brand) + '</div><div class="k-name">' + esc(p.name) + '</div>' +
         '<div class="k-swatches">' + dots + (moreCount > 0 ? '<span class="k-more">+' + moreCount + '</span>' : '') + '</div>' +
         '<div class="k-meta">' + esc(priceLabel(p) + (span ? (' · ' + span) : '')) + '</div></button>';
     }
@@ -612,7 +618,7 @@
       if (!picked.length) return '';
       var cards = picked.map(function (x) {
         var c0 = x.colors && x.colors[0]; var img = x.image || (c0 && c0.face) || ''; var isPhoto = !!x.imagePhoto;
-        return '<button class="k-relcard" data-k="open" data-id="' + esc(x.id) + '" aria-label="' + esc(x.name) + '"><span class="k-card-img"><img class="' + (isPhoto ? 'photo' : '') + '" src="' + esc(img) + '" alt="' + esc(x.name) + '" loading="lazy"></span><div class="k-brand">' + esc(x.brand || '') + '</div><div class="k-name">' + esc(x.name) + '</div><div class="k-meta">' + esc(priceLabel(x)) + '</div></button>';
+        return '<button class="k-relcard" data-k="open" data-id="' + esc(x.id) + '" aria-label="' + esc(x.name) + '"><span class="k-card-img"><img class="' + (isPhoto ? 'photo' : '') + '" src="' + esc(img) + '" alt="' + esc(x.name) + '" loading="lazy"></span><div class="k-brand">' + brandHtml(x.brand) + '</div><div class="k-name">' + esc(x.name) + '</div><div class="k-meta">' + esc(priceLabel(x)) + '</div></button>';
       }).join('');
       return '<div class="k-related"><div class="k-related-head"><div class="k-related-h">Köp ihop med</div><div class="k-relnav"><button data-k="relPrev" aria-label="Föregående">‹</button><button data-k="relNext" aria-label="Nästa">›</button></div></div><div class="k-related-grid" data-off="0"><div class="k-related-track">' + cards + '</div></div></div>';
     }
@@ -649,7 +655,7 @@
       var cartMsg = st.cartMsg ? '<div class="k-ctanote">' + esc(st.cartMsg) + '</div>' : '';
       var designbtn = p.designbar ? '<button class="k-designbtn is-soon" type="button" disabled aria-disabled="true">Designa med tryck — kommer snart</button>' : '';
       var priceHtml = '<div class="k-dprice">' + esc(priceLabel(p)) + '</div><div class="k-dnote">Publikt listpris. Ditt pris med förädling lämnas i offert.</div>';
-      var info = '<div class="k-prod-info"><div class="k-dbrand">' + esc(p.brand || '') + '</div><div class="k-dname">' + esc(p.name) + '</div>' + colorsHtml + sizesHtml + specsHtml + databladHtml + priceHtml + qtyHtml + cta + cartMsg + designbtn + '</div>';
+      var info = '<div class="k-prod-info"><div class="k-dbrand">' + brandHtml(p.brand, 'k-blogo k-blogo-lg') + '</div><div class="k-dname">' + esc(p.name) + '</div>' + colorsHtml + sizesHtml + specsHtml + databladHtml + priceHtml + qtyHtml + cta + cartMsg + designbtn + '</div>';
       var media = '<div class="k-prod-media">' + stage + stagenav + thumbs + '</div>';
       return '<div class="k-wrap k-prodwrap"><div class="k-crumb"><button class="k-back" data-k="closeDetail">‹ ' + esc(p.sub ? subLabel(p.sub, p.gender) : (p.family || 'Sortiment')) + '</button></div>' +
         '<div class="k-prod">' + media + info + '</div>' + renderRelated(p) + '<div class="k-footpad"></div></div>';
