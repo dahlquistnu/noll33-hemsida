@@ -373,16 +373,23 @@ a[data-mo-link]:not(:hover)::after { transform-origin: right center; }
 .k-wrap { max-width:var(--maxw); margin:0 auto; padding:0 var(--gutter); }
 
 /* Nav-rad under Atelier-headern: könsflikar + Sortiment (flyout), sök, korg. */
-/* Samma glas som headern (rgba + blur). Vid scroll i katalogen glider hela
-   headern undan och nav-raden tar dess plats högst upp — dubbelnav kollapsar
-   till en rad så navigationen tar mindre av sidan. */
+/* Samma glas som headern (rgba + blur). Vid scroll i katalogen kollapsar
+   dubbelnaven till en rad: header och nav-rad glider som ETT block, båda
+   med transform (compositor-animerat — top-animering räknas om per bildruta
+   och laggar). Samma duration och kurva är det som gör rörelsen sömlös. */
 .kx-navrow { position:sticky; top:74px; z-index:40; background:rgba(250,250,247,.82);
   backdrop-filter:saturate(150%) blur(14px); -webkit-backdrop-filter:saturate(150%) blur(14px);
-  border-bottom:1px solid var(--k-line); transition:top .45s cubic-bezier(.83,0,.17,1); }
-[data-mo-scrolled] body[data-page="catalog"] .site-header { transform:translateY(-100%); }
+  border-bottom:1px solid var(--k-line);
+  transition:transform .45s cubic-bezier(.83,0,.17,1); will-change:transform; }
 .site-header { transition:transform .45s cubic-bezier(.83,0,.17,1), box-shadow .3s; }
-[data-mo-scrolled] body[data-page="catalog"] .kx-navrow { top:0; }
-/* Inloggad: guldlinjen följer med till nav-radens topp när headern är undanskjuten */
+[data-mo-scrolled] body[data-page="catalog"] .site-header { transform:translateY(-100%); }
+[data-mo-scrolled] body[data-page="catalog"] .kx-navrow { transform:translateY(-74px); }
+/* Inloggad: ETT guldstreck i katalogen. Det bor på nav-radens topp (visuellt
+   samma linje som "under headern" i vila) och följer med blocket — aldrig
+   dubblerat mot headerns eget guld, som släcks här. */
+html[data-portal] body[data-page="catalog"] .site-header,
+html[data-portal][data-mo-scrolled] body[data-page="catalog"] .site-header { box-shadow:none; }
+html[data-portal] body[data-page="catalog"] .kx-navrow { box-shadow: inset 0 2px 0 #C79A2E; }
 html[data-portal][data-mo-scrolled] body[data-page="catalog"] .kx-navrow {
   box-shadow: inset 0 2px 0 #C79A2E, 0 8px 22px rgba(20,22,20,.07); }
 @media (prefers-reduced-motion: reduce) {
