@@ -117,13 +117,16 @@
 
     /* ---- render-hjälpare ---- */
     function statusPill(i) {
-      var lbl = STEG[i]; var cls = i === 4 ? 'ok' : (i >= 2 ? 'mid' : 'new');
+      var lbl = STEG[i]; var cls = i === 4 ? 'done' : (i === 0 ? 'new' : 'act');
       return '<span class="kt-status ' + cls + '">' + esc(lbl) + '</span>';
     }
     function timeline(i) {
-      return '<div class="kt-timeline">' + STEG.map(function (s, idx) {
-        return '<div class="kt-step' + (idx <= i ? ' on' : '') + '"><span class="kt-dot"></span><span class="kt-steplbl">' + esc(s) + '</span></div>';
-      }).join('<span class="kt-line"></span>') + '</div>';
+      var h = '<div class="kt-timeline">';
+      STEG.forEach(function (s, idx) {
+        h += '<div class="kt-step' + (idx <= i ? ' on' : '') + '"><span class="kt-dot"></span><span class="kt-steplbl">' + esc(s) + '</span></div>';
+        if (idx < STEG.length - 1) h += '<span class="kt-line' + (idx < i ? ' on' : '') + '"></span>';
+      });
+      return h + '</div>';
     }
     function tabs() {
       var T = st.role === 'admin' && !st.viewAs
@@ -135,7 +138,7 @@
     }
     function orderCard(o, compact) {
       var rows = o.rader.map(function (r) { return '<tr><td>' + esc(r.plagg) + '</td><td>' + esc(r.farg) + '</td><td>' + r.antal + ' st</td><td>' + esc(r.tryck) + '</td></tr>'; }).join('');
-      return '<div class="kt-order"><div class="kt-orderhead"><div><strong>' + esc(o.nr) + '</strong><span class="kt-dim"> · ' + esc(o.datum) + '</span></div>' + statusPill(o.status) + '</div>'
+      return '<div class="kt-order"><div class="kt-orderhead"><div><span class="kt-ordernr">' + esc(o.nr) + '</span><span class="kt-dim">  ' + esc(o.datum) + '</span></div>' + statusPill(o.status) + '</div>'
         + (compact ? '' : timeline(o.status))
         + '<table class="kt-table"><thead><tr><th>Plagg</th><th>Färg</th><th>Antal</th><th>Förädling</th></tr></thead><tbody>' + rows + '</tbody></table>'
         + '<div class="kt-orderfoot"><span>' + (o.track ? 'Spårning: <a class="gold-link" style="font-size:13px" href="#" onclick="return false">' + esc(o.track) + '</a>' : '&nbsp;') + '</span>'
@@ -145,57 +148,65 @@
     /* ---- flikar ---- */
     function vOversikt(k) {
       var senaste = ORDERS[0];
-      return '<div class="kt-grid2">'
-        + '<div class="kt-card"><div class="eyebrow" style="margin-bottom:14px">Senaste order</div>' + orderCard(senaste, false) + '</div>'
-        + '<div><div class="kt-card" style="margin-bottom:18px"><div class="eyebrow" style="margin-bottom:14px">Snabbt</div>'
+      var stats = '<div class="kt-stats">'
+        + '<div class="kt-stat"><div class="big">' + k.ordrar + '</div><div class="cap">Ordrar totalt</div></div>'
+        + '<div class="kt-stat"><div class="big">1 840</div><div class="cap">Plagg i år</div></div>'
+        + '<div class="kt-stat"><div class="big">' + BIBLIOTEK.length + '</div><div class="cap">Sparade tryck</div></div>'
+        + '<div class="kt-stat"><div class="big">' + esc(k.modell) + '</div><div class="cap">Prismodell</div></div>'
+        + '</div>';
+      return stats + '<div class="kt-grid2">'
+        + '<div><div class="eyebrow" style="margin-bottom:16px">Senaste order</div>' + orderCard(senaste, false) + '</div>'
+        + '<div><div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Snabbt</div>'
         + '<div class="kt-quick"><button class="pill pill-ink" data-kt-again="' + esc(senaste.nr) + '">Beställ senaste igen</button>'
         + '<a href="#" class="pill pill-outline" data-nav="catalog">Nytt ur sortimentet</a>'
         + '<button class="pill pill-outline" data-kt-tab="bibliotek">Mina tryck</button></div></div>'
-        + '<div class="kt-card"><div class="eyebrow" style="margin-bottom:14px">Ert konto</div>'
-        + '<div class="kt-kv"><span>Prismodell</span><strong>' + esc(k.modell) + (k.modell === 'B' ? ' · egna priser' : ' · standard') + '</strong></div>'
+        + '<div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Ert konto</div>'
+        + '<div class="kt-kv"><span>Prismodell</span><strong>' + esc(k.modell) + (k.modell === 'B' ? ' (egna priser)' : ' (standard)') + '</strong></div>'
         + '<div class="kt-kv"><span>Kund sedan</span><strong>' + esc(k.sedan) + '</strong></div>'
-        + '<div class="kt-kv"><span>Ordrar totalt</span><strong>' + k.ordrar + '</strong></div></div></div></div>';
+        + '<div class="kt-kv"><span>Kontakt</span><strong>' + esc(k.kontakt) + '</strong></div></div></div></div>';
     }
     function vOrder() { return ORDERS.map(function (o) { return orderCard(o, false); }).join(''); }
     function vBibliotek() {
       return '<p class="kt-lead">Alla tryck ni laddat upp sparas här — välj direkt vid nästa beställning, ingen ny uppladdning behövs.</p>'
         + '<div class="kt-lib">' + BIBLIOTEK.map(function (b) {
-          return '<div class="kt-libitem"><div class="kt-libimg"><img src="' + b.img + '" alt="' + esc(b.namn) + '"></div><div class="kt-libmeta"><strong>' + esc(b.namn) + '</strong><span>' + esc(b.typ) + ' · använd i ' + b.anv + ' order</span></div><button class="pill pill-outline kt-libuse" data-kt-use="' + esc(b.namn) + '">Använd i ny order</button></div>';
+          return '<div class="kt-libitem"><div class="kt-libimg"><img src="' + b.img + '" alt="' + esc(b.namn) + '"></div><div class="kt-libmeta"><strong>' + esc(b.namn) + '</strong><span>' + esc(b.typ) + ' · använd i ' + b.anv + ' order</span></div><button class="kt-libuse" data-kt-use="' + esc(b.namn) + '">Använd i ny order →</button></div>';
         }).join('') + '</div>';
     }
     function vPriser(k) {
-      var badge = k.modell === 'B' ? '<span class="kt-status mid">Prismodell B — era avtalade priser</span>' : '<span class="kt-status ok">Prismodell A — standardprislista 2026</span>';
-      return '<p class="kt-lead">Era priser per teknik och volym. Exakt pris räknas alltid live i designstudion. ' + badge + '</p>'
+      var note = k.modell === 'B'
+        ? '<span class="kt-note b">Prismodell B · era avtalade priser</span>'
+        : '<span class="kt-note a">Prismodell A · standardprislista 2026</span>';
+      return '<p class="kt-lead">Era priser per teknik och volym. Exakt pris räknas alltid live i designstudion.' + note + '</p>'
         + '<div class="kt-prisgrid">' + PRISER.map(function (p) {
-          return '<div class="kt-card"><strong class="kt-pristitel">' + esc(p.teknik) + '</strong><table class="kt-table kt-pristable"><tbody>'
-            + p.steg.map(function (s) { return '<tr><td>' + esc(s[0]) + ' st</td><td class="kt-sum">' + esc(s[1]) + ' ' + esc(p.enhet) + '</td></tr>'; }).join('')
+          return '<div class="kt-pris"><strong class="kt-pristitel">' + esc(p.teknik) + '</strong><table><tbody>'
+            + p.steg.map(function (s) { return '<tr><td>' + esc(s[0]) + ' st</td><td>' + esc(s[1]) + '</td></tr>'; }).join('')
             + '</tbody></table></div>';
         }).join('') + '</div>';
     }
     function vUppgifter(k) {
-      return '<div class="kt-grid2"><div class="kt-card"><div class="eyebrow" style="margin-bottom:14px">Företag</div>'
+      return '<div class="kt-grid2"><div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Företag</div>'
         + '<div class="kt-kv"><span>Företag</span><strong>' + esc(k.foretag) + '</strong></div>'
         + '<div class="kt-kv"><span>Kontakt</span><strong>' + esc(k.kontakt) + '</strong></div>'
         + '<div class="kt-kv"><span>E-post</span><strong>' + esc(k.email) + '</strong></div>'
         + '<div class="kt-kv"><span>Leveransadress</span><strong>Hållingsgatan 15, Borås</strong></div></div>'
-        + '<div class="kt-card"><div class="eyebrow" style="margin-bottom:14px">Kommer snart</div>'
+        + '<div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Kommer snart</div>'
         + '<p class="prose">Flera användare per företag, fler leveransadresser, fakturor som PDF och ordernotiser via mejl.</p></div></div>';
     }
 
     /* ---- admin ---- */
     function vAdmKunder() {
       return '<p class="kt-lead">Alla återförsäljare. Koppla prismodell och kliv in i deras vy för att se exakt vad de ser.</p>'
-        + '<table class="kt-table kt-admtable"><thead><tr><th>Företag</th><th>Kontakt</th><th>Status</th><th>Prismodell</th><th>Ordrar</th><th></th></tr></thead><tbody>'
+        + '<table class="kt-admtable"><thead><tr><th>Företag</th><th>Kontakt</th><th>Status</th><th>Prismodell</th><th>Ordrar</th><th></th></tr></thead><tbody>'
         + KUNDER.map(function (k) {
           return '<tr><td><strong>' + esc(k.foretag) + '</strong></td><td>' + esc(k.kontakt) + '</td><td>' + esc(k.status) + '</td>'
-            + '<td><span class="kt-status ' + (k.modell === 'B' ? 'mid' : 'ok') + '">Modell ' + esc(k.modell) + '</span></td>'
-            + '<td>' + k.ordrar + '</td><td><button class="pill pill-outline kt-viewas" data-kt-viewas="' + esc(k.id) + '">Visa som kund →</button></td></tr>';
+            + '<td><span class="kt-modell ' + (k.modell === 'B' ? 'b' : 'a') + '">Modell ' + esc(k.modell) + '</span></td>'
+            + '<td>' + k.ordrar + '</td><td><button class="kt-viewas" data-kt-viewas="' + esc(k.id) + '">Visa som kund →</button></td></tr>';
         }).join('') + '</tbody></table>';
     }
     function vAdmPriser() {
       return '<div class="kt-grid2">'
-        + '<div class="kt-card"><strong class="kt-pristitel">Prismodell A — Standard 2026</strong><p class="prose" style="margin:10px 0 14px">Officiella prislistan. Gäller alla kunder utan egen koppling. Verifierad mot systemet.</p><span class="kt-status ok">Aktiv · ' + (KUNDER.filter(function (k) { return k.modell === 'A'; }).length) + ' kunder</span></div>'
-        + '<div class="kt-card"><strong class="kt-pristitel">Prismodell B — Avtalskunder</strong><p class="prose" style="margin:10px 0 14px">Samma struktur som A med egna priser per cell. Läggs in när tabellen är klar, kopplas per kund.</p><span class="kt-status mid">Förbereds · ' + (KUNDER.filter(function (k) { return k.modell === 'B'; }).length) + ' kunder väntar</span></div></div>';
+        + '<div class="kt-panel"><strong class="kt-pristitel">Prismodell A · Standard 2026</strong><p class="prose" style="margin:10px 0 4px">Officiella prislistan. Gäller alla kunder utan egen koppling. Verifierad mot systemet.</p><span class="kt-note a">Aktiv · ' + (KUNDER.filter(function (k) { return k.modell === 'A'; }).length) + ' kunder</span></div>'
+        + '<div class="kt-panel"><strong class="kt-pristitel">Prismodell B · Avtalskunder</strong><p class="prose" style="margin:10px 0 4px">Samma struktur som A med egna priser per cell. Läggs in när tabellen är klar, kopplas per kund.</p><span class="kt-note b">Förbereds · ' + (KUNDER.filter(function (k) { return k.modell === 'B'; }).length) + ' kunder väntar</span></div></div>';
     }
 
     function render() {
