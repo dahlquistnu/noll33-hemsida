@@ -373,9 +373,12 @@ a[data-mo-link]:not(:hover)::after { transform-origin: right center; }
 .k-wrap { max-width:var(--maxw); margin:0 auto; padding:0 var(--gutter); }
 
 /* Nav-rad under Atelier-headern: könsflikar + Sortiment (flyout), sök, korg. */
-.kx-navrow { position:sticky; top:74px; z-index:40; background:var(--bg);
-  border-bottom:1px solid var(--k-line); transition:top .45s cubic-bezier(.83,0,.17,1); }
-[data-mo-scrolled] .kx-navrow { top:60px; }
+/* Samma glas som headern (rgba + blur). top matchar headerns fasta 74px —
+   den gamla 60px-regeln var en kvarleva från när headern krympte vid scroll
+   och sköt in nav-raden 14px bakom headern (såg avklippt ut). */
+.kx-navrow { position:sticky; top:74px; z-index:40; background:rgba(250,250,247,.82);
+  backdrop-filter:saturate(150%) blur(14px); -webkit-backdrop-filter:saturate(150%) blur(14px);
+  border-bottom:1px solid var(--k-line); }
 /* Vid scroll: headerns djup-skugga blöder annars ner över nav-raden och gör linjen tjock.
    På katalogen: släck headerns skugga och lägg den under nav-raden i stället. */
 [data-mo-scrolled] body[data-page="catalog"] .site-header { box-shadow:none; }
