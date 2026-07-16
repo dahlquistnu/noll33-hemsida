@@ -266,10 +266,13 @@ a[data-mo-link]:not(:hover)::after { transform-origin: right center; }
 /* Magnetisk knapp: etiketten rullar upp, dubblett rullar in underifrån */
 .mo-btn { position: relative; overflow: hidden; }
 .mo-btn > .mo-btn-in { display: inline-flex; align-items: center; gap: 9px; transition: transform .34s cubic-bezier(.83,0,.17,1); }
-.mo-btn::after { content: attr(data-label); position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: .4em;
-  transform: translateY(115%); transition: transform .34s cubic-bezier(.83,0,.17,1); white-space: nowrap; }
+/* top/right/bottom/left istället för inset + visibility-vakt: om positioneringen
+   någonsin faller bort (äldre motor, bruten cascade) får dubbletten aldrig synas
+   i vila — då uteblir bara hover-effekten istället för en dubblerad knapp. */
+.mo-btn::after { content: attr(data-label); position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: center; gap: .4em;
+  visibility: hidden; transform: translateY(115%); transition: transform .34s cubic-bezier(.83,0,.17,1), visibility 0s .34s; white-space: nowrap; }
 .mo-btn:hover > .mo-btn-in { transform: translateY(-115%); }
-.mo-btn:hover::after { transform: translateY(0); }
+.mo-btn:hover::after { visibility: visible; transform: translateY(0); transition: transform .34s cubic-bezier(.83,0,.17,1); }
 
 /* Bild-zoom vid hover (auto-taggade länk-omslutna bilder) */
 [data-mo-zoom] { overflow: hidden; }

@@ -16,8 +16,9 @@
     if ((location.hash.slice(1) || 'home') !== page) history.replaceState(null, '', page === 'home' ? location.pathname : '#' + page);
     if (!opts || !opts.keepScroll) window.scrollTo(0, 0);
     closeMobileNav();
-    // Ny vy → tagga + avslöja dess element
-    moInit(); edObserve(true); setRates();
+    // Ny vy → tagga + avslöja dess element; tickers på nyvisad sida byggs om
+    // (initTicker hoppar över dolda — se kommentaren där).
+    moInit(); edObserve(true); setRates(); initTicker();
     // Katalogen monteras EFTER moInit (så dess noder inte auto-taggas/döljs).
     if (page === 'catalog') CAT.mount();
     if (page === 'konto') KONTO.mount();
@@ -41,13 +42,17 @@
   function initTicker() {
     document.querySelectorAll('[data-ticker]').forEach(function (t) {
       if (!t.__base) { var h0 = t.querySelector('[data-ticker-half]'); if (!h0) return; t.__base = h0.innerHTML; }
+      // På en dold sida (display:none) mäter halvan 0px — upprepningen rusar då till
+      // guard-taket och banan får 30+ kopior = skenande hastighet. Bygg bara synliga
+      // tickers; goto() initierar om när sidan visas.
+      if (!t.offsetParent) return;
       var cw = ((t.parentElement || t).getBoundingClientRect().width) || window.innerWidth || 1200;
       var half = document.createElement('div');
       half.style.display = 'flex'; half.setAttribute('data-ticker-half', '');
       half.innerHTML = t.__base;
       t.innerHTML = ''; t.appendChild(half);
-      var guard = 0;
-      while (half.getBoundingClientRect().width < cw && guard++ < 30) { half.innerHTML += t.__base; }
+      var guard = 0, hw;
+      while ((hw = half.getBoundingClientRect().width) > 0 && hw < cw && guard++ < 30) { half.innerHTML += t.__base; }
       var copy = half.cloneNode(true); copy.setAttribute('aria-hidden', 'true'); copy.removeAttribute('data-ticker-half');
       t.appendChild(copy);
     });
@@ -105,7 +110,8 @@
     function kund() { var id = (st.role === 'admin' && st.viewAs) ? st.viewAs : 'k1'; return KUNDER.filter(function (k) { return k.id === id; })[0] || KUNDER[0]; }
     function loggedIn() { return st.role === 'kund' || st.role === 'admin'; }
 
-    function login(role) { st = { role: role, tab: role === 'admin' ? 'adm-kunder' : 'oversikt', viewAs: null }; save(); updateHeader(); window.NOLL33_goto('konto'); }
+    // email sätts vid riktig inloggning (Supabase-verifierad); demo-knapparna lämnar den tom.
+    function login(role, email) { st = { role: role, email: email || null, tab: role === 'admin' ? 'adm-kunder' : 'oversikt', viewAs: null }; save(); updateHeader(); window.NOLL33_goto('konto'); }
     function logout() { st = {}; save(); updateHeader(); window.NOLL33_goto('home'); }
 
     function updateHeader() {
@@ -152,7 +158,7 @@
         + '<div class="kt-stat"><div class="big">' + k.ordrar + '</div><div class="cap">Ordrar totalt</div></div>'
         + '<div class="kt-stat"><div class="big">1 840</div><div class="cap">Plagg i år</div></div>'
         + '<div class="kt-stat"><div class="big">' + BIBLIOTEK.length + '</div><div class="cap">Sparade tryck</div></div>'
-        + '<div class="kt-stat"><div class="big">' + esc(k.modell) + '</div><div class="cap">Prismodell</div></div>'
+        + '<div class="kt-stat"><div class="big">' + esc(k.sedan) + '</div><div class="cap">Kund sedan</div></div>'
         + '</div>';
       return stats + '<div class="kt-grid2">'
         + '<div><div class="eyebrow" style="margin-bottom:16px">Senaste order</div>' + orderCard(senaste, false) + '</div>'
@@ -161,7 +167,7 @@
         + '<a href="#" class="pill pill-outline" data-nav="catalog">Nytt ur sortimentet</a>'
         + '<button class="pill pill-outline" data-kt-tab="bibliotek">Mina tryck</button></div></div>'
         + '<div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Ert konto</div>'
-        + '<div class="kt-kv"><span>Prismodell</span><strong>' + esc(k.modell) + (k.modell === 'B' ? ' (egna priser)' : ' (standard)') + '</strong></div>'
+        + '<div class="kt-kv"><span>Företag</span><strong>' + esc(k.foretag) + '</strong></div>'
         + '<div class="kt-kv"><span>Kund sedan</span><strong>' + esc(k.sedan) + '</strong></div>'
         + '<div class="kt-kv"><span>Kontakt</span><strong>' + esc(k.kontakt) + '</strong></div></div></div></div>';
     }
@@ -173,9 +179,8 @@
         }).join('') + '</div>';
     }
     function vPriser(k) {
-      var note = k.modell === 'B'
-        ? '<span class="kt-note b">Prismodell B · era avtalade priser</span>'
-        : '<span class="kt-note a">Prismodell A · standardprislista 2026</span>';
+      // Modell-etiketten är intern (admin) — kunden ser bara "era priser".
+      var note = '<span class="kt-note a">Era avtalade priser · 2026</span>';
       return '<p class="kt-lead">Era priser per teknik och volym. Exakt pris räknas alltid live i designstudion.' + note + '</p>'
         + '<div class="kt-prisgrid">' + PRISER.map(function (p) {
           return '<div class="kt-pris"><strong class="kt-pristitel">' + esc(p.teknik) + '</strong><table><tbody>'
@@ -217,11 +222,12 @@
       if (st.role === 'admin') {
         adminBar = st.viewAs
           ? '<div class="kt-adminbar"><span><strong>ADMIN</strong> · Visar som: ' + esc(k.foretag) + ' (prismodell ' + esc(k.modell) + ')</span><button class="kt-adminback" data-kt-back="1">‹ Tillbaka till admin</button></div>'
-          : '<div class="kt-adminbar"><span><strong>ADMIN</strong> · Noll33</span><span class="kt-dim">Demo med exempeldata</span></div>';
+          : '<div class="kt-adminbar"><span><strong>ADMIN</strong> · Noll33' + (st.email ? ' · ' + esc(st.email) : '') + '</span><span class="kt-dim">' + (st.email ? 'Inloggad — innehållet är exempeldata' : 'Demo med exempeldata') + '</span></div>';
       }
       var isAdminHome = st.role === 'admin' && !st.viewAs;
       var title = isAdminHome ? 'Admin' : 'Mitt konto';
-      var sub = isAdminHome ? 'Kunder, prismodeller och förfrågningar.' : (esc(k.foretag) + ' · ' + esc(k.kontakt));
+      var sub = isAdminHome ? 'Kunder, prismodeller och förfrågningar.'
+        : (esc(k.foretag) + ' · ' + esc(k.kontakt) + (st.email && st.role === 'kund' ? ' · inloggad som ' + esc(st.email) : ''));
       var body = '';
       switch (st.tab) {
         case 'order': body = vOrder(); break;
@@ -263,7 +269,7 @@
         }
       });
     }
-    return { mount: mount, init: init, loggedIn: loggedIn };
+    return { mount: mount, init: init, loggedIn: loggedIn, login: login };
   })();
 
   /* ============ mo-reveal: auto-tagga + avslöja (systemisk motion) ============ */
@@ -1131,14 +1137,55 @@
     });
     // Escape stänger metod-modalen + söket
     window.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeMetodModal(); SEARCH.close(); } });
-    // Ansökan → tackvy; Logga in → hem (demo, ingen backend på formuläret ännu)
+    // Ansökan → tackvy; Logga in → riktig verifiering mot PRNTR (Supabase auth).
+    // Anon-nyckeln är publik per design. Portalens INNEHÅLL är fortfarande exempeldata;
+    // det äkta här är själva inloggningen (e-post + lösenord valideras på riktigt).
+    var PRNTR_SUPABASE = 'https://koczjxjjcvgsuvdlooft.supabase.co';
+    var PRNTR_ANON = 'sb_publishable_txgCWP0y-jpt6HP2rd-Uuw_3Ng8ehUb';
+    var ADMIN_EMAILS = ['admin@prntr.dahlquist.se'];
     document.addEventListener('submit', function (e) {
       if (e.target.closest('[data-ansok-form]')) {
         e.preventDefault();
         var f = document.getElementById('ansokForm'), t = document.getElementById('ansokThanks');
         if (f) f.style.display = 'none'; if (t) t.style.display = 'block'; window.scrollTo(0, 0);
       } else if (e.target.closest('[data-login-form]')) {
-        e.preventDefault(); goto('home');
+        e.preventDefault();
+        var form = e.target.closest('[data-login-form]');
+        var email = ((form.querySelector('input[type="email"]') || {}).value || '').trim().toLowerCase();
+        var pass = (form.querySelector('input[type="password"]') || {}).value || '';
+        var btn = form.querySelector('button[type="submit"]');
+        var err = form.querySelector('[data-login-error]');
+        if (!err) {
+          err = document.createElement('p');
+          err.setAttribute('data-login-error', '');
+          err.style.cssText = 'color:#8a1f2d;font-size:13px;margin:0;';
+          if (btn) form.insertBefore(err, btn); else form.appendChild(err);
+        }
+        err.textContent = '';
+        if (btn) { btn.disabled = true; btn.dataset.lbl = btn.textContent; btn.textContent = 'Loggar in…'; }
+        fetch(PRNTR_SUPABASE + '/auth/v1/token?grant_type=password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', apikey: PRNTR_ANON },
+          body: JSON.stringify({ email: email, password: pass })
+        }).then(function (res) { return res.json().then(function (d) { return { ok: res.ok, d: d }; }); })
+          .then(function (r) {
+            if (btn) { btn.disabled = false; btn.textContent = btn.dataset.lbl; }
+            if (r.ok && r.d && r.d.user) {
+              var role = ADMIN_EMAILS.indexOf(email) !== -1 ? 'admin' : 'kund';
+              KONTO.login(role, email);
+            } else {
+              var code = (r.d && (r.d.error_code || r.d.error)) || '';
+              err.textContent = code === 'invalid_credentials' || code === 'invalid_grant'
+                ? 'Fel e-post eller lösenord.'
+                : code === 'email_not_confirmed'
+                  ? 'Kontot är inte bekräftat ännu — kolla din mejl.'
+                  : 'Inloggningen misslyckades. Försök igen.';
+            }
+          })
+          .catch(function () {
+            if (btn) { btn.disabled = false; btn.textContent = btn.dataset.lbl; }
+            err.textContent = 'Kunde inte nå inloggningstjänsten. Försök igen.';
+          });
       }
     });
 
