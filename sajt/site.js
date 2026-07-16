@@ -923,13 +923,14 @@
       if (!st.menu) return '';
       var inner;
       if (st.menu === 'Sortiment') {
-        inner = '<div class="k-fly-h">Kategorier</div><div class="k-fly-list">' +
+        // Ingen rubrik i flyouten — guld-understrykningen på navknappen pekar redan ut valet.
+        inner = '<div class="k-fly-list">' +
           data.CATS.map(function (c) { return '<button class="k-fly-link" data-k="flyCat" data-cat="' + esc(c.name) + '">' + esc(c.name) + '</button>'; }).join('') + '</div>';
       } else {
         var mg = st.menu, subc = {};
         data.P.forEach(function (p) { if (p.family === 'Kläder' && p.gender === mg && p.sub) subc[p.sub] = (subc[p.sub] || 0) + 1; });
         var mk = Object.keys(subc).sort(function (a, b) { if (a === 'Övrigt' || a === 'Ovrigt') return 1; if (b === 'Övrigt' || b === 'Ovrigt') return -1; return (subRank(a) - subRank(b)) || (subc[b] - subc[a]); });
-        inner = '<div class="k-fly-h">Plagg för ' + esc(mg) + '</div><div class="k-fly-list">' +
+        inner = '<div class="k-fly-list">' +
           mk.map(function (sub) { return '<button class="k-fly-link" data-k="flySub" data-gender="' + esc(mg) + '" data-sub="' + esc(sub) + '">' + esc(subLabel(sub, mg)) + '</button>'; }).join('') +
           '</div><button class="k-fly-all" data-k="flyAll" data-gender="' + esc(mg) + '">Visa alla ' + esc(mg.toLowerCase()) + 'plagg</button>';
       }
