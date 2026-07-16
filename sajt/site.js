@@ -119,6 +119,13 @@
         if (loggedIn()) { a.dataset.nav = 'konto'; a.textContent = st.role === 'admin' ? 'Admin' : 'Mitt konto'; }
         else { a.dataset.nav = 'login'; a.textContent = 'Logga in'; }
       });
+      // Portal-läge: sajtens skal byter skepnad (Ansökan döljs, guldlinje under headern).
+      document.documentElement.toggleAttribute('data-portal', loggedIn());
+    }
+
+    function halsning() {
+      var h = new Date().getHours();
+      return h < 5 ? 'God kväll' : h < 10 ? 'God morgon' : h < 18 ? 'God dag' : 'God kväll';
     }
 
     /* ---- render-hjälpare ---- */
@@ -142,10 +149,23 @@
         return '<button class="kt-tab' + (st.tab === t[0] ? ' is-active' : '') + '" data-kt-tab="' + t[0] + '">' + t[1] + '</button>';
       }).join('') + '</nav>';
     }
-    function orderCard(o, compact) {
+    /* Nästa händelse som handling: portalens viktigaste rad. Godkänn-knappen
+       driver demo-flödet vidare (status 1 → 2) så Mats kan känna på interaktionen. */
+    function nextStep(o) {
+      if (o.status >= 4) return '';
+      var msg, act = '';
+      if (o.status === 0) msg = 'Vi går igenom er order och förbereder korrektur.';
+      else if (o.status === 1) { msg = 'Korrektur väntar på ert godkännande.'; act = '<button class="pill pill-ink" data-kt-approve="' + esc(o.nr) + '">Godkänn korrektur</button>'; }
+      else if (o.status === 2) msg = 'I produktion. Beräknat klart inom 5-7 arbetsdagar.';
+      else msg = 'Skickad. Följ paketet via spårningsnumret nedan.';
+      return '<div class="kt-next"><span>' + msg + '</span>' + act + '</div>';
+    }
+
+    function orderCard(o, compact, withNext) {
       var rows = o.rader.map(function (r) { return '<tr><td>' + esc(r.plagg) + '</td><td>' + esc(r.farg) + '</td><td>' + r.antal + ' st</td><td>' + esc(r.tryck) + '</td></tr>'; }).join('');
       return '<div class="kt-order"><div class="kt-orderhead"><div><span class="kt-ordernr">' + esc(o.nr) + '</span><span class="kt-dim">  ' + esc(o.datum) + '</span></div>' + statusPill(o.status) + '</div>'
         + (compact ? '' : timeline(o.status))
+        + (withNext ? nextStep(o) : '')
         + '<table class="kt-table"><thead><tr><th>Plagg</th><th>Färg</th><th>Antal</th><th>Förädling</th></tr></thead><tbody>' + rows + '</tbody></table>'
         + '<div class="kt-orderfoot"><span>' + (o.track ? 'Spårning: <a class="gold-link" style="font-size:13px" href="#" onclick="return false">' + esc(o.track) + '</a>' : '&nbsp;') + '</span>'
         + '<span class="kt-sum">' + esc(o.summa) + '</span><button class="pill pill-ink kt-again" data-kt-again="' + esc(o.nr) + '">Beställ igen</button></div></div>';
@@ -153,23 +173,36 @@
 
     /* ---- flikar ---- */
     function vOversikt(k) {
-      var senaste = ORDERS[0];
+      // Portalens fråga är alltid "var är mina grejer och hur beställer jag igen?"
+      // — pågående ordrar med nästa handling överst, ombeställning direkt under.
+      var pagaende = ORDERS.filter(function (o) { return o.status < 4; });
+      var pag = pagaende.length
+        ? pagaende.map(function (o) { return orderCard(o, false, true); }).join('')
+        : '<div class="kt-panel"><p class="prose" style="margin:0">Inga pågående ordrar just nu. Börja i sortimentet eller beställ om en tidigare order nedan.</p></div>';
+      var reorder = ORDERS.slice(0, 3).map(function (o) {
+        var r = o.rader[0];
+        return '<div class="kt-ritem"><strong>' + esc(o.nr) + '</strong><span>' + esc(r.plagg) + ' · ' + r.antal + ' st</span><span>' + esc(o.datum) + '</span>'
+          + '<button class="pill pill-outline" data-kt-again="' + esc(o.nr) + '">Beställ igen</button></div>';
+      }).join('');
       var stats = '<div class="kt-stats">'
         + '<div class="kt-stat"><div class="big">' + k.ordrar + '</div><div class="cap">Ordrar totalt</div></div>'
         + '<div class="kt-stat"><div class="big">1 840</div><div class="cap">Plagg i år</div></div>'
         + '<div class="kt-stat"><div class="big">' + BIBLIOTEK.length + '</div><div class="cap">Sparade tryck</div></div>'
         + '<div class="kt-stat"><div class="big">' + esc(k.sedan) + '</div><div class="cap">Kund sedan</div></div>'
         + '</div>';
-      return stats + '<div class="kt-grid2">'
-        + '<div><div class="eyebrow" style="margin-bottom:16px">Senaste order</div>' + orderCard(senaste, false) + '</div>'
+      return '<div class="kt-in"><div class="eyebrow" style="margin-bottom:16px">Pågående just nu</div>' + pag + '</div>'
+        + '<div class="kt-grid2 kt-in" style="animation-delay:.08s;margin-top:34px">'
+        + '<div><div class="eyebrow" style="margin-bottom:16px">Beställ igen</div><div class="kt-reorder">' + reorder + '</div>'
+        + '<a href="#" class="kt-catcard" data-nav="catalog" style="margin-top:26px"><img src="assets/c-hood.jpg" alt="Plagg ur sortimentet" loading="lazy"><span class="kt-catlbl">Bläddra sortimentet →</span></a></div>'
         + '<div><div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Snabbt</div>'
-        + '<div class="kt-quick"><button class="pill pill-ink" data-kt-again="' + esc(senaste.nr) + '">Beställ senaste igen</button>'
-        + '<a href="#" class="pill pill-outline" data-nav="catalog">Nytt ur sortimentet</a>'
+        + '<div class="kt-quick"><a href="#" class="pill pill-ink" data-nav="apply">Designa nytt tryck</a>'
         + '<button class="pill pill-outline" data-kt-tab="bibliotek">Mina tryck</button></div></div>'
-        + '<div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Ert konto</div>'
-        + '<div class="kt-kv"><span>Företag</span><strong>' + esc(k.foretag) + '</strong></div>'
-        + '<div class="kt-kv"><span>Kund sedan</span><strong>' + esc(k.sedan) + '</strong></div>'
-        + '<div class="kt-kv"><span>Kontakt</span><strong>' + esc(k.kontakt) + '</strong></div></div></div></div>';
+        + '<div class="kt-panel" style="margin-top:18px"><div class="eyebrow" style="margin-bottom:16px">Er kontakt hos Noll33</div>'
+        + '<div class="kt-kv"><span>Mejl</span><strong><a class="gold-link" style="font-size:13.5px" href="mailto:info@noll33.se">info@noll33.se</a></strong></div>'
+        + '<div class="kt-kv"><span>Telefon</span><strong>033-129110</strong></div>'
+        + '<p class="prose" style="margin:12px 0 0;font-size:13px;color:var(--muted2)">Vi svarar inom en arbetsdag.</p></div>'
+        + '</div></div>'
+        + '<div class="kt-in" style="animation-delay:.16s;margin-top:38px">' + stats + '</div>';
     }
     function vOrder() { return ORDERS.map(function (o) { return orderCard(o, false); }).join(''); }
     function vBibliotek() {
@@ -225,7 +258,10 @@
           : '<div class="kt-adminbar"><span><strong>ADMIN</strong> · Noll33' + (st.email ? ' · ' + esc(st.email) : '') + '</span><span class="kt-dim">' + (st.email ? 'Inloggad — innehållet är exempeldata' : 'Demo med exempeldata') + '</span></div>';
       }
       var isAdminHome = st.role === 'admin' && !st.viewAs;
-      var title = isAdminHome ? 'Admin' : 'Mitt konto';
+      // Kund möts av en hälsning istället för generiskt "Mitt konto" — portalen ska
+      // kännas personlig direkt vid inloggning. Admins visa-som-kund behåller neutralt.
+      var title = isAdminHome ? 'Admin'
+        : (st.role === 'kund' ? halsning() + (k.kontakt ? ', ' + esc(k.kontakt.split(' ')[0]) : '') : 'Mitt konto');
       var sub = isAdminHome ? 'Kunder, prismodeller och förfrågningar.'
         : (esc(k.foretag) + ' · ' + esc(k.kontakt) + (st.email && st.role === 'kund' ? ' · inloggad som ' + esc(st.email) : ''));
       var body = '';
@@ -257,6 +293,13 @@
         if ((b = e.target.closest('[data-kt-viewas]'))) { e.preventDefault(); st.viewAs = b.getAttribute('data-kt-viewas'); st.tab = 'oversikt'; save(); render(); window.scrollTo(0, 0); return; }
         if ((b = e.target.closest('[data-kt-back]'))) { e.preventDefault(); st.viewAs = null; st.tab = 'adm-kunder'; save(); render(); return; }
         if ((b = e.target.closest('[data-kt-logout]'))) { e.preventDefault(); logout(); return; }
+        if ((b = e.target.closest('[data-kt-approve]'))) {
+          e.preventDefault();
+          var onr = b.getAttribute('data-kt-approve');
+          var ord = ORDERS.filter(function (x) { return x.nr === onr; })[0];
+          if (ord) { ord.status = 2; render(); }
+          return;
+        }
         if ((b = e.target.closest('[data-kt-again]'))) {
           e.preventDefault();
           b.textContent = 'Lagd i korgen ✓'; b.disabled = true; b.style.opacity = '.65';
@@ -1171,8 +1214,13 @@
           .then(function (r) {
             if (btn) { btn.disabled = false; btn.textContent = btn.dataset.lbl; }
             if (r.ok && r.d && r.d.user) {
-              var role = ADMIN_EMAILS.indexOf(email) !== -1 ? 'admin' : 'kund';
-              KONTO.login(role, email);
+              if (ADMIN_EMAILS.indexOf(email) !== -1) {
+                // Riktiga adminpanelen bor i PRNTR (Noll33-tematiserad) — sajtens
+                // adminvy är demo-skiss. Dörren sitter här, huset är PRNTR.
+                window.location.href = 'https://printrstudio.vercel.app/admin';
+              } else {
+                KONTO.login('kund', email);
+              }
             } else {
               var code = (r.d && (r.d.error_code || r.d.error)) || '';
               err.textContent = code === 'invalid_credentials' || code === 'invalid_grant'
