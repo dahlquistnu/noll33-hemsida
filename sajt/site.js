@@ -393,7 +393,7 @@
       } }
       return packshot || { src: '', photo: false };
     }
-    function studioUrl(p, col) { return 'https://prntr.dahlquist.se/?from=noll33&garment_id=' + encodeURIComponent(p.id) + '&color=' + encodeURIComponent((col && col.name) || '') + '&qty=50'; }
+    function studioUrl(p, col) { return 'https://printrstudio.vercel.app/?from=noll33&garment_id=' + encodeURIComponent(p.id) + '&color=' + encodeURIComponent((col && col.name) || '') + '&qty=50'; }
     // Kuraterade kategoribilder (valda av kund) — vinner över auto-valet.
     var CAT_IMG = {
       'Klädaccessoarer': 'https://cdn.toptex.com/pictures/K861-2_2026.jpg',   // burgundy satin-halsduk
