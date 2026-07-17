@@ -834,7 +834,15 @@
     }
 
     /* --- navigering --- */
-    function setState(patch) { if (st.cartOpen) snapshotForm(); Object.assign(st, patch); renderAll(); }
+    function setState(patch) {
+      if (st.cartOpen) snapshotForm();
+      Object.assign(st, patch);
+      // Rör bara menyn? Rendera inte om sidkroppen — annars byggs alla
+      // produktbilder om vid varje kategoriväxling (ser ut som sidomladdning).
+      var keys = Object.keys(patch);
+      if (keys.length && keys.every(function (k) { return k === 'menu'; })) { renderMenu(); return; }
+      renderAll();
+    }
     function goCategory(name, gender) { setState({ family: name, gender: gender || '', sub: '', showAll: false, brand: '', q: '', shown: 48, detailId: null }); top(); }
     function setSub(sub) { setState({ sub: sub, showAll: false, shown: 48 }); top(); }
     function showAllProducts() { setState({ showAll: true, sub: '', shown: 48 }); top(); }
@@ -916,7 +924,7 @@
       var keys = GORDER.filter(function (g) { return present[g]; }).concat(['Sortiment']);
       return keys.map(function (k) {
         var open = st.menu === k;
-        return '<button class="k-navbtn' + (open ? ' is-open' : '') + '" data-k="toggleMenu" data-menu="' + esc(k) + '" aria-haspopup="true" aria-expanded="' + (open ? 'true' : 'false') + '">' + esc(k) + '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></button>';
+        return '<button class="k-navbtn' + (open ? ' is-open' : '') + '" data-k="toggleMenu" data-menu="' + esc(k) + '" aria-haspopup="true" aria-expanded="' + (open ? 'true' : 'false') + '"><span class="k-navlbl">' + esc(k) + '</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></button>';
       }).join('');
     }
     function renderFly() {
@@ -925,13 +933,14 @@
       if (st.menu === 'Sortiment') {
         // Ingen rubrik i flyouten — guld-understrykningen på navknappen pekar redan ut valet.
         inner = '<div class="k-fly-list">' +
-          data.CATS.map(function (c) { return '<button class="k-fly-link" data-k="flyCat" data-cat="' + esc(c.name) + '">' + esc(c.name) + '</button>'; }).join('') + '</div>';
+          data.CATS.map(function (c) { return '<button class="k-fly-link" data-k="flyCat" data-cat="' + esc(c.name) + '"><span class="k-fly-lbl">' + esc(c.name) + '</span></button>'; }).join('') + '</div>' +
+          '<button class="k-fly-all" data-k="flyReset">Visa hela sortimentet</button>';
       } else {
         var mg = st.menu, subc = {};
         data.P.forEach(function (p) { if (p.family === 'Kläder' && p.gender === mg && p.sub) subc[p.sub] = (subc[p.sub] || 0) + 1; });
         var mk = Object.keys(subc).sort(function (a, b) { if (a === 'Övrigt' || a === 'Ovrigt') return 1; if (b === 'Övrigt' || b === 'Ovrigt') return -1; return (subRank(a) - subRank(b)) || (subc[b] - subc[a]); });
         inner = '<div class="k-fly-list">' +
-          mk.map(function (sub) { return '<button class="k-fly-link" data-k="flySub" data-gender="' + esc(mg) + '" data-sub="' + esc(sub) + '">' + esc(subLabel(sub, mg)) + '</button>'; }).join('') +
+          mk.map(function (sub) { return '<button class="k-fly-link" data-k="flySub" data-gender="' + esc(mg) + '" data-sub="' + esc(sub) + '"><span class="k-fly-lbl">' + esc(subLabel(sub, mg)) + '</span></button>'; }).join('') +
           '</div><button class="k-fly-all" data-k="flyAll" data-gender="' + esc(mg) + '">Visa alla ' + esc(mg.toLowerCase()) + 'plagg</button>';
       }
       return '<div class="k-fly"><div class="k-fly-inner">' + inner + '</div></div>';
@@ -1140,11 +1149,36 @@
     }
     function updateBadge() { var b = document.getElementById('kBadge'); if (!b) return; var n = cartLines(); if (n > 0) { b.textContent = n; b.hidden = false; } else b.hidden = true; }
     function syncSearch() { var inp = document.getElementById('kSearch'); if (inp && document.activeElement !== inp && inp.value !== st.q) inp.value = st.q; }
-    function renderAll() {
+    // Flyoutens innehåll linjerar med den öppna kategoriknappen (Dam/Herr/Barn/
+    // Unisex/Sortiment) — kolumnerna börjar rakt under ordet man tryckte på.
+    function alignFly() {
+      var inner = root && root.querySelector('.k-fly-inner'); if (!inner) return;
+      var btn = root.querySelector('.k-navbtn.is-open');
+      if (!btn || window.innerWidth < 761) return;
+      var left = Math.max(0, Math.round(btn.getBoundingClientRect().left));
+      inner.style.margin = '0';
+      inner.style.paddingLeft = left + 'px';
+      inner.style.maxWidth = (1400 + left) + 'px';
+    }
+    // Nav-raden + flyouten + backdropen — allt menyväxling behöver röra.
+    function renderMenu() {
       if (!root) return;
       var nav = document.getElementById('kNavBtns'); if (nav) nav.innerHTML = renderNavBtns();
-      var fly = document.getElementById('kFly'); if (fly) fly.innerHTML = renderFly();
+      var fly = document.getElementById('kFly');
+      if (fly) {
+        // Intro-animationen (flydown) ska bara köras när flyouten ÖPPNAS.
+        // Vid växling Dam→Herr osv. byts bara innehållet — annars blinkar
+        // bakgrunden igenom en frame när containern återskapas.
+        var hadeFly = !!fly.firstElementChild;
+        fly.innerHTML = renderFly();
+        if (hadeFly && fly.firstElementChild) fly.firstElementChild.style.animation = 'none';
+      }
+      alignFly();
       var mb = document.getElementById('kMenuBackdrop'); if (mb) mb.style.display = st.menu ? 'block' : 'none';
+    }
+    function renderAll() {
+      if (!root) return;
+      renderMenu();
       var body = document.getElementById('kBody'); if (body) body.innerHTML = renderBody();
       var ov = document.getElementById('kOverlays'); if (ov) ov.innerHTML = st.cartOpen ? renderCart() : '';
       updateBadge(); syncSearch(); catObserve();
@@ -1164,6 +1198,7 @@
         case 'clearFilters': clearFilters(); break;
         case 'closeDetail': closeDetail(); break;
         case 'toggleMenu': setState({ menu: st.menu === d.menu ? null : d.menu }); break;
+        case 'flyReset': setState({ detailId: null, q: '', brand: '', family: '', gender: '', sub: '', showAll: false, shown: 48, menu: null }); window.scrollTo(0, 0); break;
         case 'closeMenu': setState({ menu: null }); break;
         case 'flyCat': setState({ family: d.cat, gender: '', sub: '', showAll: false, brand: '', q: '', shown: 48, detailId: null, menu: null }); top(); break;
         case 'flySub': setState({ family: 'Kläder', gender: d.gender, sub: d.sub, showAll: false, shown: 48, detailId: null, menu: null }); top(); break;
@@ -1231,7 +1266,10 @@
       // Djuplänk → hel kategori (family) i katalogen.
       openFamily: function (fam) { st.detailId = null; st.q = ''; st.brand = ''; st.family = fam; st.gender = ''; st.sub = ''; st.showAll = false; st.shown = 48; st.menu = null; if (root && bound) renderAll(); },
       // Nollställ till katalogens startsida (header "Sortiment" / "Utforska hela katalogen").
-      reset: function () { st.detailId = null; st.q = ''; st.brand = ''; st.family = ''; st.gender = ''; st.sub = ''; st.showAll = false; st.shown = 48; st.menu = null; if (root && bound) renderAll(); }
+      reset: function () { st.detailId = null; st.q = ''; st.brand = ''; st.family = ''; st.gender = ''; st.sub = ''; st.showAll = false; st.shown = 48; st.menu = null; if (root && bound) renderAll(); },
+      // Stäng flyouten vid scroll: blur under transform flimrar, och en öppen
+      // mega-meny som följer med scrollen är ändå fel läge.
+      closeMenu: function () { if (st.menu) setState({ menu: null }); }
     };
   })();
 
@@ -1390,7 +1428,7 @@
     // Reveal-loopar + scroll
     onScrollHeader();
     initTicker();
-    window.addEventListener('scroll', function () { onScrollHeader(); moReveal(); mqVel += (window.scrollY - mqLast); mqLast = window.scrollY; }, { passive: true });
+    window.addEventListener('scroll', function () { onScrollHeader(); moReveal(); mqVel += (window.scrollY - mqLast); mqLast = window.scrollY; CAT.closeMenu(); }, { passive: true });
     var _tkRz; window.addEventListener('resize', function () { moReveal(); clearTimeout(_tkRz); _tkRz = setTimeout(initTicker, 200); }, { passive: true });
     setInterval(moReveal, 220);
     // Säkerhetsnät: avslöja bara det som nått viewporten (aldrig blank sektion) —

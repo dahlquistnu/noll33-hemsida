@@ -57,9 +57,13 @@ h1, h2, h3, p { margin: 0; }
 .pill-outline:hover { background: var(--ink); color: var(--bg); }
 
 /* ---- Header (Atelier) ---- */
+/* Ingen saturate i glaset: 150% förstärkte färgen bakom, så raden blev varmare
+   över beige innehåll än headern över ljus sidtopp — två olika vita nyanser.
+   Guldlinjen (1px) är navigationens nedre kant på alla sidor; på katalogen
+   täcks den av kategorimenyn som bär sin egen guldkant längre ner. */
 .site-header { position: sticky; top: 0; z-index: 50; background: rgba(250,250,247,.82);
-  backdrop-filter: saturate(150%) blur(14px); -webkit-backdrop-filter: saturate(150%) blur(14px);
-  border-bottom: 1px solid var(--line); }
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid #C79A2E; }
 .site-header .bar { height: 74px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .wordmark { display: inline-flex; align-items: center; flex: none; font-weight: 800; font-size: 26px; line-height: 1;
   letter-spacing: -.02em; color: #2A2F2C; }
@@ -70,10 +74,12 @@ h1, h2, h3, p { margin: 0; }
 .header-actions { display: flex; align-items: center; gap: 14px; margin-left: clamp(44px, 6vw, 96px); font-weight: 500; font-size: 14.5px; letter-spacing: .02em; color: #2A2F2C; }
 
 /* guld-underline på nav + länkar */
+/* Strecksystem: hover-svep 1px, aktivt/valt läge 1.5px — gäller överallt. */
 .uline { position: relative; }
-.uline::after { content: ''; position: absolute; left: 0; right: 0; bottom: -5px; height: 1.5px; background: var(--gold);
+.uline::after { content: ''; position: absolute; left: 0; right: 0; bottom: -5px; height: 1px; background: var(--gold);
   transform: scaleX(0); transform-origin: left center; transition: transform .3s cubic-bezier(.16,1,.3,1); }
 .uline:hover::after, .uline.active::after { transform: scaleX(1); }
+.uline.active::after { height: 1.5px; }
 .uline:not(:hover)::after { transform-origin: right center; }
 
 /* hamburger — dold på desktop */
@@ -258,7 +264,7 @@ h1, h2, h3, p { margin: 0; }
 
 /* Länk-underline (auto-taggade textlänkar) */
 a[data-mo-link] { position: relative; text-decoration: none; }
-a[data-mo-link]::after { content: ''; position: absolute; left: 0; bottom: -2px; width: 100%; height: 1.5px; background: currentColor;
+a[data-mo-link]::after { content: ''; position: absolute; left: 0; bottom: -2px; width: 100%; height: 1px; background: currentColor;
   transform: scaleX(0); transform-origin: left center; transition: transform .28s cubic-bezier(.16,1,.3,1); }
 a[data-mo-link]:hover::after { transform: scaleX(1); }
 a[data-mo-link]:not(:hover)::after { transform-origin: right center; }
@@ -377,21 +383,29 @@ a[data-mo-link]:not(:hover)::after { transform-origin: right center; }
    dubbelnaven till en rad: header och nav-rad glider som ETT block, båda
    med transform (compositor-animerat — top-animering räknas om per bildruta
    och laggar). Samma duration och kurva är det som gör rörelsen sömlös. */
-.kx-navrow { position:sticky; top:74px; z-index:40; background:rgba(250,250,247,.82);
-  backdrop-filter:saturate(150%) blur(14px); -webkit-backdrop-filter:saturate(150%) blur(14px);
-  border-bottom:1px solid var(--k-line);
+/* OBS: glaset ligger på ett fullbredds-::before, INTE på .kx-navrow själv —
+   flyouten (#kFly) är barn till navrow, och ett barn under en backdrop-filter-
+   förälder kan inte sampla sidan bakom (blur:en dör). Med filtret på pseudo-
+   elementet får både raden och flyouten riktig frost och ser identiska ut. */
+.kx-navrow { position:sticky; top:74px; z-index:40; background:transparent;
   transition:transform .45s cubic-bezier(.83,0,.17,1); will-change:transform; }
+/* Guldlinjen under kategorimenyn — flyttar ner till flyoutens botten när den öppnas. */
+.kx-navrow::after { content:''; position:absolute; left:0; right:0; bottom:0; height:1px;
+  background:#C79A2E; pointer-events:none; }
+.kx-navrow:has(.k-fly)::after { opacity:0; }
+.kx-navrow::before { content:''; position:absolute; inset:0; z-index:-1;
+  background:rgba(250,250,247,.82); transform:translateZ(0);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
 .site-header { transition:transform .45s cubic-bezier(.83,0,.17,1), box-shadow .3s; }
 [data-mo-scrolled] body[data-page="catalog"] .site-header { transform:translateY(-100%); }
 [data-mo-scrolled] body[data-page="catalog"] .kx-navrow { transform:translateY(-74px); }
-/* Inloggad: ETT guldstreck i katalogen. Det bor på nav-radens topp (visuellt
-   samma linje som "under headern" i vila) och följer med blocket — aldrig
-   dubblerat mot headerns eget guld, som släcks här. */
-html[data-portal] body[data-page="catalog"] .site-header,
-html[data-portal][data-mo-scrolled] body[data-page="catalog"] .site-header { box-shadow:none; }
-html[data-portal] body[data-page="catalog"] .kx-navrow { box-shadow: inset 0 2px 0 #C79A2E; }
-html[data-portal][data-mo-scrolled] body[data-page="catalog"] .kx-navrow {
-  box-shadow: inset 0 2px 0 #C79A2E, 0 8px 22px rgba(20,22,20,.07); }
+/* Guldlinjen bor numera i navigationens NEDRE kant (header-border, navrow::after,
+   flyoutens botten) — den gamla topp-guld-logiken för portal-läget är borttagen.
+   Skuggan under den kollapsade raden behålls. */
+[data-mo-scrolled] body[data-page="catalog"] .kx-navrow { box-shadow: 0 8px 22px rgba(20,22,20,.07); }
+/* I sortimentet bär kategorimenyn guldlinjen — headerns släcks (annars två streck,
+   eftersom menyns glas är genomskinligt och inte täcker headerns linje helt). */
+body[data-page="catalog"] .site-header { border-bottom: 0; }
 @media (prefers-reduced-motion: reduce) {
   .site-header, .kx-navrow { transition: none; }
 }
@@ -402,10 +416,19 @@ html[data-portal][data-mo-scrolled] body[data-page="catalog"] .kx-navrow {
 .kx-nav { max-width:var(--maxw); margin:0 auto; padding:0 var(--gutter); height:54px; display:flex; align-items:center; gap:clamp(14px,2vw,28px); }
 .kx-navbtns { display:flex; align-items:center; gap:clamp(16px,2.4vw,32px); overflow-x:auto; -webkit-overflow-scrolling:touch; flex:0 1 auto; }
 .kx-navbtns::-webkit-scrollbar { height:0; }
-.k-navbtn { background:none; border:none; padding:0; height:54px; white-space:nowrap; font:600 14.5px/1 var(--font); color:var(--ink); display:flex; align-items:center; gap:6px; border-bottom:2px solid transparent; transition:border-color .2s,color .2s; }
+/* Samma underline som headerns nav (.uline): tunn guldlinje tätt under ordet,
+   sveper in från vänster — headern och menyn ska kännas som samma system. */
+.k-navbtn { background:none; border:none; padding:0; height:54px; white-space:nowrap; font:600 14.5px/1 var(--font); color:var(--ink); display:flex; align-items:center; gap:6px; }
+.k-navlbl { position:relative; }
+.k-navlbl::after { content:''; position:absolute; left:0; right:0; bottom:-5px; height:1px; background:var(--gold);
+  transform:scaleX(0); transform-origin:left center; transition:transform .3s cubic-bezier(.16,1,.3,1); }
+.k-navbtn:not(:hover) .k-navlbl::after { transform-origin:right center; }
+.k-navbtn.is-open .k-navlbl::after { transform:scaleX(1); height:1.5px; }
+/* Öppet val = guld text, precis som headerns aktiva länk (chevronen följer med). */
+.k-navbtn.is-open { color:var(--gold); }
+@media(hover:hover){ .k-navbtn:hover .k-navlbl::after { transform:scaleX(1); } }
 .k-navbtn svg { width:10px; height:10px; color:var(--k-muted2); transition:transform .25s; }
-.k-navbtn.is-open { border-bottom-color:var(--accent); }
-.k-navbtn.is-open svg { transform:rotate(180deg); }
+.k-navbtn.is-open svg { transform:rotate(180deg); color:var(--gold); }
 @media(hover:hover){ .k-navbtn:hover { color:var(--ink); } }
 .k-search { flex:1 1 200px; max-width:320px; position:relative; margin-left:auto; }
 .k-search input { width:100%; height:36px; padding:0 14px 0 38px; border:1px solid var(--k-line); border-radius:0; background:#fff; font:400 13px/1 var(--font); color:var(--ink); outline:none; }
@@ -419,14 +442,37 @@ html[data-portal][data-mo-scrolled] body[data-page="catalog"] .kx-navrow {
 .k-loading { max-width:var(--maxw); margin:0 auto; padding:120px var(--gutter); color:var(--k-muted2); font-size:15px; }
 
 /* Flyout */
-.k-fly { position:absolute; top:100%; left:0; right:0; background:var(--bg); border-top:1px solid var(--k-line); border-bottom:1px solid var(--k-line); box-shadow:0 26px 44px rgba(20,22,20,.09); animation:k-flydown .28s cubic-bezier(.16,1,.3,1); z-index:41; }
+/* Samma glas som headern och nav-raden — de tre nivåerna läses som ett system. */
+.k-fly { position:absolute; top:100%; left:0; right:0; background:rgba(250,250,247,.82);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-top:1px solid var(--k-line); border-bottom:1px solid #C79A2E; box-shadow:0 26px 44px rgba(20,22,20,.09); animation:k-flydown .28s cubic-bezier(.16,1,.3,1); z-index:41; }
 @keyframes k-flydown { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:none;} }
 .k-fly-inner { max-width:1400px; margin:0 auto; padding:clamp(24px,3vw,40px) clamp(24px,8vw,80px); }
 .k-fly-h { font-weight:600; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--k-muted2); margin:0 0 16px; }
-.k-fly-list { columns:3; column-gap:44px; }
-.k-fly-link { display:block; width:100%; text-align:left; background:none; border:none; padding:9px 0; font:500 16px/1.3 var(--font); color:var(--ink); break-inside:avoid; }
-@media(hover:hover){ .k-fly-link:hover { color:var(--k-muted); } }
-.k-fly-all { display:inline-block; margin-top:20px; background:none; border:none; padding:0 0 4px; font:600 14px/1 var(--font); color:var(--ink); border-bottom:1.5px solid var(--accent); }
+.k-fly-list { columns:3; column-gap:44px; animation:k-fade .18s ease; }
+/* Samma typografi som headerns nav (500/14.5/.02em) och samma hover-effekt:
+   guld text + streck som sveper in under ordet. */
+.k-fly-link { display:block; width:100%; text-align:left; background:none; border:none; padding:9px 0; font:500 14.5px/1.3 var(--font); letter-spacing:.02em; color:#2A2F2C; break-inside:avoid; transition:color .2s; }
+.k-fly-lbl { position:relative; }
+.k-fly-lbl::after { content:''; position:absolute; left:0; right:0; bottom:-4px; height:1px; background:var(--gold);
+  transform:scaleX(0); transform-origin:left center; transition:transform .3s cubic-bezier(.16,1,.3,1); }
+.k-fly-link:not(:hover) .k-fly-lbl::after { transform-origin:right center; }
+@media(hover:hover){
+  .k-fly-link:hover { color:var(--gold); }
+  .k-fly-link:hover .k-fly-lbl::after { transform:scaleX(1); }
+}
+/* Statisk guldlinje alltid kvar; vid hover blir texten guld och en mörkare
+   guldlinje sveper in över den — samma rörelse som övriga streck. */
+/* Linjen ligger alltid kvar (dämpad guld) — vid hover RULLAR fullt guld in
+   över den med samma svep som övriga streck. */
+.k-fly-all { display:inline-block; position:relative; margin-top:20px; background:none; border:none; padding:0 0 4px; font:600 14px/1 var(--font); color:var(--ink); border-bottom:1px solid rgba(184,134,11,.35); cursor:pointer; transition:color .2s; }
+.k-fly-all::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:1px; background:var(--gold);
+  transform:scaleX(0); transform-origin:left center; transition:transform .3s cubic-bezier(.16,1,.3,1); }
+.k-fly-all:not(:hover)::after { transform-origin:right center; }
+@media(hover:hover){
+  .k-fly-all:hover { color:var(--gold); }
+  .k-fly-all:hover::after { transform:scaleX(1); }
+}
 .k-menu-backdrop { position:fixed; inset:0; top:128px; z-index:39; background:rgba(20,22,20,.14); }
 @media(max-width:760px){ .k-fly-list { columns:2; } }
 @media(max-width:520px){ .k-fly-list { columns:1; } }
@@ -780,10 +826,8 @@ html[data-portal][data-mo-scrolled] body[data-page="catalog"] .kx-navrow {
 
 /* ---- Portal-läge (inloggad): sajtens skal byter skepnad ---- */
 html[data-portal] [data-nav="ansok"] { display: none !important; }
-/* border-bottom transparent: annars ligger headerns ljusa 1px-linje UNDER guldet
-   och ser ut som en vit springa. Guldet ska vara headerns sista pixel. */
-html[data-portal] .site-header { box-shadow: inset 0 -2px 0 #C79A2E; border-bottom-color: transparent; }
-html[data-portal][data-mo-scrolled] .site-header { box-shadow: inset 0 -2px 0 #C79A2E, 0 6px 24px rgba(20,22,20,.08); }
+/* Guldlinjen är numera headerns border-bottom på ALLA sidor (inte bara inloggad)
+   — de gamla portal-inset-reglerna är borttagna. */
 
 /* Portalens sektioner stiger in i tur och ordning vid inloggning/flikbyte */
 @keyframes ktIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
