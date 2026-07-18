@@ -96,7 +96,7 @@
         { plagg: 'Hoodie Heavy 350g', farg: 'Svart', antal: 85, tryck: 'Brodyr · bröst + DTF rygg' } ] },
       { nr: 'N33-2371', datum: '2026-05-28', status: 1, summa: '9 640 kr', track: null, rader: [
         { plagg: 'Piké Classic', farg: 'Kaki', antal: 60, tryck: 'Brodyr · bröst vänster' } ] },
-      { nr: 'N33-2344', datum: '2026-04-15', status: 4, summa: '22 400 kr', track: 'PN10331877SE', rader: [
+      { nr: 'N33-2344', datum: '2025-11-20', status: 4, summa: '22 400 kr', track: 'PN10331877SE', rader: [
         { plagg: 'Arbetsjacka Pro', farg: 'Antracit', antal: 45, tryck: 'Screentransfer · rygg + vävt märke ärm' },
         { plagg: 'Keps 5-panel', farg: 'Svart', antal: 100, tryck: 'Brodyr · front' } ] }
     ];
@@ -239,6 +239,35 @@
         + '<span class="kt-sum">' + esc(o.summa) + '</span><button class="pill pill-ink kt-again" data-kt-again="' + esc(o.nr) + '">Beställ igen</button></div></div>';
     }
 
+    /* Sektionsrubrik: eyebrow + hårfin linje (+ ev. handling till höger) — ger
+       Översikten struktur utan att stapla tunga paneler. */
+    function secHead(label, action) {
+      return '<div class="kt-sechead"><span class="eyebrow">' + esc(label) + '</span><span class="kt-secline"></span>' + (action || '') + '</div>';
+    }
+    /* Tomt tillstånd: eyebrow + en mening + EN handling — inbjudande, inte ursäktande. */
+    function emptyState(rubrik, text, cta) {
+      return '<div class="kt-empty"><span class="eyebrow">' + esc(rubrik) + '</span><p class="prose">' + text + '</p>' + (cta || '') + '</div>';
+    }
+    /* Laddar-skelett i orderkortens siluett — sidan behåller sin form medan datan hämtas. */
+    function skeleton() {
+      var kort = '<div class="kt-order kt-skelcard" aria-hidden="true"><div class="kt-skelrow" style="width:38%"></div><div class="kt-skelrow" style="width:72%"></div><div class="kt-skelrow" style="width:100%"></div><div class="kt-skelrow" style="width:100%"></div><div class="kt-skelrow" style="width:26%"></div></div>';
+      return '<div role="status" aria-label="Hämtar era uppgifter">' + kort + kort + '</div>';
+    }
+    /* Kompakt orderkort för Översikten: timeline + nästa handling är stjärnan,
+       innehållet komprimeras till tunna rader (full tabell bor i Orderhistoriken).
+       Ingen "Beställ igen" här — man beställer inte om en order som är i produktion. */
+    function overviewOrderCard(o) {
+      var lines = o.rader.map(function (r) {
+        var bits = [r.farg, r.antal + ' st', r.tryck].filter(function (x) { return x && x !== '—'; });
+        return '<li><span class="kt-oplagg">' + esc(r.plagg) + '</span>'
+          + (bits.length ? '<span class="kt-ometa">' + esc(bits.join(' · ')) + '</span>' : '') + '</li>';
+      }).join('');
+      return '<div class="kt-order kt-order-ov"><div class="kt-orderhead"><div><span class="kt-ordernr">' + esc(o.nr) + '</span><span class="kt-dim">  ' + esc(o.datum) + '</span></div>' + statusPill(o.status) + '</div>'
+        + timeline(o.status) + nextStep(o)
+        + '<ul class="kt-olines">' + lines + '</ul>'
+        + '<div class="kt-ovfoot"><button class="kt-textlink" data-kt-tab="order">Se orderdetaljer →</button><span class="kt-sum">' + esc(o.summa) + '</span></div></div>';
+    }
+
     /* ---- flikar ---- */
     function vOversikt(k) {
       // Portalens fråga är alltid "var är mina grejer och hur beställer jag igen?"
@@ -246,15 +275,16 @@
       var alla = ordersData();
       var pagaende = alla.filter(function (o) { return o.status < 4; });
       var pag = pagaende.length
-        ? pagaende.map(function (o) { return orderCard(o, false, true); }).join('')
+        ? pagaende.map(overviewOrderCard).join('')
         : '<div class="kt-panel"><p class="prose" style="margin:0">Inga pågående ordrar just nu. Börja i sortimentet' + (alla.length ? ' eller beställ om en tidigare order nedan' : '') + '.</p></div>';
       var reorder = alla.slice(0, 3).map(function (o) {
         var r = o.rader[0];
-        return '<div class="kt-ritem"><strong>' + esc(o.nr) + '</strong><span>' + esc(r.plagg) + ' · ' + r.antal + ' st</span><span>' + esc(o.datum) + '</span>'
-          + '<button class="pill pill-outline" data-kt-again="' + esc(o.nr) + '">Beställ igen</button></div>';
+        return '<div class="kt-ritem"><div class="kt-rtop"><strong>' + esc(o.nr) + '</strong><span class="kt-rdate">' + esc(o.datum) + '</span></div>'
+          + '<span class="kt-rdesc">' + esc(r.plagg) + ' · ' + r.antal + ' st</span>'
+          + '<button class="pill pill-outline kt-rbtn" data-kt-again="' + esc(o.nr) + '">Beställ igen</button></div>';
       }).join('');
       var reorderBlock = alla.length
-        ? '<div class="eyebrow" style="margin-bottom:16px">Beställ igen</div><div class="kt-reorder">' + reorder + '</div>'
+        ? secHead('Beställ igen') + '<div class="kt-reorder">' + reorder + '</div>'
         : '';
       var antalOrdrar = isLive() ? live.orders.length : k.ordrar;
       var plaggIAr = isLive()
@@ -270,7 +300,7 @@
         + '<div class="kt-stat"><div class="big">' + antalTryck + '</div><div class="cap">Sparade tryck</div></div>'
         + '<div class="kt-stat"><div class="big">' + esc(kundSedan) + '</div><div class="cap">Kund sedan</div></div>'
         + '</div>';
-      return '<div class="kt-in"><div class="eyebrow" style="margin-bottom:16px">Pågående just nu</div>' + pag + '</div>'
+      return '<div class="kt-in">' + secHead('Pågående just nu', pagaende.length > 1 ? '<span class="kt-seccount">' + pagaende.length + ' ordrar</span>' : '') + pag + '</div>'
         + '<div class="kt-grid2 kt-in" style="animation-delay:.08s;margin-top:34px">'
         + '<div>' + reorderBlock
         + '<a href="#" class="kt-catcard" data-nav="catalog" style="margin-top:26px"><img src="assets/c-hood.jpg" alt="Plagg ur sortimentet" loading="lazy"><span class="kt-catlbl">Bläddra sortimentet →</span></a></div>'
@@ -285,48 +315,101 @@
         + '<div class="kt-in" style="animation-delay:.16s;margin-top:38px">' + stats + '</div>';
     }
     function vOrder() {
+      // Orderhistoriken bär samma tänk som Översikten: pågående ordrar med nästa
+      // handling överst, avslutade samlade under — men här FULL historik med tabell.
       var alla = ordersData();
-      if (!alla.length) return '<div class="kt-panel"><p class="prose" style="margin:0">Inga ordrar ännu. När er första beställning är lagd samlas historiken här.</p></div>';
-      return alla.map(function (o) { return orderCard(o, false); }).join('');
+      if (!alla.length) return emptyState('Inga ordrar ännu',
+        'Er orderhistorik samlas här — status, innehåll och summa för varje beställning.',
+        '<a href="#" class="pill pill-ink" data-nav="catalog">Till sortimentet</a>');
+      var pag = alla.filter(function (o) { return o.status < 4; });
+      var klar = alla.filter(function (o) { return o.status >= 4; });
+      var ordText = function (n) { return n + (n === 1 ? ' order' : ' ordrar'); };
+      var out = '<p class="kt-lead">Alla era beställningar med status, innehåll och summa. Beställ om en tidigare order med ett klick.</p>';
+      if (pag.length) {
+        out += '<div class="kt-in">' + secHead('Pågående', '<span class="kt-seccount">' + ordText(pag.length) + '</span>')
+          + pag.map(function (o) { return orderCard(o, false, true); }).join('') + '</div>';
+      }
+      if (klar.length) {
+        // Medvetet inga filterkontroller: Pågående/Avslutade + årsgruppering täcker
+        // behovet tills historiken blir oöverskådlig. Årsrubrikerna dyker upp först
+        // när ordrarna spänner mer än ett år — innan dess ser vyn ut som idag.
+        var byYear = {};
+        klar.forEach(function (o) { var y = String(o.datum).slice(0, 4); (byYear[y] = byYear[y] || []).push(o); });
+        var years = Object.keys(byYear).sort().reverse();
+        var klarHtml = years.length > 1
+          ? years.map(function (y) {
+              return '<div class="kt-yearhead"><span>' + esc(y) + '</span><span class="kt-secline"></span></div>'
+                + byYear[y].map(function (o) { return orderCard(o, false, false); }).join('');
+            }).join('')
+          : klar.map(function (o) { return orderCard(o, false, false); }).join('');
+        out += '<div class="kt-in" style="animation-delay:.08s;margin-top:' + (pag.length ? '34px' : '0') + '">'
+          + secHead('Avslutade', '<span class="kt-seccount">' + ordText(klar.length) + '</span>')
+          + klarHtml + '</div>';
+      }
+      return out;
     }
     function vOfferter() {
+      // Offertkort i samma vokabulär som Översiktens orderkort (olines + ovfoot),
+      // inte en trång tabell för en enda rad. Summan är stjärnan i foten.
       var q = quotesData();
-      if (!q.length) return '<div class="kt-panel"><p class="prose" style="margin:0">Inga offerter ännu. Designa i studion och begär offert, så samlas den här.</p></div>';
-      return q.map(function (o) {
-        return '<div class="kt-order"><div class="kt-orderhead"><div><span class="kt-ordernr">#' + esc(o.quote_number) + '</span>'
+      if (!q.length) return emptyState('Inga offerter ännu',
+        'Designa i studion och begär offert — era offerter samlas här med status och pris.',
+        '<a href="#" class="pill pill-ink" data-nav="apply">Designa i studion</a>');
+      var cards = q.map(function (o) {
+        // Avgjorda offerter (accepterad/avvisad) dämpas som avslutade ordrar; öppna är guld.
+        var cls = (o.status === 'accepted' || o.status === 'rejected') ? 'done' : 'act';
+        var per = Number(o.price_per_piece || 0).toLocaleString('sv-SE');
+        var sum = Number(o.total_price || 0).toLocaleString('sv-SE') + ' kr';
+        var open = (o.status === 'new' || o.status === 'sent');
+        var foot = open
+          ? '<a class="kt-textlink" style="text-decoration:none" href="mailto:info@noll33.se?subject=' + encodeURIComponent('Offert #' + o.quote_number) + '">Frågor om offerten →</a>'
+          : '<span>&nbsp;</span>';
+        return '<div class="kt-order kt-order-ov"><div class="kt-orderhead"><div><span class="kt-ordernr">#' + esc(o.quote_number) + '</span>'
           + '<span class="kt-dim">  ' + esc(String(o.created_at || '').slice(0, 10)) + '</span></div>'
-          + '<span class="kt-status ' + (o.status === 'accepted' ? 'done' : o.status === 'rejected' ? '' : 'act') + '">' + esc(QUOTE_LABEL[o.status] || o.status) + '</span></div>'
-          + '<table class="kt-table"><thead><tr><th>Antal</th><th>Pris/st</th><th>Summa</th></tr></thead><tbody>'
-          + '<tr><td>' + (o.quantity || 0) + ' st</td><td>' + Number(o.price_per_piece || 0).toLocaleString('sv-SE') + ' kr</td><td>' + Number(o.total_price || 0).toLocaleString('sv-SE') + ' kr</td></tr>'
-          + '</tbody></table></div>';
+          + '<span class="kt-status ' + cls + '">' + esc(QUOTE_LABEL[o.status] || o.status) + '</span></div>'
+          + '<ul class="kt-olines"><li><span class="kt-oplagg">Antal</span><span class="kt-ometa">' + (o.quantity || 0) + ' st</span></li>'
+          + '<li><span class="kt-oplagg">Pris per styck</span><span class="kt-ometa">' + per + ' kr</span></li></ul>'
+          + '<div class="kt-ovfoot">' + foot + '<span class="kt-sum">' + sum + '</span></div></div>';
       }).join('');
+      return '<p class="kt-lead">Era offerter från studion. En offert gäller tills ni beställer eller den avvisas.</p>'
+        + '<div class="kt-in">' + secHead('Offerter', '<span class="kt-seccount">' + q.length + (q.length === 1 ? ' offert' : ' offerter') + '</span>') + cards + '</div>';
     }
     function vBibliotek() {
+      var lead, n, grid;
       if (isLive()) {
-        if (!live.designs.length) return '<div class="kt-panel"><p class="prose" style="margin:0">Inga sparade tryck ännu. Spara en design i studion så dyker den upp här.</p></div>';
-        return '<p class="kt-lead">Era sparade designer från studion. Öppna en för att beställa igen eller jobba vidare.</p>'
-          + '<div class="kt-lib">' + live.designs.map(function (d) {
-            var img = d.thumbnail_url || demoLogo('#14181A', '#C79A2E', (d.name || 'D').slice(0, 6).toUpperCase());
-            var kod = String(d.id || '').slice(-6).toUpperCase();
-            return '<div class="kt-libitem"><div class="kt-libimg"><img src="' + img + '" alt="' + esc(d.name) + '"></div>'
-              + '<div class="kt-libmeta"><strong>' + esc(d.name) + '</strong><span>' + esc(String(d.created_at || '').slice(0, 10)) + ' · hämtkod ' + esc(kod) + '</span></div>'
-              + '<a class="kt-libuse" href="' + PRNTR_STUDIO + '/konto?email=' + encodeURIComponent(st.email) + '" target="_blank" rel="noopener">Öppna i studion →</a></div>';
-          }).join('') + '</div>';
-      }
-      return '<p class="kt-lead">Alla tryck ni laddat upp sparas här — välj direkt vid nästa beställning, ingen ny uppladdning behövs.</p>'
-        + '<div class="kt-lib">' + BIBLIOTEK.map(function (b) {
+        if (!live.designs.length) return emptyState('Inga sparade tryck ännu',
+          'Spara en design i studion så dyker den upp här — redo att användas vid nästa beställning.',
+          '<a href="#" class="pill pill-ink" data-nav="apply">Öppna designstudion</a>');
+        n = live.designs.length;
+        lead = 'Era sparade designer från studion. Öppna en för att beställa igen eller jobba vidare.';
+        grid = live.designs.map(function (d) {
+          var img = d.thumbnail_url || demoLogo('#14181A', '#C79A2E', (d.name || 'D').slice(0, 6).toUpperCase());
+          var kod = String(d.id || '').slice(-6).toUpperCase();
+          return '<div class="kt-libitem"><div class="kt-libimg"><img src="' + img + '" alt="' + esc(d.name) + '"></div>'
+            + '<div class="kt-libmeta"><strong>' + esc(d.name) + '</strong><span>' + esc(String(d.created_at || '').slice(0, 10)) + ' · hämtkod ' + esc(kod) + '</span></div>'
+            + '<a class="kt-libuse" href="' + PRNTR_STUDIO + '/konto?email=' + encodeURIComponent(st.email) + '" target="_blank" rel="noopener">Öppna i studion →</a></div>';
+        }).join('');
+      } else {
+        n = BIBLIOTEK.length;
+        lead = 'Alla tryck ni laddat upp sparas här — välj direkt vid nästa beställning, ingen ny uppladdning behövs.';
+        grid = BIBLIOTEK.map(function (b) {
           return '<div class="kt-libitem"><div class="kt-libimg"><img src="' + b.img + '" alt="' + esc(b.namn) + '"></div><div class="kt-libmeta"><strong>' + esc(b.namn) + '</strong><span>' + esc(b.typ) + ' · använd i ' + b.anv + ' order</span></div><button class="kt-libuse" data-kt-use="' + esc(b.namn) + '">Använd i ny order →</button></div>';
-        }).join('') + '</div>';
+        }).join('');
+      }
+      return '<p class="kt-lead">' + lead + '</p>'
+        + '<div class="kt-in">' + secHead('Sparade tryck', '<span class="kt-seccount">' + n + ' tryck</span>')
+        + '<div class="kt-lib">' + grid + '</div></div>';
     }
     function vPriser(k) {
       // Modell-etiketten är intern (admin) — kunden ser bara "era priser".
       var note = '<span class="kt-note a">Era avtalade priser · 2026</span>';
       return '<p class="kt-lead">Era priser per teknik och volym. Exakt pris räknas alltid live i designstudion.' + note + '</p>'
+        + '<div class="kt-in">' + secHead('Era priser')
         + '<div class="kt-prisgrid">' + PRISER.map(function (p) {
           return '<div class="kt-pris"><strong class="kt-pristitel">' + esc(p.teknik) + '</strong><table><tbody>'
             + p.steg.map(function (s) { return '<tr><td>' + esc(s[0]) + ' st</td><td>' + esc(s[1]) + '</td></tr>'; }).join('')
             + '</tbody></table></div>';
-        }).join('') + '</div>';
+        }).join('') + '</div></div>';
     }
     function vUppgifter(k) {
       var rows = isLive()
@@ -336,9 +419,10 @@
           + '<div class="kt-kv"><span>Kontakt</span><strong>' + esc(k.kontakt) + '</strong></div>'
           + '<div class="kt-kv"><span>E-post</span><strong>' + esc(k.email) + '</strong></div>'
           + '<div class="kt-kv"><span>Leveransadress</span><strong>Hållingsgatan 15, Borås</strong></div>';
-      return '<div class="kt-grid2"><div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Företag</div>' + rows + '</div>'
+      return '<p class="kt-lead">Ert företagskonto hos Noll33. Hör av er om något behöver ändras.</p>'
+        + '<div class="kt-in"><div class="kt-grid2"><div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Företag</div>' + rows + '</div>'
         + '<div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Kommer snart</div>'
-        + '<p class="prose">Flera användare per företag, fler leveransadresser, fakturor som PDF och ordernotiser via mejl.</p></div></div>';
+        + '<p class="prose">Flera användare per företag, fler leveransadresser, fakturor som PDF och ordernotiser via mejl.</p></div></div></div>';
     }
 
     /* ---- admin ---- */
@@ -376,9 +460,11 @@
         : (isLive() ? esc(st.email) : esc(k.foretag) + ' · ' + esc(k.kontakt));
       var body = '';
       if (isLive() && live.loading) {
-        body = '<div class="kt-panel"><p class="prose" style="margin:0">Hämtar era uppgifter…</p></div>';
+        body = skeleton();
       } else if (isLive() && live.error) {
-        body = '<div class="kt-panel"><p class="prose" style="margin:0">Kunde inte hämta era uppgifter just nu. Ladda om sidan eller försök igen om en stund.</p></div>';
+        body = '<div class="kt-empty"><span class="eyebrow">Något gick fel</span>'
+          + '<p class="prose">Vi kunde inte hämta era uppgifter just nu. Kontrollera uppkopplingen och försök igen.</p>'
+          + '<button class="pill pill-outline" data-kt-retry="1">Försök igen</button></div>';
       } else switch (st.tab) {
         case 'order': body = vOrder(); break;
         case 'offerter': body = vOfferter(); break;
@@ -390,11 +476,12 @@
         default: body = vOversikt(k);
       }
       root.innerHTML = adminBar
-        + '<div class="kt-head"><div><div class="eyebrow eyebrow-gold" style="color:var(--ink);margin-bottom:14px">' + (isAdminHome ? 'Noll33 intern' : 'Återförsäljarportal') + '</div>'
+        + '<div class="kt-head"><div><div class="eyebrow eyebrow-gold" style="margin-bottom:14px">' + (isAdminHome ? 'Noll33 intern' : 'Återförsäljarportal') + '</div>'
         + '<h1 class="h-statement">' + title + '</h1><p class="kt-sub">' + sub + '</p></div>'
         + '<button class="kt-logout" data-kt-logout="1">Logga ut</button></div>'
         + tabs() + '<div class="kt-body">' + body + '</div>'
-        + '<p class="kt-demonote">Klickbar skiss med exempeldata — kopplas till riktiga konton och order i nästa steg.</p>';
+        // Skiss-notisen gäller bara exempeldata — riktigt inloggade ser sin riktiga data.
+        + (isLive() ? '' : '<p class="kt-demonote">Klickbar skiss med exempeldata — kopplas till riktiga konton och order i nästa steg.</p>');
     }
 
     function mount() { if (isLive()) loadLive(); render(); }
@@ -408,6 +495,7 @@
         if ((b = e.target.closest('[data-kt-viewas]'))) { e.preventDefault(); st.viewAs = b.getAttribute('data-kt-viewas'); st.tab = 'oversikt'; save(); render(); window.scrollTo(0, 0); return; }
         if ((b = e.target.closest('[data-kt-back]'))) { e.preventDefault(); st.viewAs = null; st.tab = 'adm-kunder'; save(); render(); return; }
         if ((b = e.target.closest('[data-kt-logout]'))) { e.preventDefault(); logout(); return; }
+        if ((b = e.target.closest('[data-kt-retry]'))) { e.preventDefault(); live.loaded = false; live.error = false; loadLive(); return; }
         if ((b = e.target.closest('[data-kt-approve]'))) {
           e.preventDefault();
           var onr = b.getAttribute('data-kt-approve');
@@ -563,6 +651,22 @@
     track.style.animation = 'none';
     track.innerHTML = '<span style="display:flex;align-items:center;">' + half + '</span>'
       + '<span aria-hidden="true" style="display:flex;align-items:center;">' + half + '</span>';
+    fitMarqueeLogos(track);
+  }
+  /* Lika-yta-normalisering (samma princip som NOLL33_fitLogo): skala varje logga så
+     dess renderade YTA ≈ konstant → bred wordmark väger inte tyngre än liten kvadrat.
+     Höjd clampas så inget blir absurt smalt/högt. */
+  function fitMarqueeLogos(track) {
+    var TARGET = 2100, HMIN = 20, HMAX = 42;
+    Array.prototype.forEach.call(track.querySelectorAll('.cell img'), function (im) {
+      function size() {
+        var r = im.naturalWidth / (im.naturalHeight || 1); if (!r || !isFinite(r)) return;
+        var h = Math.max(HMIN, Math.min(HMAX, Math.sqrt(TARGET / r)));
+        im.style.height = h.toFixed(1) + 'px'; im.style.width = 'auto';
+        im.style.maxHeight = 'none'; im.style.maxWidth = 'none';
+      }
+      if (im.complete && im.naturalWidth) size(); else im.addEventListener('load', size, { once: true });
+    });
   }
   function mqTick() {
     var track = document.getElementById('brandTrack');
@@ -684,7 +788,7 @@
       + '<div style="padding:clamp(24px,3.5vw,40px);">'
       + '<div style="display:flex;align-items:baseline;gap:12px;"><span style="font-weight:700;font-size:14px;letter-spacing:.04em;color:var(--gold);">' + m.n + '</span>'
       + '<h3 class="h-sub" style="margin:0;">' + esc(m.name) + '</h3></div>'
-      + '<p style="font-size:14px;line-height:1.55;color:rgba(28,23,18,.66);margin:14px 0 0;">' + esc(m.what) + '</p>'
+      + '<p style="font-size:15px;line-height:1.6;color:rgba(28,23,18,.66);margin:14px 0 0;">' + esc(m.what) + '</p>'
       + '<div class="mgrid">'
       + field('Bäst för', m.bestFor) + field('Färger', m.colors) + field('Volym', m.volume)
       + field('Tålighet', m.durability) + field('Prisvärt när', m.priceWhen) + field('Mindre bra för', m.lessGood)
@@ -695,6 +799,36 @@
     function fieldInner(k, v) { return '<div class="k">' + k + '</div><div class="v">' + esc(v) + '</div>'; }
   }
   function closeMetodModal() { var h = document.getElementById('metodModal'); if (h) { h.style.display = 'none'; h.innerHTML = ''; } }
+
+  /* Ansökan: designad inline-validering (formuläret är novalidate → detta är enda vägen).
+     Fel = röd kant + fältmeddelande under inputen; rensas när användaren rättar. */
+  function setFieldError(lab, inp, msg) {
+    var err = lab.querySelector('.field-err-msg');
+    if (msg) {
+      inp.classList.add('field-invalid');
+      inp.setAttribute('aria-invalid', 'true');
+      if (!err) { err = document.createElement('span'); err.className = 'field-err-msg'; lab.appendChild(err); }
+      err.textContent = msg;
+    } else {
+      inp.classList.remove('field-invalid');
+      inp.removeAttribute('aria-invalid');
+      if (err) err.remove();
+    }
+  }
+  function validateAnsokForm(form) {
+    var labels = form.querySelectorAll('label'); var firstBad = null;
+    Array.prototype.forEach.call(labels, function (lab) {
+      var inp = lab.querySelector('input'); if (!inp) return;
+      var v = (inp.value || '').trim(); var msg = '';
+      if (!v) { msg = 'Fyll i det här fältet.'; }
+      else if (inp.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { msg = 'Ange en giltig e-postadress.'; }
+      else if (/org/i.test(lab.textContent) && !/^\d{6}-?\d{4}$/.test(v.replace(/\s/g, ''))) { msg = 'Ange org.nr som 556000-0000.'; }
+      setFieldError(lab, inp, msg);
+      if (msg && !firstBad) firstBad = inp;
+    });
+    if (firstBad) firstBad.focus();
+    return !firstBad;
+  }
 
   /* ============================================================
      KATALOG (D4) — reproducerar Noll33 Katalog.dc.html i vanilla.
@@ -756,6 +890,7 @@
     }
     function mode() {
       if (st.detailId && data && data.byId[st.detailId]) return 'product';
+      if (st.detailId && data) return 'notfound';   // id satt + katalog laddad men produkten finns ej → designat 404
       if (st.q) return 'products';
       if (!st.family) return 'start';
       if (!st.sub && !st.showAll) return 'category';
@@ -788,7 +923,27 @@
     var LOGO_INDEX = (function () { var m = {}; LOGO_FILES.forEach(function (f) { m[f.replace(/\.[a-z]+$/, '')] = f; }); return m; })();
     function brandSlug(b) { return String(b || '').toLowerCase().replace(/&/g, 'and').replace(/[®™]/g, '').replace(/\./g, '').trim().replace(/[+\s]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, ''); }
     function brandLogoFile(b) { var s = brandSlug(b); return (s && LOGO_INDEX[s]) ? LOGO_INDEX[s] : null; }
-    function brandHtml(b, cls) { var f = brandLogoFile(b); return f ? ('<img class="' + (cls || 'k-blogo') + '" src="assets/logos/' + f + '" alt="' + esc(b) + '" title="' + esc(b) + '" loading="lazy">') : esc(b || ''); }
+    /* Loggorna har vitt skilda proportioner (kvadratiska emblem ↔ mycket breda
+       ordmärken). En fast höjd/box gör breda märken dominanta och emblem till
+       prickar. Vi normaliserar därför mot LIKA SYNLIG YTA: höjden sätts till
+       √(mål-yta / bredd·höjd-förhållande) så alla loggor får ungefär samma
+       "bläckmängd" på skärmen. Klamras bara som säkerhet mot extremfall. */
+    function fitLogo(img) {
+      var nw = img.naturalWidth, nh = img.naturalHeight;
+      if (!nw || !nh) return;
+      var lg = img.classList.contains('k-blogo-lg');
+      var area = lg ? 2900 : 560;     // mål-yta i px² (detaljvyn klart större)
+      var maxH = lg ? 62 : 30, maxW = lg ? 250 : 108;
+      var r = nw / nh;                 // bredd/höjd
+      var h = Math.sqrt(area / r);
+      if (h > maxH) h = maxH;
+      var w = h * r;
+      if (w > maxW) { w = maxW; h = w / r; }
+      img.style.height = h.toFixed(1) + 'px';
+      img.style.width = w.toFixed(1) + 'px';
+    }
+    if (typeof window !== 'undefined') window.NOLL33_fitLogo = fitLogo;
+    function brandHtml(b, cls) { var f = brandLogoFile(b); return f ? ('<img class="' + (cls || 'k-blogo') + '" src="assets/logos/' + f + '" alt="' + esc(b) + '" title="' + esc(b) + '" loading="lazy" onload="window.NOLL33_fitLogo&&window.NOLL33_fitLogo(this)">') : esc(b || ''); }
     function subCountsSorted() {
       var counts = {}; data.P.forEach(function (p) { if (passes(p, false, true) && p.sub) counts[p.sub] = (counts[p.sub] || 0) + 1; });
       var keys = Object.keys(counts).sort(function (a, b) { if (a === 'Övrigt' || a === 'Ovrigt') return 1; if (b === 'Övrigt' || b === 'Ovrigt') return -1; return (subRank(a) - subRank(b)) || (counts[b] - counts[a]); });
@@ -1037,7 +1192,14 @@
       if (!all.length) return '<div class="k-wrap">' + head + toolbar + '<div class="k-empty"><div>Inga produkter matchar.</div><button data-k="clearFilters">Rensa filter</button></div><div class="k-footpad"></div></div>';
       var visible = all.slice(0, st.shown);
       var grid = visible.map(renderCard).join('');
-      var more = all.length > st.shown ? '<div class="k-morewrap"><span class="k-count">Visar ' + visible.length + ' av ' + all.length + ' produkter</span><button class="k-morebtn" data-k="more">Visa fler</button></div>' : '';
+      var more = '';
+      if (all.length > st.shown) {
+        var pct = Math.max(4, Math.round(visible.length / all.length * 100));
+        more = '<div class="k-morewrap"><div class="k-moremeta">' +
+          '<span class="k-count">Visar ' + visible.length + ' av ' + all.length + ' produkter</span>' +
+          '<div class="k-progress" role="progressbar" aria-valuenow="' + visible.length + '" aria-valuemax="' + all.length + '"><span style="width:' + pct + '%"></span></div>' +
+          '</div><button class="k-morebtn" data-k="more">Visa fler</button></div>';
+      }
       return '<div class="k-wrap">' + head + toolbar + '<div class="k-grid">' + grid + '</div>' + more + '<div class="k-footpad"></div></div>';
     }
     function renderRelated(p) {
@@ -1102,7 +1264,19 @@
       if (m === 'start') return renderStart();
       if (m === 'category') return renderCategory();
       if (m === 'product') return renderProduct();
+      if (m === 'notfound') return renderNotFound();
       return renderProducts();
+    }
+    /* Designat 404-läge för okänd produkt-id (annars föll man tyst till katalog-starten). */
+    function renderNotFound() {
+      return '<div class="k-wrap">' +
+        '<div class="k-crumb"><button class="k-back" data-k="flyReset">‹ Till sortimentet</button></div>' +
+        '<div class="k-notfound">' +
+          '<div class="k-ctx">404 · Produkten</div>' +
+          '<h2 class="k-h2">Produkten hittades inte</h2>' +
+          '<p class="k-nf-text">Artikeln kan ha utgått, eller så stämmer inte länken. Utforska hela sortimentet så hittar vi rätt plagg åt dig.</p>' +
+          '<button class="k-nf-btn" data-k="flyReset">Till sortimentet →</button>' +
+        '</div><div class="k-footpad"></div></div>';
     }
     function renderCart() {
       var cart = loadCart();
@@ -1125,9 +1299,17 @@
             '<button class="k-cartremove" data-k="removeRow" data-idx="' + idx + '">Ta bort</button></div>';
         }).join('');
         var qk = st.cartKind !== 'order', ok = st.cartKind === 'order';
+        var li = KONTO.loggedIn();
+        var fromSum = 0, haveFrom = false;
+        cart.forEach(function (r) { var q = Object.keys(r.sizes).reduce(function (a, k) { return a + (r.sizes[k] || 0); }, 0); if (li && r.priceFrom != null) { fromSum += r.priceFrom * q; haveFrom = true; } });
+        var summaRow = '<div class="k-cartsumma"><span class="k-cartsumma-k">' + count + ' plagg i korgen</span>' +
+          (li && haveFrom ? '<span class="k-cartsumma-v">Från ' + fromSum.toLocaleString('sv-SE') + ' kr</span>' : '') + '</div>';
+        var priceNote = li
+          ? 'Frånpriser ex. moms — slutpris bekräftas i offerten eller orderbekräftelsen.'
+          : 'Era priser visas när du loggar in. Slutpris bekräftas i offerten.';
         inner = '<div class="k-cartrows">' + rows + '</div>' +
-          '<div class="k-carttotal">' + count + ' plagg i korgen</div>' +
-          '<div class="k-cartpricenote">Priserna är frånpriser. Slutpris bekräftas i offerten eller orderbekräftelsen.</div>' +
+          summaRow +
+          '<div class="k-cartpricenote">' + priceNote + '</div>' +
           '<div class="k-cartform">' +
             '<div class="k-cartkinds"><label data-k="setKind" data-kind="quote"><input type="radio" name="k-cartkind" ' + (qk ? 'checked' : '') + '> Offert</label><label data-k="setKind" data-kind="order"><input type="radio" name="k-cartkind" ' + (ok ? 'checked' : '') + '> Beställning</label></div>' +
             (ok ? '<div class="k-cartordernote">Beställningen är bindande och faktureras. Slutpris bekräftas i orderbekräftelsen.</div>' : '') +
@@ -1181,6 +1363,8 @@
       renderMenu();
       var body = document.getElementById('kBody'); if (body) body.innerHTML = renderBody();
       var ov = document.getElementById('kOverlays'); if (ov) ov.innerHTML = st.cartOpen ? renderCart() : '';
+      // Cachade loggor är redan complete → onload firar inte; storleksätt dem direkt.
+      if (root) root.querySelectorAll('img.k-blogo, img.k-blogo-lg').forEach(function (im) { if (im.complete && im.naturalWidth) fitLogo(im); });
       updateBadge(); syncSearch(); catObserve();
       if (mode() === 'product') attachRelWheel();
     }
@@ -1367,11 +1551,20 @@
     });
     // Escape stänger metod-modalen + söket
     window.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeMetodModal(); SEARCH.close(); } });
+    // Ansökan: rensa fältfel så fort användaren börjar rätta
+    document.addEventListener('input', function (e) {
+      var inp = e.target;
+      if (inp && inp.classList && inp.classList.contains('field-invalid')) {
+        var lab = inp.closest('label'); if (lab) setFieldError(lab, inp, '');
+      }
+    });
     // Ansökan → tackvy; Logga in → riktig verifiering mot PRNTR (Supabase auth).
     var ADMIN_EMAILS = ['admin@prntr.dahlquist.se'];
     document.addEventListener('submit', function (e) {
       if (e.target.closest('[data-ansok-form]')) {
         e.preventDefault();
+        var af = e.target.closest('[data-ansok-form]');
+        if (!validateAnsokForm(af)) return;
         var f = document.getElementById('ansokForm'), t = document.getElementById('ansokThanks');
         if (f) f.style.display = 'none'; if (t) t.style.display = 'block'; window.scrollTo(0, 0);
       } else if (e.target.closest('[data-login-form]')) {
