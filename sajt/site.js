@@ -1420,7 +1420,7 @@
       root.addEventListener('click', onClick);
       root.addEventListener('change', onChange);
       var inp = document.getElementById('kSearch');
-      if (inp) inp.addEventListener('input', function () { st.q = (inp.value || '').trim().toLowerCase(); st.shown = 48; st.detailId = null; st.menu = null; renderAll(); });
+      if (inp) { var _searchDeb; inp.addEventListener('input', function () { clearTimeout(_searchDeb); _searchDeb = setTimeout(function () { st.q = (inp.value || '').trim().toLowerCase(); st.shown = 48; st.detailId = null; st.menu = null; renderAll(); }, 140); }); }
       if (!reduceMotion && 'IntersectionObserver' in window) {
         io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: 0.08, rootMargin: '0px 0px -6% 0px' });
       }
@@ -1504,7 +1504,7 @@
       var hs = document.getElementById('hdrSearch');
       if (!header || !input || !resultsEl || !hs) return;
       bound = true;
-      input.addEventListener('input', function () { render(input.value); });
+      var _ssDeb; input.addEventListener('input', function () { clearTimeout(_ssDeb); _ssDeb = setTimeout(function () { render(input.value); }, 140); });
       input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); showAll(); } else if (e.key === 'Escape') { close(); } });
       hs.addEventListener('click', function (e) {
         if (e.target.closest('[data-search-close]')) { e.preventDefault(); close(); return; }

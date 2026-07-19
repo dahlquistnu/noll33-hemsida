@@ -256,14 +256,13 @@ h1, h2, h3, p { margin: 0; }
 
 /* ================= MOTION-LAGER (reproducerar design_handoff) ================= */
 /* Editorial slide-in */
-.ed-slide { opacity: .34; transition: opacity 1s ease, transform 1.15s cubic-bezier(.2,.72,.24,1); will-change: opacity, transform; }
+.ed-slide { opacity: .34; transition: opacity 1s ease, transform 1.15s cubic-bezier(.2,.72,.24,1); }
 .ed-slide.ed-left  { transform: translateX(-100px); }
 .ed-slide.ed-right { transform: translateX(100px); }
 .ed-slide.ed-in { opacity: 1; transform: translate(0,0); }
 
 /* Bild-reveal (fem varianter, roteras per sektion av _moInit) */
 [data-mo-img] { overflow: hidden !important; }
-[data-mo-img] > img { will-change: transform, opacity, filter; }
 [data-mo-img="a"] > img { transform: translateY(72px); opacity: 0; transition: transform 1.7s cubic-bezier(.16,1,.3,1), opacity 1.1s ease; }
 [data-mo-img="a"][data-mo-in] > img { transform: translateY(0); opacity: 1; }
 [data-mo-img="b"] > img { transform: scale(1.24); opacity: 0; transition: transform 2.1s cubic-bezier(.16,1,.3,1), opacity 1.2s ease; }
