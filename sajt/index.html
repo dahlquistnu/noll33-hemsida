@@ -275,7 +275,7 @@
       <h1 class="h-statement" style="max-width:16ch;margin-bottom:18px;">Designa live — se resultatet direkt.</h1>
       <p class="prose" style="line-height:1.7;max-width:46ch;">Ladda upp din logga eller skapa en text, välj tryckmetod och placering och se din design direkt på plagget. Justera antal, färg och storlek — och beställ när allt sitter. Studion är öppen för godkända återförsäljare.</p>
       <div style="display:flex;gap:16px 24px;align-items:center;flex-wrap:wrap;margin-top:32px;">
-        <a href="https://printrstudio.vercel.app/?from=noll33" target="_blank" rel="noopener" class="pill pill-ink">Logga in →</a>
+        <a href="#" class="pill pill-ink" data-nav="login">Logga in →</a>
         <a href="#" class="gold-link" data-nav="ansok">Bli återförsäljare →</a>
       </div>
     </div>
@@ -459,24 +459,8 @@
   </div>
 </div></div>
 
-<!-- ==================== LOGGA IN ==================== -->
-<div class="page" data-page="login"><div class="sub">
-  <div style="max-width:420px;margin:clamp(20px,6vw,80px) auto;">
-    <div class="eyebrow eyebrow-gold" style="margin-bottom:16px;">Återförsäljare</div>
-    <h1 class="h-statement" style="font-size:clamp(24px,3vw,35px);margin-bottom:10px;">Logga in</h1>
-    <p class="prose" style="margin-bottom:30px;">Logga in för att designa och beställa i Design Studio.</p>
-    <form class="sub-form" data-login-form>
-      <label>E-post<input required type="email" placeholder="namn@foretag.se"></label>
-      <label>Lösenord<input required type="password" placeholder="••••••••"></label>
-      <a href="#" class="kt-textlink" style="align-self:flex-end;font-size:12.5px;text-decoration:none;">Glömt lösenordet?</a>
-      <button type="submit" class="pill pill-ink" style="margin-top:6px;align-self:flex-start;border:none;cursor:pointer;">Logga in →</button>
-    </form>
-    <div style="margin-top:30px;padding-top:22px;border-top:1px solid var(--line2);font-size:13.5px;color:var(--body);">Inte återförsäljare än? <a href="#" class="gold-link" style="font-size:13.5px;" data-nav="ansok">Ansök här →</a></div>
-  </div>
-</div></div>
-
-<!-- ==================== MITT KONTO (Fas 2-demo, JS-renderad) ==================== -->
-<div class="page" data-page="konto"><div class="sub" id="kontoRoot"></div></div>
+<!-- Inloggning + kundportal bor i PRNTR-appen (en dörr, en origin).
+     data-nav="login"/"konto" skickas dit av site.js — ingen egen login-vy här. -->
 
 <!-- Metod-modal (förädling) -->
 <div id="metodModal" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(18,20,18,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:clamp(20px,6vw,80px);"></div>
@@ -510,6 +494,6 @@
 </footer>
 
 <script defer src="katalog-data.js?v=d2"></script>
-<script defer src="site.js?v=d66"></script>
+<script defer src="site.js?v=d68"></script>
 </body>
 </html>
