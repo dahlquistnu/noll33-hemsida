@@ -7,6 +7,7 @@
 <meta name="description" content="Hållbar textilförädling som stärker ditt varumärke. GOTS-certifierat tryck och brodyr, white-label till återförsäljare. Borås sedan 2007.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.toptex.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site.css?v=d103">
 </head>
@@ -67,9 +68,9 @@
          (feDisplacementMap driven av dimple-map2 + edge-mask). -->
     <svg width="0" height="0" aria-hidden="true" style="position:absolute;width:0;height:0;pointer-events:none;"><filter id="n33-ripple" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB"><feFlood flood-color="rgb(128,128,128)" result="flat"></feFlood><feImage data-bump href="uploads/dimple-map2.png" x="-9999" y="-9999" width="512" height="512" preserveAspectRatio="none" result="bump"></feImage><feComposite in="bump" in2="flat" operator="over" result="map0"></feComposite><feImage data-emask href="uploads/edge-mask.png" x="0" y="0" width="512" height="512" preserveAspectRatio="none" result="emask"></feImage><feComposite in="map0" in2="emask" operator="arithmetic" k1="1" k2="0" k3="-0.5" k4="0.5" result="map"></feComposite><feDisplacementMap data-disp in="SourceGraphic" in2="map" scale="0" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter></svg>
     <div class="hero-media" data-hero-fab>
-      <img src="assets/noll33-wide.jpg" alt="noll33 tryck på tyg">
-      <img class="swapB" src="assets/din-design-wide.jpg" alt="" aria-hidden="true">
-      <img class="swapC" src="assets/gots-fabric.jpg" alt="" aria-hidden="true">
+      <img src="assets/noll33-wide.jpg" alt="noll33 tryck på tyg" fetchpriority="high" decoding="async">
+      <img class="swapB" src="assets/din-design-wide.jpg" alt="" aria-hidden="true" fetchpriority="low" decoding="async">
+      <img class="swapC" src="assets/gots-fabric.jpg" alt="" aria-hidden="true" fetchpriority="low" decoding="async">
     </div>
     <div class="hero-veil"></div>
     <div class="wrap hero-body">
@@ -106,7 +107,7 @@
   <!-- Editorial rows -->
   <section class="editorial">
     <div class="ed-row">
-      <div class="ed-media ed-slide ed-left"><video autoplay muted loop playsinline preload="auto" poster="assets/ett-lofte-poster.jpg" src="assets/header-uw-longer.webm" style="object-position:72% center;"></video></div>
+      <div class="ed-media ed-slide ed-left"><video autoplay muted loop playsinline preload="metadata" poster="assets/ett-lofte-poster.jpg" src="assets/header-uw-longer.webm" style="object-position:72% center;"></video></div>
       <div class="ed-text pad-l ed-slide ed-right">
         <div class="eyebrow">Ett enkelt löfte</div>
         <h3>Vi säljer endast till återförsäljare.</h3>
@@ -339,7 +340,7 @@
   <div class="eyebrow eyebrow-gold" style="color:var(--ink);margin-bottom:20px;">Hållbarhet</div>
   <h1 class="h-statement" style="max-width:18ch;margin-bottom:20px;">När hållbarhet avgör affären.</h1>
   <p class="lead" style="max-width:56ch;margin-bottom:clamp(40px,5vw,60px);">Fler upphandlingar och inköp ställer idag krav på dokumenterad hållbarhet, spårbarhet och socialt ansvar. Därför erbjuder vi GOTS-certifierad produktion när uppdraget kräver det — ett starkare erbjudande i affärer där valet av produktionspartner kan vara avgörande.</p>
-  <div class="bleed" style="aspect-ratio:21/9;overflow:hidden;background:#EEEBE2;margin-bottom:0;"><img src="assets/noplanetb.png" alt="Ekocertifierade plagg" style="width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block;"></div>
+  <div class="bleed" style="aspect-ratio:21/9;overflow:hidden;background:#EEEBE2;margin-bottom:0;"><img src="assets/noplanetb.png" alt="Ekocertifierade plagg" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block;"></div>
   <div class="bleed section-panel" style="margin-bottom:clamp(36px,5vw,56px);"><div class="wrap" style="padding-top:clamp(44px,5vw,80px);padding-bottom:clamp(44px,5vw,80px);">
     <div class="eyebrow" style="margin-bottom:16px;">GOTS-certifierad produktion</div>
     <h2 class="h-sub" style="max-width:24ch;margin-bottom:18px;">En konkurrensfördel för dig som återförsäljare</h2>
@@ -363,7 +364,7 @@
 <div class="page" data-page="about"><div class="sub">
   <div class="eyebrow eyebrow-gold" style="color:var(--ink);margin-bottom:22px;letter-spacing:.28em;">Om oss</div>
   <h1 class="h-statement" style="margin-bottom:clamp(44px,6vw,80px);">Vi förädlar.<br>Ni äger kunden.</h1>
-  <div class="bleed" style="height:clamp(320px,42vw,580px);overflow:hidden;background:#EEEBE2;margin-bottom:0;"><img src="assets/_m7.jpg" alt="Screentryck i produktionen — Borås" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+  <div class="bleed" style="height:clamp(320px,42vw,580px);overflow:hidden;background:#EEEBE2;margin-bottom:0;"><img src="assets/_m7.jpg" alt="Screentryck i produktionen — Borås" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
   <div class="bleed section-panel" style="margin-bottom:clamp(44px,6vw,84px);"><div class="wrap split2" style="padding-top:clamp(44px,5vw,84px);padding-bottom:clamp(44px,5vw,84px);gap:clamp(36px,5vw,90px);">
     <div>
       <h2 class="h-sub" style="margin-bottom:18px;">Din relation med kunden är din.</h2>
@@ -508,7 +509,7 @@
   </div>
 </footer>
 
-<script src="katalog-data.js"></script>
-<script src="site.js?v=d65"></script>
+<script defer src="katalog-data.js?v=d2"></script>
+<script defer src="site.js?v=d65"></script>
 </body>
 </html>
