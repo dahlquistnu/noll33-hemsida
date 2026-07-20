@@ -12,7 +12,13 @@
     // Inloggning + kundportal bor i PRNTR-appen: en dörr, en origin, en session.
     // Sajten autentiserar inte längre själv (gav fel origin + demo-portal). Alla
     // login/konto-vägar (header, mobilmeny, produktprisnot, hash-länk) skickas hit.
-    if (page === 'login' || page === 'konto') { window.location.href = PRNTR_STUDIO + '/logga-in?from=noll33'; return; }
+    if (page === 'login' || page === 'konto') {
+      // Känd session (via handskakningen) → hoppa över login-mellansteget helt.
+      var dest = SESSION_ROLE === 'admin' ? '/admin'
+        : SESSION_ROLE === 'kund' ? '/konto'
+        : '/logga-in?from=noll33';
+      window.location.href = PRNTR_STUDIO + dest; return;
+    }
     if (PAGES.indexOf(page) === -1) page = 'home';
     document.querySelectorAll('.page').forEach(function (el) { el.classList.toggle('active', el.dataset.page === page); });
     document.querySelectorAll('[data-nav]').forEach(function (a) { a.classList.toggle('active', a.dataset.nav === page); });
@@ -65,6 +71,39 @@
   // Enda kopplingen sajten behöver: appens adress. Login, portal och admin bor där.
   // Vid domänflytt (t.ex. app.noll33.se) byts URL:en på EXAKT ett ställe — här.
   var PRNTR_STUDIO = 'https://printrstudio.vercel.app';
+  // Lokal QA: sajt på localhost → prata med lokala appen så hela kedjan
+  // (inloggning, handskakning, direktlänkar) kan testas utan deploy.
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    PRNTR_STUDIO = 'http://localhost:8080';
+  }
+
+  /* ============ Sessionshandskakning mot appen ============ */
+  // Dold iframe till appens /session-status; svaret (postMessage, bara roll —
+  // aldrig tokens) byter headerknappen "Logga in" → "Admin"/"Mitt konto" och
+  // låter goto() länka direkt till /admin resp /konto utan login-mellansteg.
+  var SESSION_ROLE = null;
+  function initSessionProbe() {
+    var appOrigin;
+    try { appOrigin = new URL(PRNTR_STUDIO).origin; } catch (e) { return; }
+    window.addEventListener('message', function (ev) {
+      if (ev.origin !== appOrigin) return;
+      var d = ev.data;
+      if (!d || d.type !== 'noll33-session' || !d.loggedIn) return;
+      SESSION_ROLE = d.role === 'admin' ? 'admin' : 'kund';
+      var label = SESSION_ROLE === 'admin' ? 'Admin' : 'Mitt konto';
+      document.querySelectorAll('[data-nav="login"]').forEach(function (a) {
+        // Bara headerknappen och mobilmenyraden byter text — löpande länkar
+        // ("Logga in för att se era priser") behåller sin mening.
+        if (a.classList.contains('pill') || a.closest('.mobile-nav')) a.textContent = label;
+      });
+    });
+    var f = document.createElement('iframe');
+    f.src = PRNTR_STUDIO + '/session-status';
+    f.style.display = 'none';
+    f.setAttribute('aria-hidden', 'true');
+    f.tabIndex = -1;
+    document.body.appendChild(f);
+  }
 
   // Designa-knappen i katalogen är "kommer snart" publikt tills studion är klar.
   // Förhandsvisning slås på per webbläsare med ?designa=1 (av med ?designa=0) —
@@ -1123,6 +1162,7 @@
     });
 
     KONTO.init();
+    initSessionProbe();
     var initial = location.hash.slice(1);
     goto(PAGES.indexOf(initial) !== -1 ? initial : 'home', { keepScroll: true });
     window.addEventListener('hashchange', function () { goto(location.hash.slice(1) || 'home'); });
