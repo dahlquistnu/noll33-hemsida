@@ -66,6 +66,18 @@
   // Vid domänflytt (t.ex. app.noll33.se) byts URL:en på EXAKT ett ställe — här.
   var PRNTR_STUDIO = 'https://printrstudio.vercel.app';
 
+  // Designa-knappen i katalogen är "kommer snart" publikt tills studion är klar.
+  // Förhandsvisning slås på per webbläsare med ?designa=1 (av med ?designa=0) —
+  // flaggan sparas i localStorage så hela flödet katalog → studio kan testas
+  // utan att kunder ser den skarpa knappen.
+  var DESIGNA_LS = 'n33_designa_preview';
+  try {
+    var dq = new URLSearchParams(location.search).get('designa');
+    if (dq === '1') localStorage.setItem(DESIGNA_LS, '1');
+    if (dq === '0') localStorage.removeItem(DESIGNA_LS);
+  } catch (e) {}
+  function designPreviewOn() { try { return localStorage.getItem(DESIGNA_LS) === '1'; } catch (e) { return false; } }
+
   /* ============ Konto-länkar ============ */
   // Demo-portalen är pensionerad: inloggning, kundportal och admin bor i
   // PRNTR-appen (en dörr, en origin — se goto()). Kvar här: städning av
@@ -491,7 +503,7 @@
       } }
       return packshot || { src: '', photo: false };
     }
-    function studioUrl(p, col) { return 'https://printrstudio.vercel.app/?from=noll33&garment_id=' + encodeURIComponent(p.id) + '&color=' + encodeURIComponent((col && col.name) || '') + '&qty=50'; }
+    function studioUrl(p, col) { return PRNTR_STUDIO + '/?from=noll33&garment_id=' + encodeURIComponent(p.id) + '&color=' + encodeURIComponent((col && col.name) || '') + '&qty=50'; }
     // Kuraterade kategoribilder (valda av kund) — vinner över auto-valet.
     var CAT_IMG = {
       'Klädaccessoarer': 'https://cdn.toptex.com/pictures/K861-2_2026.jpg',   // burgundy satin-halsduk
@@ -784,7 +796,14 @@
       var ctaLabel = noAvail ? 'Tillfälligt slut i denna färg' : (st.panelQty ? 'Lägg till i korgen' : 'Lägg i korgen');
       var cta = '<button class="k-cta" data-k="addToCart"' + (noAvail ? ' disabled style="opacity:.5;cursor:not-allowed"' : '') + '>' + esc(ctaLabel) + '</button>';
       var cartMsg = st.cartMsg ? '<div class="k-ctanote">' + esc(st.cartMsg) + '</div>' : '';
-      var designbtn = p.designbar ? '<button class="k-designbtn is-soon" type="button" disabled aria-disabled="true">Designa med tryck — kommer snart</button>' : '';
+      // Skarp Designa-länk bara i förhandsvisningsläget (?designa=1) — publikt
+      // står den som "kommer snart" tills studion är redo för kunder.
+      var designbtn = '';
+      if (p.designbar) {
+        designbtn = designPreviewOn()
+          ? '<a class="k-designbtn" href="' + esc(studioUrl(p, col)) + '">Designa med tryck →</a>'
+          : '<button class="k-designbtn is-soon" type="button" disabled aria-disabled="true">Designa med tryck — kommer snart</button>';
+      }
       var priceHtml = KONTO.loggedIn()
         ? '<div class="k-dprice">' + esc(priceLabel(p)) + '</div><div class="k-dnote">Listpris utan förädling. Ert pris med tryck eller brodyr lämnas i offert.</div>'
         : '<div class="k-dprice">Pris vid inloggning</div><div class="k-dnote"><a href="#" class="gold-link" data-nav="login" style="font-size:12.5px">Logga in</a> för att se era priser.</div>';
