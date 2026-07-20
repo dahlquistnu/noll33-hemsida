@@ -7,6 +7,68 @@
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var touch = window.matchMedia && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
 
+  /* ============ Laddningsstreck ============ */
+  // Tunt guldstreck överst (samma guld som headerlinjen, se #loadbar i CSS).
+  // Trickle mot 90%, klart => 100% + tona ut. Startar först efter 250 ms så
+  // snabba laddningar aldrig blinkar till.
+  var LOADBAR = (function () {
+    var el = null, timer = null, delay = null, pct = 0, active = 0;
+    function ensure() { if (!el) { el = document.createElement('div'); el.id = 'loadbar'; document.body.appendChild(el); } return el; }
+    function tick() { pct += (90 - pct) * 0.08; ensure().style.width = pct + '%'; timer = setTimeout(tick, 180); }
+    function begin() { ensure().classList.add('on'); pct = Math.max(pct, 8); ensure().style.width = pct + '%'; if (!timer) tick(); }
+    return {
+      start: function () {
+        active++;
+        if (active === 1 && !delay && !timer) delay = setTimeout(function () { delay = null; if (active > 0) begin(); }, 250);
+      },
+      done: function () {
+        active = Math.max(0, active - 1);
+        if (active > 0) return;
+        if (delay) { clearTimeout(delay); delay = null; }
+        if (timer) { clearTimeout(timer); timer = null; }
+        if (el && el.classList.contains('on')) {
+          el.style.width = '100%';
+          setTimeout(function () { el.classList.remove('on'); setTimeout(function () { el.style.width = '0'; pct = 0; }, 350); }, 250);
+        } else { pct = 0; }
+      }
+    };
+  })();
+
+  // Vy-bilder som inte hunnit in när vyn visas (t.ex. Om oss / Hållbarhet):
+  // visa strecket tills de är klara.
+  function watchPageMedia(page) {
+    var root = document.querySelector('.page[data-page="' + page + '"]');
+    if (!root) return;
+    var pending = [].filter.call(root.querySelectorAll('img'), function (im) { return im.src && !im.complete; });
+    if (!pending.length) return;
+    LOADBAR.start();
+    var left = pending.length;
+    pending.forEach(function (im) {
+      var fin = function () { im.removeEventListener('load', fin); im.removeEventListener('error', fin); if (--left === 0) LOADBAR.done(); };
+      im.addEventListener('load', fin);
+      im.addEventListener('error', fin);
+    });
+  }
+
+  /* ============ Katalogdata på begäran ============ */
+  // katalog-data.js är 6.5 MB (550 KB över nätet) — laddas först när
+  // katalogen eller söket faktiskt öppnas, inte på varje sidvisning.
+  // CAT.mount har redan "Laddar sortimentet…" + retry, och sökets render
+  // visar samma text tills datan är inne.
+  var katalogLoad = null;
+  function loadKatalogData() {
+    if (window.NOLL33_PRODUCTS) return Promise.resolve();
+    if (katalogLoad) return katalogLoad;
+    LOADBAR.start();
+    katalogLoad = new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = 'katalog-data.js?v=d2';
+      s.onload = s.onerror = function () { LOADBAR.done(); resolve(); };
+      document.head.appendChild(s);
+    });
+    return katalogLoad;
+  }
+
   /* ============ Sidväxling ============ */
   function goto(page, opts) {
     // Inloggning + kundportal bor i PRNTR-appen: en dörr, en origin, en session.
@@ -29,8 +91,9 @@
     // Ny vy → tagga + avslöja dess element; tickers på nyvisad sida byggs om
     // (initTicker hoppar över dolda — se kommentaren där).
     moInit(); edObserve(true); setRates(); initTicker();
+    watchPageMedia(page);
     // Katalogen monteras EFTER moInit (så dess noder inte auto-taggas/döljs).
-    if (page === 'catalog') CAT.mount();
+    if (page === 'catalog') { loadKatalogData(); CAT.mount(); }
   }
   window.NOLL33_goto = goto;
 
@@ -1141,7 +1204,12 @@
         close();
       });
     }
-    function open() { ensure(); if (!header) return; header.classList.add('searching'); input.value = curQ; render(curQ); setTimeout(function () { input.focus(); }, 30); }
+    function open() {
+      ensure(); if (!header) return;
+      // Datan hämtas när söket öppnas; när den landat ritas aktuell fråga om.
+      loadKatalogData().then(function () { if (header.classList.contains('searching')) render(input.value); });
+      header.classList.add('searching'); input.value = curQ; render(curQ); setTimeout(function () { input.focus(); }, 30);
+    }
     function close() { if (header) header.classList.remove('searching'); if (resultsEl) resultsEl.classList.remove('has'); }
     return { open: open, close: close };
   })();
@@ -1194,6 +1262,11 @@
 
     KONTO.init();
     initSessionProbe();
+    // Initial sidladdning: strecket tills allt kritiskt är inne.
+    if (document.readyState !== 'complete') {
+      LOADBAR.start();
+      window.addEventListener('load', function () { LOADBAR.done(); }, { once: true });
+    }
     var initial = location.hash.slice(1);
     goto(PAGES.indexOf(initial) !== -1 ? initial : 'home', { keepScroll: true });
     window.addEventListener('hashchange', function () { goto(location.hash.slice(1) || 'home'); });
