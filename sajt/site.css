@@ -214,7 +214,10 @@ h1, h2, h3, p { margin: 0; }
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
 .brand-track { display: flex; width: max-content; filter: grayscale(1); opacity: .62; animation: n33-marquee 60s linear infinite; }
-.brand-track .cell { flex: none; display: inline-flex; align-items: center; justify-content: center; height: 70px; width: 150px; margin-right: 10px; padding: 0 14px; }
+/* Ingen fast cellbredd: lika-yta-skalningen (fitMarqueeLogos) släpper breda
+   wordmarks förbi 150px och de överlappade grannarna. Cellen växer med loggan
+   och paddingen ger EXAKT samma luft mellan alla varumärken. */
+.brand-track .cell { flex: none; display: inline-flex; align-items: center; justify-content: center; height: 70px; padding: 0 26px; }
 .brand-track .cell img { max-height: 38px; max-width: 100%; width: auto; object-fit: contain; }
 
 /* split-manifest */
