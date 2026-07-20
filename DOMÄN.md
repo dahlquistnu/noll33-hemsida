@@ -10,17 +10,12 @@ Målbild: ett domän-paraply. Besökaren möter alltid noll33.se, appen bor på 
 Sajten autentiserar aldrig själv. Alla "Logga in"-vägar skickar till appens
 `/logga-in`, som role-routar: admin hamnar i `/admin`, kund i `/konto`.
 
-## Steg 0: publicera nya sajten (görs FÖRE domänflytten)
+## Steg 0: publicera nya sajten — KLART 2026-07-20
 
-Nya sajten behöver en publik adress redan innan noll33.se pekas om
-(noll33.se visar gamla webshopen tills dess, och adminens
-"Till hemsidan"-genväg pekar på Vercel-adressen):
-
-1. vercel.com → Add New → Project → importera `dahlquistnu/noll33-hemsida`.
-2. Project Name: **noll33-hemsida** (exakt så — admin-genvägen pekar på
-   `https://noll33-hemsida.vercel.app`).
-3. Root Directory: `sajt`. Framework: Other (statisk, ingen build).
-4. Deploy. Klart — varje push till main deployas automatiskt.
+Vercel-projektet **noll33_hemsida** är skapat och git-kopplat: nya sajten
+ligger live på **https://noll33hemsida.vercel.app** och varje push till
+main deployas automatiskt. Adminens "Till hemsidan"-genväg pekar dit
+tills noll33.se pekats om (noll33.se visar gamla webshopen tills dess).
 
 ## Steg 1: koppla noll33.se till sajten
 
