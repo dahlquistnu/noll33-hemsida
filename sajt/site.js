@@ -12,10 +12,24 @@
   // Trickle mot 90%, klart => 100% + tona ut. Startar först efter 250 ms så
   // snabba laddningar aldrig blinkar till.
   var LOADBAR = (function () {
-    var el = null, timer = null, delay = null, pct = 0, active = 0;
+    var el = null, timer = null, delay = null, cap = null, pct = 0, active = 0;
     function ensure() { if (!el) { el = document.createElement('div'); el.id = 'loadbar'; document.body.appendChild(el); } return el; }
-    function tick() { pct += (90 - pct) * 0.08; ensure().style.width = pct + '%'; timer = setTimeout(tick, 180); }
-    function begin() { ensure().classList.add('on'); pct = Math.max(pct, 8); ensure().style.width = pct + '%'; if (!timer) tick(); }
+    function tick() { pct += (90 - pct) * 0.16; ensure().style.width = pct + '%'; timer = setTimeout(tick, 140); }
+    function begin() {
+      ensure().classList.add('on'); pct = Math.max(pct, 12); ensure().style.width = pct + '%'; if (!timer) tick();
+      // Säkerhetstak: strecket får ALDRIG bli stående (QA 2026-07-21:
+      // "fastnar vid 80%") — efter 8 s stängs det oavsett vad som väntar.
+      if (!cap) cap = setTimeout(function () { cap = null; active = 0; finish(); }, 8000);
+    }
+    function finish() {
+      if (delay) { clearTimeout(delay); delay = null; }
+      if (timer) { clearTimeout(timer); timer = null; }
+      if (cap) { clearTimeout(cap); cap = null; }
+      if (el && el.classList.contains('on')) {
+        el.style.width = '100%';
+        setTimeout(function () { el.classList.remove('on'); setTimeout(function () { el.style.width = '0'; pct = 0; }, 350); }, 250);
+      } else { pct = 0; }
+    }
     return {
       start: function () {
         active++;
@@ -24,23 +38,33 @@
       done: function () {
         active = Math.max(0, active - 1);
         if (active > 0) return;
-        if (delay) { clearTimeout(delay); delay = null; }
-        if (timer) { clearTimeout(timer); timer = null; }
-        if (el && el.classList.contains('on')) {
-          el.style.width = '100%';
-          setTimeout(function () { el.classList.remove('on'); setTimeout(function () { el.style.width = '0'; pct = 0; }, 350); }, 250);
-        } else { pct = 0; }
+        finish();
       }
     };
   })();
 
   // Vy-bilder som inte hunnit in när vyn visas (t.ex. Om oss / Hållbarhet):
-  // visa strecket tills de är klara.
+  // visa strecket tills de är klara. BARA bilder nära viewporten räknas —
+  // lazy-bilder under fold börjar inte laddas förrän man scrollar dit och
+  // skulle annars hålla strecket öppet för evigt (QA 2026-07-21).
   function watchPageMedia(page) {
     var root = document.querySelector('.page[data-page="' + page + '"]');
     if (!root) return;
-    var pending = [].filter.call(root.querySelectorAll('img'), function (im) { return im.src && !im.complete; });
+    // 1.1 viewport: bara bilder webbläsaren faktiskt börjar hämta direkt —
+    // längre ner tar lazy-laddningen dem först vid scroll, och då är de
+    // små nog att inte behöva något streck.
+    var nearH = (window.innerHeight || 800) * 1.1;
+    var pending = [].filter.call(root.querySelectorAll('img'), function (im) {
+      if (!im.src || im.complete) return false;
+      var r = im.getBoundingClientRect();
+      return r.top < nearH;
+    });
     if (!pending.length) return;
+    // Tvinga igång hämtningen: lazy-bilder i en nyss dold vy får aldrig sin
+    // laddning triggad av webbläsaren när vyn visas (QA 2026-07-21 — requesten
+    // startade aldrig trots synlig bild). Eager på de synliga löser det;
+    // bilder under fold behåller lazy och laddas vid scroll.
+    pending.forEach(function (im) { im.loading = 'eager'; });
     LOADBAR.start();
     var left = pending.length;
     pending.forEach(function (im) {
@@ -1262,11 +1286,9 @@
 
     KONTO.init();
     initSessionProbe();
-    // Initial sidladdning: strecket tills allt kritiskt är inne.
-    if (document.readyState !== 'complete') {
-      LOADBAR.start();
-      window.addEventListener('load', function () { LOADBAR.done(); }, { once: true });
-    }
+    // Initial laddning täcks av watchPageMedia via goto() nedan — window.load
+    // väntade även på startsidans videor (4 MB) och höll strecket öppet långt
+    // efter att sidan kändes klar (QA 2026-07-21).
     var initial = location.hash.slice(1);
     goto(PAGES.indexOf(initial) !== -1 ? initial : 'home', { keepScroll: true });
     window.addEventListener('hashchange', function () { goto(location.hash.slice(1) || 'home'); });
