@@ -160,7 +160,8 @@
   var PRNTR_STUDIO = 'https://printrstudio.vercel.app';
   // Lokal QA: sajt på localhost → prata med lokala appen så hela kedjan
   // (inloggning, handskakning, direktlänkar) kan testas utan deploy.
-  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+  var IS_LOCAL_QA = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  if (IS_LOCAL_QA) {
     PRNTR_STUDIO = 'http://localhost:8080';
   }
 
@@ -210,7 +211,21 @@
     window.addEventListener('message', function (ev) {
       if (ev.origin !== appOrigin) return;
       var d = ev.data;
-      if (!d || d.type !== 'noll33-session' || !d.loggedIn) return;
+      if (!d || d.type !== 'noll33-session') return;
+      if (!d.loggedIn) {
+        // Utloggad enligt appen. På PROD ljuger detta (PSL-partitionerad
+        // iframe ser aldrig sessionen) → ignorera där, ledtråden får leva.
+        // På LOKAL QA (samma site, ingen partitionering) är svaret ärligt:
+        // rensa ledtråden så headern inte visar "Admin" för utloggade.
+        if (IS_LOCAL_QA) {
+          try { localStorage.removeItem(ROLE_HINT_KEY); } catch (e) {}
+          SESSION_ROLE = null;
+          document.querySelectorAll('[data-nav="login"]').forEach(function (a) {
+            if (a.classList.contains('pill') || a.closest('.mobile-nav')) a.textContent = 'Logga in';
+          });
+        }
+        return;
+      }
       // Bekräftad session slår ledtråden och fräschar upp den.
       try { localStorage.setItem(ROLE_HINT_KEY, JSON.stringify({ role: d.role === 'admin' ? 'admin' : 'kund', t: Date.now() })); } catch (e) {}
       applyRoleLabel(d.role === 'admin' ? 'admin' : 'kund');
