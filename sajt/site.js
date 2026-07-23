@@ -384,7 +384,7 @@
           + (bits.length ? '<span class="kt-ometa">' + esc(bits.join(' · ')) + '</span>' : '') + '</li>';
       }).join('');
       return '<div class="kt-order kt-order-ov"><div class="kt-orderhead"><div><span class="kt-ordernr">' + esc(o.nr) + '</span><span class="kt-dim">  ' + esc(o.datum) + '</span></div>' + statusPill(o.status) + '</div>'
-        + timeline(o.status) + nextStep(o)
+        + timeline(o.status)
         + '<ul class="kt-olines">' + lines + '</ul>'
         + '<div class="kt-ovfoot"><button class="kt-textlink" data-kt-tab="order">Se orderdetaljer →</button><span class="kt-sum">' + esc(o.summa) + '</span></div></div>';
     }
@@ -397,16 +397,8 @@
       var pagaende = alla.filter(function (o) { return o.status < 4; });
       var pag = pagaende.length
         ? pagaende.map(overviewOrderCard).join('')
-        : '<div class="kt-panel"><p class="prose" style="margin:0">Inga pågående ordrar just nu. Börja i sortimentet' + (alla.length ? ' eller beställ om en tidigare order nedan' : '') + '.</p></div>';
-      var reorder = alla.slice(0, 3).map(function (o) {
-        var r = o.rader[0];
-        return '<div class="kt-ritem"><div class="kt-rtop"><strong>' + esc(o.nr) + '</strong><span class="kt-rdate">' + esc(o.datum) + '</span></div>'
-          + '<span class="kt-rdesc">' + esc(r.plagg) + ' · ' + r.antal + ' st</span>'
-          + '<button class="pill pill-outline kt-rbtn" data-kt-again="' + esc(o.nr) + '">Beställ igen</button></div>';
-      }).join('');
-      var reorderBlock = alla.length
-        ? secHead('Beställ igen') + '<div class="kt-reorder">' + reorder + '</div>'
-        : '';
+        : '<div class="kt-panel"><p class="prose" style="margin:0">Inga pågående ordrar just nu.</p></div>';
+      // Beställ igen bor i Orderhistoriken, inte på översikten (för mycket annars).
       var antalTryck = isLive() ? live.designs.length : BIBLIOTEK.length;
       var antalOfferter = isLive() ? live.quotes.length : DEMO_QUOTES.length;
       // C-dashboard: handlingsbara summeringsrutor högst upp (ersätter botten-stats).
@@ -417,14 +409,10 @@
         + '</div>';
       return '<div class="kt-in">' + tiles + '</div>'
         + '<div class="kt-in" style="margin-top:30px">' + secHead('Pågående just nu', pagaende.length > 1 ? '<span class="kt-seccount">' + pagaende.length + ' ordrar</span>' : '') + pag + '</div>'
-        + '<div class="kt-grid2 kt-in" style="animation-delay:.08s;margin-top:34px">'
-        + '<div>' + reorderBlock
-        + '<a href="#" class="kt-catcard" data-nav="catalog" style="margin-top:26px"><img src="assets/c-hood.jpg" alt="Plagg ur sortimentet" loading="lazy"><span class="kt-catlbl">Bläddra sortimentet →</span></a></div>'
-        + '<div><div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Er kontakt hos Noll33</div>'
+        + '<div class="kt-in" style="animation-delay:.08s;margin-top:34px"><div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Er kontakt hos Noll33</div>'
         + '<div class="kt-kv"><span>Mejl</span><strong><a class="gold-link" style="font-size:13.5px" href="mailto:info@noll33.se">info@noll33.se</a></strong></div>'
         + '<div class="kt-kv"><span>Telefon</span><strong>033-129110</strong></div>'
-        + '<p class="prose" style="margin:12px 0 0;font-size:13px;color:var(--muted2)">Vi svarar inom en arbetsdag.</p></div></div>'
-        + '</div>';
+        + '<p class="prose" style="margin:12px 0 0;font-size:13px;color:var(--muted2)">Vi svarar inom en arbetsdag.</p></div></div>';
     }
     function vOrder() {
       // Orderhistoriken bär samma tänk som Översikten: pågående ordrar med nästa
