@@ -215,10 +215,22 @@
     ];
 
     var BIBLIOTEK = [
-      { namn: 'sportbutiken-logga.svg', typ: 'Vektor', anv: 12, img: demoLogo('#14181A', '#C79A2E', 'SPORT') },
-      { namn: 'kampanj-2026.png', typ: 'Raster · 3 färger', anv: 4, img: demoLogo('#B8860B', '#FFFFFF', 'RUN -26') },
-      { namn: 'ryggtryck-slogan.svg', typ: 'Vektor', anv: 7, img: demoLogo('#F1EEE6', '#14181A', 'JUST GO') },
-      { namn: 'jubileum-25ar.pdf', typ: 'Vektor', anv: 2, img: demoLogo('#2A3440', '#E8E5DC', '25 ÅR') }
+      { namn: 'sportbutiken-logga.svg', typ: 'Vektor', farger: 2,
+        pantone: [{ n: 'PMS 872 C', hex: '#B8860B' }, { n: 'PMS Black 6 C', hex: '#14181A' }],
+        plagg: 'Hoodie Heavy 350g', pfarg: 'Svart', antal: 85, metod: 'Brodyr · bröst', order: 'N33-2398',
+        img: demoLogo('#14181A', '#C79A2E', 'SPORT') },
+      { namn: 'kampanj-2026.png', typ: 'Raster', farger: 2,
+        pantone: [{ n: 'PMS 1235 C', hex: '#B8860B' }, { n: 'Vit', hex: '#FFFFFF' }],
+        plagg: 'T-shirt Bio 180g', pfarg: 'Vit', antal: 120, metod: 'DTF · bröst', order: 'N33-2350',
+        img: demoLogo('#B8860B', '#FFFFFF', 'RUN -26') },
+      { namn: 'ryggtryck-slogan.svg', typ: 'Vektor', farger: 1,
+        pantone: [{ n: 'PMS Black 6 C', hex: '#14181A' }],
+        plagg: 'Piké Classic', pfarg: 'Kaki', antal: 60, metod: 'Screentryck · rygg', order: 'N33-2371',
+        img: demoLogo('#F1EEE6', '#14181A', 'JUST GO') },
+      { namn: 'jubileum-25ar.pdf', typ: 'Vektor', farger: 2,
+        pantone: [{ n: 'PMS 872 C', hex: '#B8860B' }, { n: 'Cool Gray 3 C', hex: '#C8C4BC' }],
+        plagg: 'Sweatshirt Premium', pfarg: 'Marin', antal: 40, metod: 'Brodyr · vänster bröst', order: 'N33-2299',
+        img: demoLogo('#2A3440', '#E8E5DC', '25 ÅR') }
     ];
 
     var PRISER = [
@@ -473,26 +485,56 @@
       return '<p class="kt-lead">Era offerter från studion. En offert gäller tills ni beställer eller den avvisas.</p>'
         + '<div class="kt-in">' + secHead('Offerter', '<span class="kt-seccount">' + q.length + (q.length === 1 ? ' offert' : ' offerter') + '</span>') + cards + '</div>';
     }
+    // Ett tryck-kort: tryckets specar (typ, färgantal, pantone) + var det senast
+    // användes (plagg, färg, antal, metod) + åtgärder. Fält som saknas döljs, så
+    // live-designer utan full metadata ändå ser rena ut.
+    function libCard(c) {
+      var farg = c.farger ? ' · ' + c.farger + (c.farger === 1 ? ' färg' : ' färger') : '';
+      var tag = c.typ ? '<span class="kt-libtag">' + esc(c.typ) + farg + '</span>' : '';
+      var pant = (c.pantone && c.pantone.length)
+        ? '<div class="kt-libpant">' + c.pantone.map(function (p) {
+            return '<span class="kt-libsw"><span class="kt-libdot" style="background:' + esc(p.hex) + '"></span>' + esc(p.n) + '</span>';
+          }).join('') + '</div>' : '';
+      var detalj = [c.pfarg, (c.antal ? c.antal + ' st' : ''), c.metod].filter(Boolean).join(' · ');
+      var used = (c.plagg || detalj)
+        ? '<div class="kt-libsep"></div><div class="kt-libused"><span class="kt-libused-lbl">Senast använt</span>'
+          + (c.plagg ? '<a class="kt-libplagg" href="#" data-nav="catalog">' + esc(c.plagg) + ' <span aria-hidden="true">→</span></a>' : '')
+          + (detalj ? '<span class="kt-libdetalj">' + esc(detalj) + '</span>' : '')
+          + '</div>' : '';
+      var dl = c.img ? '<a class="kt-libdl" href="' + c.img + '" download="' + esc(c.namn || 'tryck') + '" title="Ladda ner filen" aria-label="Ladda ner filen"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>' : '';
+      var again = c.order ? '<button class="pill pill-ink kt-libagain" data-kt-again="' + esc(c.order) + '">Beställ igen</button>' : '';
+      var studio = '<a class="kt-libstudio" href="' + (c.studioHref || (PRNTR_STUDIO + '/?from=noll33')) + '" target="_blank" rel="noopener">Öppna i studion →</a>';
+      return '<div class="kt-libitem">'
+        + '<div class="kt-libimg"><img src="' + c.img + '" alt="' + esc(c.namn) + '">' + dl + '</div>'
+        + '<div class="kt-libbody"><strong class="kt-libname">' + esc(c.namn) + '</strong>'
+        + tag + pant + used
+        + '<div class="kt-libcta">' + again + studio + '</div></div></div>';
+    }
     function vBibliotek() {
       var lead, n, grid;
+      var LEAD = 'Era sparade tryck med specar och pantone-färger. Beställ om en tidigare order, öppna i studion för en variant, gå till plagget eller ladda ner filen.';
       if (isLive()) {
         if (!live.designs.length) return emptyState('Inga sparade tryck ännu',
-          'Spara en design i studion så dyker den upp här — redo att användas vid nästa beställning.',
+          'Spara en design i studion så dyker den upp här — redo att beställa vid nästa order.',
           '<a href="#" class="pill pill-ink" data-nav="apply">Öppna designstudion</a>');
         n = live.designs.length;
-        lead = 'Era sparade designer från studion. Öppna en för att beställa igen eller jobba vidare.';
+        lead = LEAD;
         grid = live.designs.map(function (d) {
-          var img = d.thumbnail_url || demoLogo('#14181A', '#C79A2E', (d.name || 'D').slice(0, 6).toUpperCase());
-          var kod = String(d.id || '').slice(-6).toUpperCase();
-          return '<div class="kt-libitem"><div class="kt-libimg"><img src="' + img + '" alt="' + esc(d.name) + '"></div>'
-            + '<div class="kt-libmeta"><strong>' + esc(d.name) + '</strong><span>' + esc(String(d.created_at || '').slice(0, 10)) + ' · hämtkod ' + esc(kod) + '</span></div>'
-            + '<a class="kt-libuse" href="' + PRNTR_STUDIO + '/?from=noll33" target="_blank" rel="noopener">Öppna i studion →</a></div>';
+          return libCard({
+            img: d.thumbnail_url || demoLogo('#14181A', '#C79A2E', (d.name || 'D').slice(0, 6).toUpperCase()),
+            namn: d.name, typ: d.file_kind || d.kind, farger: d.color_count,
+            pantone: d.pantone || d.colors, plagg: d.last_garment, pfarg: d.last_color,
+            antal: d.last_quantity, metod: d.last_method, order: d.last_order_number
+          });
         }).join('');
       } else {
         n = BIBLIOTEK.length;
-        lead = 'Alla tryck ni laddat upp sparas här — välj direkt vid nästa beställning, ingen ny uppladdning behövs.';
+        lead = LEAD;
         grid = BIBLIOTEK.map(function (b) {
-          return '<div class="kt-libitem"><div class="kt-libimg"><img src="' + b.img + '" alt="' + esc(b.namn) + '"></div><div class="kt-libmeta"><strong>' + esc(b.namn) + '</strong><span>' + esc(b.typ) + ' · använd i ' + b.anv + ' order</span></div><button class="kt-libuse" data-kt-use="' + esc(b.namn) + '">Använd i ny order →</button></div>';
+          return libCard({
+            img: b.img, namn: b.namn, typ: b.typ, farger: b.farger, pantone: b.pantone,
+            plagg: b.plagg, pfarg: b.pfarg, antal: b.antal, metod: b.metod, order: b.order
+          });
         }).join('');
       }
       return '<p class="kt-lead">' + lead + '</p>'

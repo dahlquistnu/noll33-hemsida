@@ -900,17 +900,31 @@ html[data-portal] .kt-head .h-statement { font-size:clamp(26px,2.8vw,32px); }
 .kt-textlink:hover { color:var(--ink); border-bottom-color:var(--gold); }
 
 /* Bibliotek — tryck på produktplatta */
-.kt-lib { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:clamp(16px,2vw,28px); }
-.kt-libitem { display:flex; flex-direction:column; gap:12px; }
-.kt-libimg { background:var(--plate, var(--panel)); aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; padding:26px; transition:transform .35s cubic-bezier(.16,1,.3,1); }
-.kt-libitem:hover .kt-libimg { transform:translateY(-3px); }
+.kt-lib { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:clamp(16px,2vw,26px); align-items:start; }
+.kt-libitem { display:flex; flex-direction:column; background:var(--panel); border:1px solid var(--line2); transition:transform .35s cubic-bezier(.16,1,.3,1); }
+.kt-libitem:hover { transform:translateY(-3px); }
+.kt-libimg { position:relative; aspect-ratio:4/3; display:flex; align-items:center; justify-content:center; padding:24px; overflow:hidden; border-bottom:1px solid var(--line2); }
 .kt-libimg img { max-width:100%; max-height:100%; object-fit:contain; }
-.kt-libmeta { display:flex; flex-direction:column; gap:3px; }
-.kt-libmeta strong { font-size:14px; font-weight:600; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.kt-libmeta span { font-size:12.5px; color:var(--muted2); }
-.kt-libuse { align-self:flex-start; background:none; border:none; cursor:pointer; font:600 13px/1 var(--font); color:var(--ink); padding:2px 0 4px; border-bottom:1.5px solid var(--gold); transition:color .2s; }
-.kt-libuse:hover { color:var(--gold-deep, var(--gold)); }
-.kt-libuse:disabled { cursor:default; }
+.kt-libdl { position:absolute; top:10px; right:10px; width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; background:rgba(254,253,251,.9); border:1px solid var(--line); color:var(--ink); transition:color .2s,border-color .2s; }
+.kt-libdl svg { width:17px; height:17px; }
+.kt-libdl:hover { color:var(--gold-deep, var(--gold)); border-color:var(--gold); }
+.kt-libbody { display:flex; flex-direction:column; padding:14px 15px 15px; }
+.kt-libname { font-size:14px; font-weight:600; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-bottom:9px; }
+.kt-libtag { align-self:flex-start; font-size:11.5px; color:var(--muted2); border:1px solid var(--line2); padding:2px 9px; letter-spacing:.03em; }
+.kt-libpant { display:flex; flex-wrap:wrap; gap:6px 12px; margin-top:11px; }
+.kt-libsw { display:inline-flex; align-items:center; gap:5px; font-size:11.5px; color:var(--ink); }
+.kt-libdot { width:12px; height:12px; border:1px solid rgba(20,24,26,.15); display:inline-block; flex:none; }
+.kt-libsep { height:1px; background:var(--line2); margin:12px 0; }
+.kt-libused { display:flex; flex-direction:column; gap:4px; }
+.kt-libused-lbl { font-size:11px; color:var(--muted2); letter-spacing:.07em; text-transform:uppercase; }
+.kt-libplagg { align-self:flex-start; font-size:13.5px; font-weight:600; color:var(--ink); text-decoration:none; border-bottom:1px solid transparent; padding-bottom:1px; transition:color .2s,border-color .2s; }
+.kt-libplagg:hover { color:var(--gold-deep, var(--gold)); border-bottom-color:var(--gold); }
+.kt-libdetalj { font-size:12.5px; color:var(--muted2); }
+.kt-libcta { display:flex; flex-direction:column; align-items:flex-start; gap:10px; margin-top:15px; }
+.kt-libagain { font-size:13px; padding:8px 16px; }
+.kt-libagain:disabled { cursor:default; }
+.kt-libstudio { font:500 12.5px/1 var(--font); color:var(--muted2); text-decoration:none; border-bottom:1px solid transparent; padding-bottom:2px; transition:color .2s,border-color .2s; }
+.kt-libstudio:hover { color:var(--ink); border-bottom-color:var(--gold); }
 
 /* Priser — guld-streck-block istället för kort */
 .kt-prisgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:clamp(26px,3.4vw,48px); }
