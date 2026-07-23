@@ -232,7 +232,7 @@ h1, h2, h3, p { margin: 0; }
 .split2 { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(36px, 5vw, 80px); align-items: start; }
 .split2 .col-text { display: flex; flex-direction: column; gap: 16px; max-width: 56ch; }
 .split2 .col-text p { font-size: 17px; line-height: 1.7; color: var(--body); margin: 0; }
-.split2 .col-text .emph { font-weight: 600; font-size: 19px; line-height: 1.5; letter-spacing: -.01em; color: var(--ink); margin-top: 6px; }
+.split2 .col-text .emph, .hant-body .emph { font-weight: 600; font-size: 19px; line-height: 1.5; letter-spacing: -.01em; color: var(--ink); margin-top: 6px; }
 
 /* cta-band */
 .ctaband { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(36px, 5vw, 80px); align-items: stretch;
