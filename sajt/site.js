@@ -407,12 +407,11 @@
         + '<div class="kt-stat"><div class="big">' + antalOfferter + '</div><div class="cap">Öppna offerter</div></div>'
         + '<div class="kt-stat"><div class="big">' + antalTryck + '</div><div class="cap">Sparade tryck</div></div>'
         + '</div>';
+      // Kontaktkort borttaget här: kontakt nås via header-navet "Kontakt"
+      // (telefon + mejl finns på Kontakt-sidan och i footern). Översikten
+      // slutar med Pågående ordrar — mindre brus.
       return '<div class="kt-in">' + tiles + '</div>'
-        + '<div class="kt-in" style="margin-top:30px">' + secHead('Pågående just nu', pagaende.length > 1 ? '<span class="kt-seccount">' + pagaende.length + ' ordrar</span>' : '') + pag + '</div>'
-        + '<div class="kt-in" style="animation-delay:.08s;margin-top:34px"><div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Er kontakt hos Noll33</div>'
-        + '<div class="kt-kv"><span>Mejl</span><strong><a class="gold-link" style="font-size:13.5px" href="mailto:info@noll33.se">info@noll33.se</a></strong></div>'
-        + '<div class="kt-kv"><span>Telefon</span><strong>033-129110</strong></div>'
-        + '<p class="prose" style="margin:12px 0 0;font-size:13px;color:var(--muted2)">Vi svarar inom en arbetsdag.</p></div></div>';
+        + '<div class="kt-in" style="margin-top:30px">' + secHead('Pågående just nu', pagaende.length > 1 ? '<span class="kt-seccount">' + pagaende.length + ' ordrar</span>' : '') + pag + '</div>';
     }
     function vOrder() {
       // Orderhistoriken bär samma tänk som Översikten: pågående ordrar med nästa
