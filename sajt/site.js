@@ -339,7 +339,7 @@
     function tabs() {
       var T = st.role === 'admin' && !st.viewAs
         ? [['adm-kunder', 'Kundregister'], ['adm-priser', 'Prismodeller']]
-        : [['oversikt', 'Översikt'], ['order', 'Ordrar'], ['offerter', 'Offerter'], ['bibliotek', 'Mina tryck'], ['priser', 'Mina priser'], ['uppgifter', 'Uppgifter']];
+        : [['oversikt', 'Översikt'], ['order', 'Ordrar'], ['offerter', 'Offerter'], ['bibliotek', 'Mina tryck'], ['uppgifter', 'Uppgifter']];
       return '<nav class="kt-tabs">' + T.map(function (t) {
         return '<button class="kt-tab' + (st.tab === t[0] ? ' is-active' : '') + '" data-kt-tab="' + t[0] + '">' + t[1] + '</button>';
       }).join('') + '</nav>';
@@ -541,6 +541,9 @@
         + '<div class="kt-in">' + secHead('Sparade tryck', '<span class="kt-seccount">' + n + ' tryck</span>')
         + '<div class="kt-lib">' + grid + '</div></div>';
     }
+    // Kund-prisfliken är borttagen: en ofullständig statisk tariff är sämre än
+    // ingen, och exakt pris räknas live i studion. Funktionen behålls (oanvänd)
+    // för en framtida RIKTIG komplett prislista kopplad till pricing_configs.
     function vPriser(k) {
       // Modell-etiketten är intern (admin) — kunden ser bara "era priser".
       var note = '<span class="kt-note a">Era avtalade priser · 2026</span>';
@@ -610,7 +613,6 @@
         case 'order': body = vOrder(); break;
         case 'offerter': body = vOfferter(); break;
         case 'bibliotek': body = vBibliotek(); break;
-        case 'priser': body = vPriser(k); break;
         case 'uppgifter': body = vUppgifter(k); break;
         case 'adm-kunder': body = vAdmKunder(); break;
         case 'adm-priser': body = vAdmPriser(); break;
