@@ -815,6 +815,14 @@ body[data-page="catalog"] .site-header { border-bottom: 0; }
 .kt-stat::before { content:''; position:absolute; top:-1px; left:0; width:32px; height:2px; background:var(--gold); }
 .kt-stat .big { font-weight:600; font-size:clamp(20px,2.2vw,30px); letter-spacing:-.02em; color:var(--ink); }
 .kt-stat .cap { font-size:13.5px; color:var(--muted2); margin-top:5px; }
+/* C-dashboard: summeringsrutor + lugnare masthead (guld nedskruvat) */
+.kt-eyebrow { color:var(--muted2); letter-spacing:.2em; }
+html[data-portal] .kt-head .h-statement { font-size:clamp(26px,2.8vw,32px); }
+.kt-tiles { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:13px; }
+.kt-tile { border:1px solid var(--line); border-radius:14px; background:var(--panel); padding:18px 20px; }
+.kt-tile .tn { font-weight:600; font-size:clamp(24px,2.6vw,30px); line-height:1; letter-spacing:-.02em; color:var(--ink); font-variant-numeric:tabular-nums; }
+.kt-tile .tk { font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted2); margin-top:9px; }
+@media (max-width:640px){ .kt-tiles { grid-template-columns:1fr; } }
 
 .kt-grid2 { display:grid; grid-template-columns:1.4fr 1fr; gap:clamp(20px,3vw,44px); align-items:start; }
 .kt-panel { background:var(--panel); padding:clamp(20px,2.6vw,30px); }

@@ -399,33 +399,24 @@
       var reorderBlock = alla.length
         ? secHead('Beställ igen') + '<div class="kt-reorder">' + reorder + '</div>'
         : '';
-      var antalOrdrar = isLive() ? live.orders.length : k.ordrar;
-      var plaggIAr = isLive()
-        ? live.orders.reduce(function (s, o) { return s + (String(o.datum).slice(0, 4) === '2026' ? o.rader[0].antal : 0); }, 0).toLocaleString('sv-SE')
-        : '1 840';
       var antalTryck = isLive() ? live.designs.length : BIBLIOTEK.length;
-      var kundSedan = isLive()
-        ? (live.orders.length ? live.orders[live.orders.length - 1].datum.slice(0, 4) : '2026')
-        : k.sedan;
-      var stats = '<div class="kt-stats">'
-        + '<div class="kt-stat"><div class="big">' + antalOrdrar + '</div><div class="cap">Ordrar totalt</div></div>'
-        + '<div class="kt-stat"><div class="big">' + plaggIAr + '</div><div class="cap">Plagg i år</div></div>'
-        + '<div class="kt-stat"><div class="big">' + antalTryck + '</div><div class="cap">Sparade tryck</div></div>'
-        + '<div class="kt-stat"><div class="big">' + esc(kundSedan) + '</div><div class="cap">Kund sedan</div></div>'
+      var antalOfferter = isLive() ? live.quotes.length : DEMO_QUOTES.length;
+      // C-dashboard: handlingsbara summeringsrutor högst upp (ersätter botten-stats).
+      var tiles = '<div class="kt-tiles">'
+        + '<div class="kt-tile"><div class="tn">' + pagaende.length + '</div><div class="tk">Pågående ordrar</div></div>'
+        + '<div class="kt-tile"><div class="tn">' + antalOfferter + '</div><div class="tk">Öppna offerter</div></div>'
+        + '<div class="kt-tile"><div class="tn">' + antalTryck + '</div><div class="tk">Sparade tryck</div></div>'
         + '</div>';
-      return '<div class="kt-in">' + secHead('Pågående just nu', pagaende.length > 1 ? '<span class="kt-seccount">' + pagaende.length + ' ordrar</span>' : '') + pag + '</div>'
+      return '<div class="kt-in">' + tiles + '</div>'
+        + '<div class="kt-in" style="margin-top:30px">' + secHead('Pågående just nu', pagaende.length > 1 ? '<span class="kt-seccount">' + pagaende.length + ' ordrar</span>' : '') + pag + '</div>'
         + '<div class="kt-grid2 kt-in" style="animation-delay:.08s;margin-top:34px">'
         + '<div>' + reorderBlock
         + '<a href="#" class="kt-catcard" data-nav="catalog" style="margin-top:26px"><img src="assets/c-hood.jpg" alt="Plagg ur sortimentet" loading="lazy"><span class="kt-catlbl">Bläddra sortimentet →</span></a></div>'
-        + '<div><div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Snabbt</div>'
-        + '<div class="kt-quick"><a href="#" class="pill pill-ink" data-nav="apply">Designa nytt tryck</a>'
-        + '<button class="pill pill-outline" data-kt-tab="bibliotek">Mina tryck</button></div></div>'
-        + '<div class="kt-panel" style="margin-top:18px"><div class="eyebrow" style="margin-bottom:16px">Er kontakt hos Noll33</div>'
+        + '<div><div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Er kontakt hos Noll33</div>'
         + '<div class="kt-kv"><span>Mejl</span><strong><a class="gold-link" style="font-size:13.5px" href="mailto:info@noll33.se">info@noll33.se</a></strong></div>'
         + '<div class="kt-kv"><span>Telefon</span><strong>033-129110</strong></div>'
-        + '<p class="prose" style="margin:12px 0 0;font-size:13px;color:var(--muted2)">Vi svarar inom en arbetsdag.</p></div>'
-        + '</div></div>'
-        + '<div class="kt-in" style="animation-delay:.16s;margin-top:38px">' + stats + '</div>';
+        + '<p class="prose" style="margin:12px 0 0;font-size:13px;color:var(--muted2)">Vi svarar inom en arbetsdag.</p></div></div>'
+        + '</div>';
     }
     function vOrder() {
       // Orderhistoriken bär samma tänk som Översikten: pågående ordrar med nästa
@@ -589,7 +580,7 @@
         default: body = vOversikt(k);
       }
       root.innerHTML = adminBar
-        + '<div class="kt-head"><div><div class="eyebrow eyebrow-gold" style="margin-bottom:14px">' + (isAdminHome ? 'Noll33 intern' : 'Återförsäljarportal') + '</div>'
+        + '<div class="kt-head"><div><div class="eyebrow kt-eyebrow" style="margin-bottom:14px">' + (isAdminHome ? 'Noll33 intern' : 'Återförsäljarportal') + '</div>'
         + '<h1 class="h-statement">' + title + '</h1><p class="kt-sub">' + sub + '</p></div>'
         + '<button class="kt-logout" data-kt-logout="1">Logga ut</button></div>'
         + tabs() + '<div class="kt-body">' + body + '</div>'
