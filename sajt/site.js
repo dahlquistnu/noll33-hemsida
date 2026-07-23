@@ -1528,8 +1528,8 @@
       root.innerHTML =
         '<div class="kx-navrow"><div class="kx-nav">' +
           '<div class="kx-navbtns" id="kNavBtns"></div>' +
-          '<div class="k-search"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.6"></circle><path d="M14 14l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg><input id="kSearch" type="search" placeholder="Sök i sortimentet" aria-label="Sök i sortimentet"></div>' +
           '<button class="k-navcart" data-k="openCart" aria-label="Öppna offertkorgen"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.5 8.5h11l-.9 10.2a1.5 1.5 0 0 1-1.5 1.3H8.9a1.5 1.5 0 0 1-1.5-1.3L6.5 8.5Z" stroke="currentColor" stroke-width="1.6"></path><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5" stroke="currentColor" stroke-width="1.6"></path></svg><span class="k-navcart-badge" id="kBadge" hidden></span></button>' +
+          '<div class="k-search"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.6"></circle><path d="M14 14l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg><input id="kSearch" type="search" placeholder="Sök i sortimentet" aria-label="Sök i sortimentet"></div>' +
         '</div><div id="kFly"></div></div>' +
         '<div id="kMenuBackdrop" class="k-menu-backdrop" style="display:none" data-k="closeMenu"></div>' +
         '<div id="kBody"></div>' +
