@@ -327,7 +327,7 @@
     function tabs() {
       var T = st.role === 'admin' && !st.viewAs
         ? [['adm-kunder', 'Kundregister'], ['adm-priser', 'Prismodeller']]
-        : [['oversikt', 'Översikt'], ['order', 'Orderhistorik'], ['offerter', 'Offerter'], ['bibliotek', 'Mina tryck'], ['priser', 'Mina priser'], ['uppgifter', 'Uppgifter']];
+        : [['oversikt', 'Översikt'], ['order', 'Ordrar'], ['offerter', 'Offerter'], ['bibliotek', 'Mina tryck'], ['priser', 'Mina priser'], ['uppgifter', 'Uppgifter']];
       return '<nav class="kt-tabs">' + T.map(function (t) {
         return '<button class="kt-tab' + (st.tab === t[0] ? ' is-active' : '') + '" data-kt-tab="' + t[0] + '">' + t[1] + '</button>';
       }).join('') + '</nav>';

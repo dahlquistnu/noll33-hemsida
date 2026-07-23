@@ -841,7 +841,7 @@ html[data-portal] .kt-head .h-statement { font-size:clamp(26px,2.8vw,32px); }
 .kt-note.b { color:var(--gold-deep, var(--gold)); }
 
 /* Order */
-.kt-order { border:1px solid var(--line2); background:var(--bg); padding:clamp(18px,2.4vw,26px); margin-bottom:18px; }
+.kt-order { border:1px solid var(--line2); background:var(--panel); padding:clamp(18px,2.4vw,26px); margin-bottom:18px; }
 .kt-orderhead { display:flex; align-items:baseline; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:8px; }
 .kt-ordernr { font-weight:700; font-size:16px; letter-spacing:-.01em; color:var(--ink); margin-right:10px; }
 .kt-dim { color:var(--muted2); font-size:13px; font-weight:400; }
@@ -889,8 +889,7 @@ html[data-portal] .kt-head .h-statement { font-size:clamp(26px,2.8vw,32px); }
 .kt-yearhead .kt-secline { opacity:.6; }
 .kt-seccount { flex:none; font-size:12.5px; color:var(--muted2); letter-spacing:.01em; }
 
-/* Kompakt orderkort i Översikten */
-.kt-order-ov { background:var(--bg); }
+/* Kompakt orderkort i Översikten (beige-bakgrunden ärvs från .kt-order) */
 .kt-olines { list-style:none; margin:0; padding:0; }
 .kt-olines li { display:flex; align-items:baseline; justify-content:space-between; gap:18px; padding:9px 0; border-bottom:1px solid var(--line2); }
 .kt-olines li:last-child { border-bottom:none; }
