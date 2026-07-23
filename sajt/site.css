@@ -1,7 +1,7 @@
 /* Noll33 — Atelier Motion. Produktionsstilar (reproducerar design_handoff).
    Tokens ur README: sval off-white, varm beige, ink-text, guld-accent. */
 :root {
-  --bg: #FAFAF7;          /* sidbakgrund */
+  --bg: #FEFDFB;          /* sidbakgrund (ljusare — mer kontrast mot paneler #F6F4EE) */
   --panel: #F6F4EE;       /* panel / cta-band (ljus, svalt neutral) */
   --plate: #F1EFE9;       /* produktbild-platta */
   --ink: #14181A;         /* primärtext / CTA */
@@ -819,7 +819,7 @@ body[data-page="catalog"] .site-header { border-bottom: 0; }
 .kt-eyebrow { color:var(--muted2); letter-spacing:.2em; }
 html[data-portal] .kt-head .h-statement { font-size:clamp(26px,2.8vw,32px); }
 .kt-tiles { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:13px; }
-.kt-tile { border:1px solid var(--line); border-radius:14px; background:var(--panel); padding:18px 20px; }
+.kt-tile { border:1px solid var(--line); border-radius:2px; background:var(--panel); padding:18px 20px; }
 .kt-tile .tn { font-weight:600; font-size:clamp(24px,2.6vw,30px); line-height:1; letter-spacing:-.02em; color:var(--ink); font-variant-numeric:tabular-nums; }
 .kt-tile .tk { font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted2); margin-top:9px; }
 @media (max-width:640px){ .kt-tiles { grid-template-columns:1fr; } }
@@ -828,13 +828,13 @@ html[data-portal] .kt-head .h-statement { font-size:clamp(26px,2.8vw,32px); }
 .kt-panel { background:var(--panel); padding:clamp(20px,2.6vw,30px); }
 .kt-panel + .kt-panel { margin-top:18px; }
 .kt-even { grid-template-columns:1fr 1fr; align-items:stretch; }
-.kt-even > .kt-panel { height:100%; border:1px solid var(--line); border-radius:14px; }
+.kt-even > .kt-panel { height:100%; border:1px solid var(--line); border-radius:2px; }
 /* Kontomeny (dropdown i headern) */
 .acct { position:relative; }
 .acct-chev { font-size:10px; color:var(--muted2); margin-left:1px; }
-.acct-menu { position:absolute; right:0; top:calc(100% + 8px); background:#FFFFFF; border:1px solid var(--line); border-radius:12px; min-width:196px; padding:6px; box-shadow:0 12px 34px rgba(20,24,26,.10); z-index:200; }
+.acct-menu { position:absolute; right:0; top:calc(100% + 8px); background:#FFFFFF; border:1px solid var(--line); border-radius:2px; min-width:196px; padding:6px; box-shadow:0 12px 34px rgba(20,24,26,.10); z-index:200; }
 .acct-menu[hidden] { display:none; }
-.acct-menu > button, .acct-menu > a { display:block; width:100%; text-align:left; background:none; border:none; cursor:pointer; font:400 14px/1.1 var(--font); color:var(--body); padding:9px 11px; border-radius:8px; text-decoration:none; }
+.acct-menu > button, .acct-menu > a { display:block; width:100%; text-align:left; background:none; border:none; cursor:pointer; font:400 14px/1.1 var(--font); color:var(--body); padding:9px 11px; border-radius:2px; text-decoration:none; }
 .acct-menu > button:hover, .acct-menu > a:hover { background:var(--panel); color:var(--ink); }
 .acct-sep { height:1px; background:var(--line2); margin:5px 0; }
 .kt-quick { display:flex; flex-direction:column; gap:10px; }
@@ -878,7 +878,7 @@ html[data-portal] .kt-head .h-statement { font-size:clamp(26px,2.8vw,32px); }
 .kt-sechead .eyebrow { flex:none; margin:0; }
 .kt-secline { flex:1; height:1px; background:var(--line2); }
 /* Tomt tillstånd: centrerad panel, eyebrow + mening + EN handling */
-.kt-empty { border:1px solid var(--line2); background:var(--panel); border-radius:14px; padding:clamp(28px,3.6vw,40px) clamp(24px,4vw,36px);
+.kt-empty { border:1px solid var(--line2); background:var(--panel); border-radius:2px; padding:clamp(28px,3.6vw,40px) clamp(24px,4vw,36px);
   display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px; }
 .kt-empty .eyebrow { color:var(--muted2); }
 .kt-empty .prose { max-width:46ch; margin:0; }
