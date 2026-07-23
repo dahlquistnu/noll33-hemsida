@@ -158,78 +158,10 @@
     PRNTR_STUDIO = 'http://localhost:8080';
   }
 
-  /* ============ Sessionshandskakning mot appen ============ */
-  // Dold iframe till appens /session-status; svaret (postMessage, bara roll —
-  // aldrig tokens) byter headerknappen "Logga in" → "Admin"/"Mitt konto" och
-  // låter goto() länka direkt till /admin resp /konto utan login-mellansteg.
-  var SESSION_ROLE = null;
-  function applyRoleLabel(role) {
-    SESSION_ROLE = role;
-    var label = role === 'admin' ? 'Admin' : 'Mitt konto';
-    document.querySelectorAll('[data-nav="login"]').forEach(function (a) {
-      // Bara headerknappen och mobilmenyraden byter text — löpande länkar
-      // ("Logga in för att se era priser") behåller sin mening.
-      if (a.classList.contains('pill') || a.closest('.mobile-nav')) a.textContent = label;
-    });
-  }
-
-  // Brygga tills domänflytten: *.vercel.app-subdomäner är OLIKA sajter (Public
-  // Suffix List) → iframe-handskakningen får partitionerad lagring i Chrome och
-  // ser inte sessionen. Appens "Till hemsidan"-länk skickar därför med
-  // #n33in=admin|kund som sparas som lokal ledtråd (7 dagar). Efter flytten
-  // till noll33.se/app.noll33.se ser handskakningen sessionen på riktigt och
-  // bryggan kan tas bort.
-  var ROLE_HINT_KEY = 'n33_role_hint';
-  var ROLE_HINT_TTL = 7 * 24 * 3600 * 1000;
-  (function captureRoleHint() {
-    var m = (location.hash || '').match(/n33in=(admin|kund)/);
-    if (!m) return;
-    try { localStorage.setItem(ROLE_HINT_KEY, JSON.stringify({ role: m[1], t: Date.now() })); } catch (e) {}
-    // Städa hashen så sidväxlingen (som läser location.hash) inte ser flaggan.
-    history.replaceState(null, '', location.pathname + location.search);
-  })();
-  function readRoleHint() {
-    try {
-      var h = JSON.parse(localStorage.getItem(ROLE_HINT_KEY) || 'null');
-      if (h && (h.role === 'admin' || h.role === 'kund') && Date.now() - h.t < ROLE_HINT_TTL) return h.role;
-    } catch (e) {}
-    return null;
-  }
-
-  function initSessionProbe() {
-    var hint = readRoleHint();
-    if (hint) applyRoleLabel(hint);
-    var appOrigin;
-    try { appOrigin = new URL(PRNTR_STUDIO).origin; } catch (e) { return; }
-    window.addEventListener('message', function (ev) {
-      if (ev.origin !== appOrigin) return;
-      var d = ev.data;
-      if (!d || d.type !== 'noll33-session') return;
-      if (!d.loggedIn) {
-        // Utloggad enligt appen. På PROD ljuger detta (PSL-partitionerad
-        // iframe ser aldrig sessionen) → ignorera där, ledtråden får leva.
-        // På LOKAL QA (samma site, ingen partitionering) är svaret ärligt:
-        // rensa ledtråden så headern inte visar "Admin" för utloggade.
-        if (IS_LOCAL_QA) {
-          try { localStorage.removeItem(ROLE_HINT_KEY); } catch (e) {}
-          SESSION_ROLE = null;
-          document.querySelectorAll('[data-nav="login"]').forEach(function (a) {
-            if (a.classList.contains('pill') || a.closest('.mobile-nav')) a.textContent = 'Logga in';
-          });
-        }
-        return;
-      }
-      // Bekräftad session slår ledtråden och fräschar upp den.
-      try { localStorage.setItem(ROLE_HINT_KEY, JSON.stringify({ role: d.role === 'admin' ? 'admin' : 'kund', t: Date.now() })); } catch (e) {}
-      applyRoleLabel(d.role === 'admin' ? 'admin' : 'kund');
-    });
-    var f = document.createElement('iframe');
-    f.src = PRNTR_STUDIO + '/session-status';
-    f.style.display = 'none';
-    f.setAttribute('aria-hidden', 'true');
-    f.tabIndex = -1;
-    document.body.appendChild(f);
-  }
+  /* Handshake borttaget (interim-B): sajten autentiserar kund själv via
+     /auth/v1/token → ingen cross-origin session-probe behövs. Headern speglas
+     av KONTO.updateHeader ur den egna sessionen. Vid domänflytten ersätts detta
+     av delad-cookie-SSO (inte iframe-handskaket, som ändå var dött på vercel). */
 
   // Designa-knappen i katalogen är "kommer snart" publikt tills studion är klar.
   // Förhandsvisning slås på per webbläsare med ?designa=1 (av med ?designa=0) —
@@ -1816,8 +1748,7 @@
     });
 
     KONTO.init();
-    // Handshake avstängt (interim-B): sajten autentiserar kund själv → ingen
-    // cross-origin-probe behövs. initSessionProbe finns kvar men anropas ej.
+    // (Handshaket borttaget helt — interim-B: sajten autentiserar kund själv.)
     // Initial laddning täcks av watchPageMedia via goto() nedan — window.load
     // väntade även på startsidans videor (4 MB) och höll strecket öppet långt
     // efter att sidan kändes klar (QA 2026-07-21).
