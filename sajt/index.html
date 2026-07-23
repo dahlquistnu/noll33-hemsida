@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://cdn.toptex.com" crossorigin>
 <link rel="preconnect" href="https://printrstudio.vercel.app">
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="site.css?v=d110">
+<link rel="stylesheet" href="site.css?v=d111">
 </head>
 <body data-page="home">
 
@@ -27,7 +27,16 @@
       <a href="#" class="uline" data-nav="about">Om oss</a>
     </nav>
     <div class="header-actions">
-      <a href="#" class="pill pill-outline desktop-only" style="font-size:14.5px;letter-spacing:.02em;padding:9px 20px;" data-nav="login">Logga in</a>
+      <div class="acct desktop-only" data-acct>
+        <a href="#" class="pill pill-outline acct-pill" style="font-size:14.5px;letter-spacing:.02em;padding:9px 20px;" data-nav="login">Logga in</a>
+        <div class="acct-menu" role="menu" hidden>
+          <button type="button" role="menuitem" data-acct-go="oversikt">Mitt konto</button>
+          <button type="button" role="menuitem" data-acct-go="uppgifter">Uppgifter</button>
+          <a href="#" role="menuitem" data-gohome>Till hemsidan</a>
+          <div class="acct-sep"></div>
+          <button type="button" role="menuitem" data-acct-logout>Logga ut</button>
+        </div>
+      </div>
       <a href="#" class="pill pill-ink desktop-only" style="padding:9px 20px;font-size:14.5px;letter-spacing:.02em;" data-nav="ansok">Ansökan</a>
       <button class="burger" aria-label="Öppna meny">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
@@ -513,6 +522,6 @@
 <!-- katalog-data.js (6.5 MB) laddas på begäran av site.js när katalogen
      eller söket öppnas — inte på varje sidvisning. -->
 
-<script defer src="site.js?v=interim-b3"></script>
+<script defer src="site.js?v=interim-b4"></script>
 </body>
 </html>
