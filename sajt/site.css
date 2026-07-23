@@ -828,7 +828,7 @@ html[data-portal] .kt-head .h-statement { font-size:clamp(26px,2.8vw,32px); }
 .kt-panel { background:var(--panel); padding:clamp(20px,2.6vw,30px); }
 .kt-panel + .kt-panel { margin-top:18px; }
 .kt-even { grid-template-columns:1fr 1fr; align-items:stretch; }
-.kt-even > .kt-panel { height:100%; border:1px solid var(--line); border-radius:2px; }
+.kt-even > .kt-panel { height:100%; margin-top:0; border:1px solid var(--line); border-radius:2px; }
 /* Kontomeny (dropdown i headern) */
 .kt-quick { display:flex; flex-direction:column; gap:10px; }
 .kt-quick .pill { justify-content:center; cursor:pointer; }
