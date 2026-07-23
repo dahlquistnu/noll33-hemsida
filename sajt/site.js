@@ -524,7 +524,7 @@
           + '<div class="kt-kv"><span>E-post</span><strong>' + esc(k.email) + '</strong></div>'
           + '<div class="kt-kv"><span>Leveransadress</span><strong>Hållingsgatan 15, Borås</strong></div>';
       return '<p class="kt-lead">Ert företagskonto hos Noll33. Hör av er om något behöver ändras.</p>'
-        + '<div class="kt-in"><div class="kt-grid2"><div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Företag</div>' + rows + '</div>'
+        + '<div class="kt-in"><div class="kt-grid2 kt-even"><div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Företag</div>' + rows + '</div>'
         + '<div class="kt-panel"><div class="eyebrow" style="margin-bottom:16px">Kommer snart</div>'
         + '<p class="prose">Flera användare per företag, fler leveransadresser, fakturor som PDF och ordernotiser via mejl.</p></div></div></div>';
     }

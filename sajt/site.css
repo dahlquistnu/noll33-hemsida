@@ -827,6 +827,8 @@ html[data-portal] .kt-head .h-statement { font-size:clamp(26px,2.8vw,32px); }
 .kt-grid2 { display:grid; grid-template-columns:1.4fr 1fr; gap:clamp(20px,3vw,44px); align-items:start; }
 .kt-panel { background:var(--panel); padding:clamp(20px,2.6vw,30px); }
 .kt-panel + .kt-panel { margin-top:18px; }
+.kt-even { grid-template-columns:1fr 1fr; align-items:stretch; }
+.kt-even > .kt-panel { height:100%; border:1px solid var(--line); border-radius:14px; }
 .kt-quick { display:flex; flex-direction:column; gap:10px; }
 .kt-quick .pill { justify-content:center; cursor:pointer; }
 .kt-kv { display:flex; justify-content:space-between; gap:14px; padding:12px 0; border-bottom:1px solid var(--line2); font-size:14px; color:var(--body); }
@@ -868,8 +870,9 @@ html[data-portal] .kt-head .h-statement { font-size:clamp(26px,2.8vw,32px); }
 .kt-sechead .eyebrow { flex:none; margin:0; }
 .kt-secline { flex:1; height:1px; background:var(--line2); }
 /* Tomt tillstånd: centrerad panel, eyebrow + mening + EN handling */
-.kt-empty { border:1px solid var(--line2); background:var(--bg); padding:clamp(34px,5vw,56px) clamp(22px,4vw,40px);
-  display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px; }
+.kt-empty { border:1px solid var(--line2); background:var(--panel); border-radius:14px; padding:clamp(28px,3.6vw,40px) clamp(24px,4vw,36px);
+  display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px; }
+.kt-empty .eyebrow { color:var(--muted2); }
 .kt-empty .prose { max-width:46ch; margin:0; }
 .kt-empty .pill { margin-top:6px; }
 /* Laddar-skelett: orderkortens siluett med stilla skimmer */
