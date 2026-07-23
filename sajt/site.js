@@ -402,10 +402,10 @@
       var antalTryck = isLive() ? live.designs.length : BIBLIOTEK.length;
       var antalOfferter = isLive() ? live.quotes.length : DEMO_QUOTES.length;
       // C-dashboard: handlingsbara summeringsrutor högst upp (ersätter botten-stats).
-      var tiles = '<div class="kt-tiles">'
-        + '<div class="kt-tile"><div class="tn">' + pagaende.length + '</div><div class="tk">Pågående ordrar</div></div>'
-        + '<div class="kt-tile"><div class="tn">' + antalOfferter + '</div><div class="tk">Öppna offerter</div></div>'
-        + '<div class="kt-tile"><div class="tn">' + antalTryck + '</div><div class="tk">Sparade tryck</div></div>'
+      var tiles = '<div class="kt-stats">'
+        + '<div class="kt-stat"><div class="big">' + pagaende.length + '</div><div class="cap">Pågående ordrar</div></div>'
+        + '<div class="kt-stat"><div class="big">' + antalOfferter + '</div><div class="cap">Öppna offerter</div></div>'
+        + '<div class="kt-stat"><div class="big">' + antalTryck + '</div><div class="cap">Sparade tryck</div></div>'
         + '</div>';
       return '<div class="kt-in">' + tiles + '</div>'
         + '<div class="kt-in" style="margin-top:30px">' + secHead('Pågående just nu', pagaende.length > 1 ? '<span class="kt-seccount">' + pagaende.length + ' ordrar</span>' : '') + pag + '</div>'
