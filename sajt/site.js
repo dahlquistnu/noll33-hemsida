@@ -1749,7 +1749,7 @@
               // Äkta roll ur user_roles (RLS: användaren läser sin egen roll) —
               // email-agnostiskt, ingen hårdkodad admin-lista. Admin → printrstudio
               // (huset bor där); kund → sajtportalen (interim-B). Fail-safe: kund.
-              var uid = r.d.user.id, token = r.d.access_token;
+              var uid = r.d.user.id, token = r.d.access_token, refresh = r.d.refresh_token;
               var routeKund = function () { KONTO.login('kund', email); };
               if (!token) { routeKund(); return; }
               fetch(PRNTR_SUPABASE + '/rest/v1/user_roles?select=role&user_id=eq.' + encodeURIComponent(uid), {
@@ -1758,7 +1758,18 @@
                 .then(function (rr) { return rr.ok ? rr.json() : []; })
                 .then(function (roles) {
                   if (Array.isArray(roles) && roles.some(function (x) { return x.role === 'admin'; })) {
-                    window.location.href = PRNTR_STUDIO + '/logga-in';
+                    // Interim-SSO (väg 3): sajten har redan sessionen — skicka den
+                    // till printrstudio via URL-fragment så admin slipper logga in
+                    // en andra gång. Fragmentet (#) skickas aldrig till servern;
+                    // printrstudio kör setSession och rensar URL:en direkt. Ersätts
+                    // av delad-cookie-SSO vid domänflytten. Fail-safe utan refresh:
+                    // vanligt admin-formulär på printrstudio.
+                    if (token && refresh) {
+                      var sso = encodeURIComponent(JSON.stringify({ access_token: token, refresh_token: refresh }));
+                      window.location.href = PRNTR_STUDIO + '/logga-in#sso=' + sso;
+                    } else {
+                      window.location.href = PRNTR_STUDIO + '/logga-in';
+                    }
                   } else { routeKund(); }
                 })
                 .catch(routeKund);
