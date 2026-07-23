@@ -242,14 +242,14 @@
 
     function updateHeader() {
       document.querySelectorAll('[data-nav="login"], [data-nav="konto"], .acct-pill').forEach(function (a) {
-        var isPill = a.classList.contains('acct-pill');
+        // Pillen är en ren länk: inloggad → till kontot, utloggad → till login.
+        // Ingen dropdown i headern — utloggning sker inne på kontot.
         if (loggedIn()) {
-          var label = st.role === 'admin' ? 'Admin' : 'Mitt konto';
-          if (isPill) { a.removeAttribute('data-nav'); a.setAttribute('data-acct-toggle', '1'); a.innerHTML = esc(label) + ' <span class="acct-chev" aria-hidden="true">▾</span>'; }
-          else { a.dataset.nav = 'konto'; a.textContent = label; }
+          a.dataset.nav = 'konto';
+          a.textContent = st.role === 'admin' ? 'Admin' : 'Mitt konto';
         } else {
-          if (isPill) { a.removeAttribute('data-acct-toggle'); var _hm = a.parentElement && a.parentElement.querySelector('.acct-menu'); if (_hm) _hm.hidden = true; }
-          a.dataset.nav = 'login'; a.textContent = 'Logga in';
+          a.dataset.nav = 'login';
+          a.textContent = 'Logga in';
         }
       });
       // Portal-läge: sajtens skal byter skepnad (Ansökan döljs, guldlinje under headern).
@@ -577,6 +577,7 @@
       root.innerHTML = adminBar
         + '<div class="kt-head"><div><div class="eyebrow kt-eyebrow" style="margin-bottom:14px">' + (isAdminHome ? 'Noll33 intern' : 'Återförsäljarportal') + '</div>'
         + '<h1 class="h-statement">' + title + '</h1><p class="kt-sub">' + sub + '</p></div>'
+        + '<button class="kt-logout" data-kt-logout="1">Logga ut</button>'
         + '</div>'
         + tabs() + '<div class="kt-body">' + body + '</div>'
         // Skiss-notisen gäller bara exempeldata — riktigt inloggade ser sin riktiga data.
@@ -590,16 +591,6 @@
       document.addEventListener('click', function (e) {
         var b;
         if ((b = e.target.closest('[data-demo-login]'))) { e.preventDefault(); login(b.getAttribute('data-demo-login')); return; }
-        // Kontomeny (dropdown i den delade headern)
-        if (e.target.closest('[data-acct-toggle]')) { e.preventDefault(); var _ap = e.target.closest('[data-acct]'); var _am = _ap && _ap.querySelector('.acct-menu'); if (_am) _am.hidden = !_am.hidden; return; }
-        if (e.target.closest('.acct-menu')) {
-          var _ag = e.target.closest('[data-acct-go]');
-          document.querySelectorAll('.acct-menu').forEach(function (m) { m.hidden = true; });
-          if (_ag) { e.preventDefault(); go(_ag.getAttribute('data-acct-go')); return; }
-          if (e.target.closest('[data-acct-logout]')) { e.preventDefault(); logout(); return; }
-        } else if (!e.target.closest('[data-acct]')) {
-          document.querySelectorAll('.acct-menu').forEach(function (m) { m.hidden = true; });
-        }
         if ((b = e.target.closest('[data-kt-tab]'))) { e.preventDefault(); st.tab = b.getAttribute('data-kt-tab'); save(); render(); return; }
         if ((b = e.target.closest('[data-kt-viewas]'))) { e.preventDefault(); st.viewAs = b.getAttribute('data-kt-viewas'); st.tab = 'oversikt'; save(); render(); window.scrollTo(0, 0); return; }
         if ((b = e.target.closest('[data-kt-back]'))) { e.preventDefault(); st.viewAs = null; st.tab = 'adm-kunder'; save(); render(); return; }

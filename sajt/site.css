@@ -830,13 +830,6 @@ html[data-portal] .kt-head .h-statement { font-size:clamp(26px,2.8vw,32px); }
 .kt-even { grid-template-columns:1fr 1fr; align-items:stretch; }
 .kt-even > .kt-panel { height:100%; border:1px solid var(--line); border-radius:2px; }
 /* Kontomeny (dropdown i headern) */
-.acct { position:relative; }
-.acct-chev { font-size:10px; color:var(--muted2); margin-left:1px; }
-.acct-menu { position:absolute; right:0; top:calc(100% + 8px); background:#FFFFFF; border:1px solid var(--line); border-radius:2px; min-width:196px; padding:6px; box-shadow:0 12px 34px rgba(20,24,26,.10); z-index:200; }
-.acct-menu[hidden] { display:none; }
-.acct-menu > button, .acct-menu > a { display:block; width:100%; text-align:left; background:none; border:none; cursor:pointer; font:400 14px/1.1 var(--font); color:var(--body); padding:9px 11px; border-radius:2px; text-decoration:none; }
-.acct-menu > button:hover, .acct-menu > a:hover { background:var(--panel); color:var(--ink); }
-.acct-sep { height:1px; background:var(--line2); margin:5px 0; }
 .kt-quick { display:flex; flex-direction:column; gap:10px; }
 .kt-quick .pill { justify-content:center; cursor:pointer; }
 .kt-kv { display:flex; justify-content:space-between; gap:14px; padding:12px 0; border-bottom:1px solid var(--line2); font-size:14px; color:var(--body); }
