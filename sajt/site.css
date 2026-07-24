@@ -139,14 +139,10 @@ h1, h2, h3, p { margin: 0; }
 .editorial { display: flex; flex-direction: column; gap: clamp(110px, 12vw, 200px); overflow-x: clip;
   padding: clamp(80px, 9vw, 140px) var(--gutter) clamp(64px, 7vw, 120px); max-width: var(--maxw); margin: 0 auto; }
 .ed-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch; }
-.ed-media { position: relative; min-height: clamp(300px, 34vw, 480px); border-radius: 2px; overflow: hidden; background: #1B1B1F; }
+/* Ljus bakgrund (ej svart): om slide-animationens transform lämnar en hårfin
+   klipp-kant syns den ljusa nyansen knappt mot videornas ljusa kanter. */
+.ed-media { position: relative; min-height: clamp(300px, 34vw, 480px); border-radius: 2px; overflow: hidden; background: #EBE7DC; }
 .ed-media img, .ed-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-/* object-fit:cover på <video> lämnar en hårfin svart subpixel-kant (höger/ned) när
-   rutan renderas — över-täck minimalt så kanten aldrig syns. Behållaren har overflow:hidden. */
-/* Videorna är skärminspelningar av studion — appens egen kant (höger/ned) är
-   INBAKAD i filen. Beskär bort den: skala upp ~4% så kanten hamnar utanför
-   behållaren; overflow:hidden klipper. (Subpixel-CSS hjälper inte mot inbakat.) */
-.ed-media video { transform: scale(1.04); transform-origin: center; }
 .ed-text { max-width: 56ch; display: flex; flex-direction: column; }
 .ed-text.pad-l { padding-left: clamp(36px, 5vw, 80px); }
 .ed-text.pad-r { max-width: 56ch; margin-left: auto; padding-right: clamp(36px, 5vw, 80px); }
@@ -276,7 +272,10 @@ h1, h2, h3, p { margin: 0; }
 .ed-slide { opacity: .34; transition: opacity 1s ease, transform 1.15s cubic-bezier(.2,.72,.24,1); }
 .ed-slide.ed-left  { transform: translateX(-100px); }
 .ed-slide.ed-right { transform: translateX(100px); }
-.ed-slide.ed-in { opacity: 1; transform: translate(0,0); }
+/* transform: none (ej translate(0,0)) EFTER slide-in — annars kvarstår ett
+   kompositionslager vars overflow-klipp subpixel-rundar och lämnar en 1px kant
+   på videon. none tar bort lagret helt; slide-in-animationen behålls. */
+.ed-slide.ed-in { opacity: 1; transform: none; }
 
 /* Bild-reveal (fem varianter, roteras per sektion av _moInit) */
 [data-mo-img] { overflow: hidden !important; }
