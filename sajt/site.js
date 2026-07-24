@@ -364,10 +364,13 @@
       if (o.status === 0) msg = 'Vi går igenom er order och förbereder korrektur.';
       else if (o.status === 1) {
         msg = 'Korrektur väntar på ert godkännande.';
-        // Riktiga godkännanden sker via korrektur-mejlet — knappen driver bara demot.
-        act = o.live
-          ? '<a class="pill pill-ink" href="mailto:info@noll33.se?subject=' + encodeURIComponent('Korrektur ' + o.nr) + '">Svara på korrektur</a>'
-          : '<button class="pill pill-ink" data-kt-korrektur="' + esc(o.nr) + '">Godkänn korrektur</button>';
+        // Har ordern korrektur-data (demo eller live-seed via pdf_config.portal) →
+        // öppna korrektur-modalen. Live-order utan korrektur-data → mejla in svaret.
+        act = o.korrektur
+          ? '<button class="pill pill-ink" data-kt-korrektur="' + esc(o.nr) + '">Godkänn korrektur</button>'
+          : (o.live
+            ? '<a class="pill pill-ink" href="mailto:info@noll33.se?subject=' + encodeURIComponent('Korrektur ' + o.nr) + '">Svara på korrektur</a>'
+            : '<button class="pill pill-ink" data-kt-korrektur="' + esc(o.nr) + '">Godkänn korrektur</button>');
       }
       else if (o.status === 2) msg = 'I produktion. Beräknat klart inom 5-7 arbetsdagar.';
       else msg = 'Skickad. Följ paketet via spårningsnumret nedan.';
