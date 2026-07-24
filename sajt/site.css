@@ -43,8 +43,10 @@ h1, h2, h3, p { margin: 0; }
 .h-statement { font-weight: 600; font-size: clamp(24px, 3vw, 40px); line-height: 1.05; letter-spacing: -.025em; color: var(--ink); }
 .h-sub { font-weight: 600; font-size: clamp(20px, 2.2vw, 28px); line-height: 1.1; letter-spacing: -.02em; color: var(--ink); }
 .h-mini { font-weight: 600; font-size: clamp(17px, 1.5vw, 22px); line-height: 1.12; letter-spacing: -.02em; color: var(--ink); }
-.lead { font-weight: 400; font-size: 17px; line-height: 1.65; color: var(--body); max-width: 64ch; }
-.prose { font-weight: 400; font-size: 17px; line-height: 1.62; color: var(--body); max-width: 60ch; }
+/* Styckesbredd (radlängd) = EN regel för hela sajten: kroppstext bryts vid
+   samma mått överallt (matchar .ed-text/.split2 .col-text = 56ch). */
+.lead { font-weight: 400; font-size: 17px; line-height: 1.65; color: var(--body); max-width: 56ch; }
+.prose { font-weight: 400; font-size: 17px; line-height: 1.62; color: var(--body); max-width: 56ch; }
 .gold-link { font-weight: 600; font-size: 15px; letter-spacing: .02em; color: var(--ink); border-bottom: 1.5px solid var(--gold); padding-bottom: 3px; display: inline-block; }
 /* Certifieringsmärkning: tunn bordertagg i ink (var tidigare tre guldord → "gult tema") */
 .cert-tag { display: inline-block; border: 1px solid var(--line2); border-radius: 2px; padding: 6px 13px; font-weight: 600; font-size: 12.5px; letter-spacing: .04em; color: var(--ink); }
