@@ -589,7 +589,9 @@
           + '</div>' : '';
       var dl = c.img ? '<a class="kt-libdl" href="' + c.img + '" download="' + esc(c.namn || 'tryck') + '" title="Ladda ner filen" aria-label="Ladda ner filen"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>' : '';
       var again = c.order ? '<button class="pill pill-ink kt-libagain" data-kt-again="' + esc(c.order) + '">Beställ igen</button>' : '';
-      var studio = '<a class="kt-libstudio" href="' + (c.studioHref || (PRNTR_STUDIO + '/?from=noll33')) + '" target="_blank" rel="noopener">Öppna i studion →</a>';
+      // "Öppna i studion" är interim avstängd tills den kan öppna RÄTT plagg med
+      // loggan (inte bara loggan). Visas som "kommer snart" tills dess.
+      var studio = '<span class="kt-libstudio" style="cursor:default;pointer-events:none;border-bottom-color:transparent">Öppna i studion — kommer snart</span>';
       return '<div class="kt-libitem">'
         + '<div class="kt-libimg"><img src="' + c.img + '" alt="' + esc(c.namn) + '">' + dl + '</div>'
         + '<div class="kt-libbody"><strong class="kt-libname">' + esc(c.namn) + '</strong>'
@@ -684,8 +686,12 @@
       var isAdminHome = st.role === 'admin' && !st.viewAs;
       // Kund möts av en hälsning istället för generiskt "Mitt konto" — portalen ska
       // kännas personlig direkt vid inloggning. Admins visa-som-kund behåller neutralt.
+      // Live: härled förnamn ur e-posten (Anna är bara demo-kundens namn). Demo: kontaktnamn.
+      var kundNamn = isLive()
+        ? (function () { var n = (st.email || '').split('@')[0].replace(/[._-]?demo$/i, '').split(/[._-]/)[0]; return n ? n.charAt(0).toUpperCase() + n.slice(1) : ''; })()
+        : (k.kontakt ? k.kontakt.split(' ')[0] : '');
       var title = isAdminHome ? 'Admin'
-        : (st.role === 'kund' ? halsning() + (k.kontakt ? ', ' + esc(k.kontakt.split(' ')[0]) : '') : 'Mitt konto');
+        : (st.role === 'kund' ? halsning() + (kundNamn ? ', ' + esc(kundNamn) : '') : 'Mitt konto');
       var sub = isAdminHome ? 'Kunder, prismodeller och förfrågningar.'
         : (isLive() ? esc(st.email) : esc(k.foretag) + ' · ' + esc(k.kontakt));
       var body = '';
