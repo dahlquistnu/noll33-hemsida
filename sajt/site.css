@@ -146,6 +146,10 @@ h1, h2, h3, p { margin: 0; }
    top:0) så bråkdels-gapet alltid fylls; overflow:hidden klipper överskottet.
    Standardteknik för subpixel-fill-gap, inte en crop av bildinnehållet. */
 .ed-media video { height: calc(100% + 2px); }
+/* Scopad hack (endast studio-videon på startsidan): dess nederkant motstod alla
+   rena fixar (2px över-täck räckte ej just här). Täckremsa i sidbakgrunden över
+   nedersta 3px. Bara detta element — övriga videor är rent lösta ovan. */
+.ed-studio-fix::after { content: ''; position: absolute; right: 0; bottom: 0; left: 0; height: 3px; background: var(--bg); pointer-events: none; z-index: 2; }
 .ed-text { max-width: 56ch; display: flex; flex-direction: column; }
 .ed-text.pad-l { padding-left: clamp(36px, 5vw, 80px); }
 .ed-text.pad-r { max-width: 56ch; margin-left: auto; padding-right: clamp(36px, 5vw, 80px); }
