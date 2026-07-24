@@ -999,7 +999,7 @@ html[data-portal] [data-nav="ansok"] { display: none !important; }
 /* Korrektur-modal */
 .kv-overlay { position:fixed; inset:0; z-index:400; background:rgba(20,24,26,.5); display:flex; align-items:flex-start; justify-content:center; padding:clamp(16px,5vh,60px) 16px; overflow-y:auto; animation:kvFade .2s ease; }
 @keyframes kvFade { from { opacity:0; } to { opacity:1; } }
-.kv-modal { background:var(--bg); border:1px solid var(--line2); width:100%; max-width:720px; box-shadow:0 24px 60px rgba(20,24,26,.22); }
+.kv-modal { background:var(--bg); border:1px solid var(--line2); width:100%; max-width:1080px; box-shadow:0 24px 60px rgba(20,24,26,.22); }
 .kv-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:17px 22px; border-bottom:1px solid var(--line2); }
 .kv-eyeb { font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted2); margin:0 0 4px; }
 .kv-h { font-size:17px; font-weight:600; color:var(--ink); margin:0; }
