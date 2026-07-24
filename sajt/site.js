@@ -447,7 +447,7 @@
         actions = '<div class="kv-changeform"><span class="kv-lbl">Vad behöver ändras?</span>'
           + '<textarea class="kv-ta" id="ktChangeMsg" rows="3" placeholder="Beskriv vad som är fel — stavning, placering, färg, storlek …"></textarea>'
           + '<div class="kv-changebtns"><button class="kv-approve" data-kt-change-send="' + esc(o.nr) + '">Skicka till Mats</button>'
-          + '<a class="kv-change" href="' + PRNTR_STUDIO + '/?from=noll33&order=' + encodeURIComponent(o.nr) + '" target="_blank" rel="noopener">Justera i studion →</a></div>'
+          + '<span class="kv-change" style="cursor:default;pointer-events:none;opacity:.5">Justera i studion — kommer snart</span></div>'
           + '<button class="kv-textbtn" data-kt-change-cancel="1">Avbryt</button></div>';
       } else {
         actions = '<div class="kv-warn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true"><path d="M12 9v4m0 4h.01M10.3 4.3 2.6 18a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 4.3a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>'
@@ -569,7 +569,7 @@
       var q = quotesData();
       if (!q.length) return emptyState('Inga offerter ännu',
         'Designa i studion och begär offert — era offerter samlas här med status och pris.',
-        '<a href="#" class="pill pill-ink" data-nav="apply">Designa i studion</a>');
+        '<span class="pill pill-ink" style="cursor:default;pointer-events:none;opacity:.5">Designa i studion — kommer snart</span>');
       var cards = q.map(function (o) {
         // Avgjorda offerter (accepterad/avvisad) dämpas som avslutade ordrar; öppna är guld.
         var cls = (o.status === 'accepted' || o.status === 'rejected') ? 'done' : 'act';
@@ -622,7 +622,7 @@
       if (isLive()) {
         if (!live.designs.length) return emptyState('Inga sparade tryck ännu',
           'Spara en design i studion så dyker den upp här — redo att beställa vid nästa order.',
-          '<a href="#" class="pill pill-ink" data-nav="apply">Öppna designstudion</a>');
+          '<span class="pill pill-ink" style="cursor:default;pointer-events:none;opacity:.5">Öppna designstudion — kommer snart</span>');
         n = live.designs.length;
         lead = LEAD;
         grid = live.designs.map(function (d) {
@@ -1367,10 +1367,11 @@
     function renderNavBtns() {
       var present = {}; data.P.forEach(function (p) { if (p.family === 'Kläder') present[p.gender] = 1; });
       var keys = GORDER.filter(function (g) { return present[g]; }).concat(['Sortiment']);
-      return keys.map(function (k) {
+      var mainBtns = keys.map(function (k) {
         var open = st.menu === k;
         return '<button class="k-navbtn' + (open ? ' is-open' : '') + '" data-k="toggleMenu" data-menu="' + esc(k) + '" aria-haspopup="true" aria-expanded="' + (open ? 'true' : 'false') + '"><span class="k-navlbl">' + esc(k) + '</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></button>';
       }).join('');
+      return mainBtns + '<button class="k-navbtn' + (st.brandsIndex ? ' is-open' : '') + '" data-k="brandIndex"><span class="k-navlbl">Varumärken</span></button>';
     }
     function renderFly() {
       if (!st.menu) return '';
@@ -1379,7 +1380,6 @@
         // Ingen rubrik i flyouten — guld-understrykningen på navknappen pekar redan ut valet.
         inner = '<div class="k-fly-list">' +
           data.CATS.map(function (c) { return '<button class="k-fly-link" data-k="flyCat" data-cat="' + esc(c.name) + '"><span class="k-fly-lbl">' + esc(c.name) + '</span></button>'; }).join('') + '</div>' +
-          '<button class="k-fly-all" data-k="brandIndex">Varumärken</button>' +
           '<button class="k-fly-all" data-k="flyReset">Visa hela sortimentet</button>';
       } else {
         var mg = st.menu, subc = {};

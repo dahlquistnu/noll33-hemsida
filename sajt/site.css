@@ -1105,7 +1105,7 @@ html[data-portal] [data-nav="ansok"] { display: none !important; }
 .k-brandcard-hook { font-size:13px; line-height:1.45; color:var(--ink); }
 .k-brandcard-count { font-size:12px; color:var(--k-muted2,#6A6F69); }
 
-.k-brandhero { display:flex; gap:clamp(18px,2.4vw,36px); align-items:flex-start; border-bottom:1px solid var(--k-line,#E3DECF); padding-bottom:22px; margin-bottom:24px; }
+.k-brandhero { display:flex; gap:clamp(18px,2.4vw,36px); align-items:flex-start; border-bottom:1px solid var(--k-line,#E3DECF); margin-top:clamp(20px,3vw,36px); padding-bottom:22px; margin-bottom:24px; }
 .k-brandhero-logo { flex:0 0 auto; display:flex; align-items:center; }
 .k-brandhero-body { max-width:70ch; }
 .k-brandhero-text { font-size:14.5px; line-height:1.6; color:var(--ink); margin:0 0 10px; }
