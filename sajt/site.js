@@ -421,7 +421,12 @@
       var pant = (k.pantone || []).map(function (p) {
         return '<span class="kv-sw"><span class="kv-dot" style="background:' + esc(p.hex) + '"></span>' + esc(p.n) + '</span>';
       }).join('');
-      var proofBox = '<div class="kv-shirt">' + proofSvg(k, view) + '</div>'
+      // Båda vyerna renderas en gång; Fram/Detalj togglar bara synlighet (ingen
+      // re-render → sidan laddas inte om och packshoten flimrar inte).
+      var proofBox = '<div class="kv-shirt">'
+        + '<div data-proof="fram"' + (view === 'fram' ? '' : ' hidden') + ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">' + proofSvg(k, 'fram') + '</div>'
+        + '<div data-proof="detalj"' + (view === 'detalj' ? '' : ' hidden') + ' style="width:100%">' + proofSvg(k, 'detalj') + '</div>'
+        + '</div>'
         + '<div class="kv-views"><button class="kv-vtab' + (view === 'fram' ? ' on' : '') + '" data-kt-proofview="fram">Fram</button>'
         + '<button class="kv-vtab' + (view === 'detalj' ? ' on' : '') + '" data-kt-proofview="detalj">Detalj</button></div>'
         + '<a class="kv-dl" href="#" onclick="return false"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>Ladda ner korrektur (PDF)</a>';
@@ -748,7 +753,16 @@
         if ((b = e.target.closest('[data-kt-logout]'))) { e.preventDefault(); logout(); return; }
         if ((b = e.target.closest('[data-kt-retry]'))) { e.preventDefault(); live.loaded = false; live.error = false; loadLive(); return; }
         if ((b = e.target.closest('[data-kt-korrektur]'))) { e.preventDefault(); ktModal = { nr: b.getAttribute('data-kt-korrektur'), mode: 'view', view: 'fram' }; render(); return; }
-        if ((b = e.target.closest('[data-kt-proofview]'))) { e.preventDefault(); ktModal.view = b.getAttribute('data-kt-proofview'); render(); return; }
+        if ((b = e.target.closest('[data-kt-proofview]'))) {
+          e.preventDefault();
+          var pv = b.getAttribute('data-kt-proofview'); ktModal.view = pv;
+          var pm = b.closest('.kv-modal');
+          if (pm) {
+            pm.querySelectorAll('[data-proof]').forEach(function (el) { el.hidden = el.getAttribute('data-proof') !== pv; });
+            pm.querySelectorAll('.kv-vtab').forEach(function (el) { el.classList.toggle('on', el.getAttribute('data-kt-proofview') === pv); });
+          }
+          return;
+        }
         if (e.target.closest('[data-kt-change]')) { e.preventDefault(); ktModal.mode = 'change'; render(); return; }
         if (e.target.closest('[data-kt-change-cancel]')) { e.preventDefault(); ktModal.mode = 'view'; render(); return; }
         if (e.target.closest('[data-kt-change-send]')) { e.preventDefault(); ktModal.mode = 'sent'; render(); return; }
@@ -1498,7 +1512,7 @@
         var stockNote = (function () { if (!col.stock) return ''; var af = false, ao = false; sizesArr.forEach(function (sz) { var l = col.stock[sz]; if (l === 'order') ao = true; else if (l !== 'out') af = true; }); if (!af && !ao) return ''; return (af ? 'I lager hos leverantör — leverans normalt 2–4 dagar. ' : '') + (ao ? '* Beställningsvara — längre leveranstid, bekräftas i offerten.' : ''); })();
         sizesHtml = '<div class="k-dlabel">Storlekar</div><div class="k-dsizes">' + chips + '</div>' + (stockNote ? '<div class="k-stocknote">' + esc(stockNote) + '</div>' : '');
       }
-      var specOrder = [['material', 'Material'], ['vikt', 'Vikt'], ['passform', 'Passform'], ['hals', 'Hals'], ['stangning', 'Stängning'], ['etikett', 'Etikett'], ['vattenpelare', 'Vattenpelare'], ['ursprung', 'Ursprung'], ['tryckyta', 'Tryckyta']];
+      var specOrder = [['material', 'Material'], ['tygvikt', 'Tygvikt'], ['vikt', 'Plaggvikt'], ['passform', 'Passform'], ['hals', 'Hals'], ['stangning', 'Stängning'], ['etikett', 'Etikett'], ['vattenpelare', 'Vattenpelare'], ['ursprung', 'Ursprung'], ['tryckyta', 'Tryckyta']];
       var specRows = []; specOrder.forEach(function (r) { var v = p.specs && p.specs[r[0]]; if (v) specRows.push('<tr><td>' + esc(r[1]) + '</td><td>' + esc(v) + '</td></tr>'); });
       var certs = p.certs || [], datablad = (p.specs && p.specs.datablad) || '';
       var hasSpecs = specRows.length || certs.length || datablad || p.utgaende;
