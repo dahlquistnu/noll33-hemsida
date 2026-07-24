@@ -287,16 +287,22 @@
     // PRNTR:s orderstatus → portalens fem steg (Mottagen Korrektur Produktion Skickad Levererad)
     var STATUS_STEG = { 'new': 0, 'artwork_check': 1, 'stock_confirmed': 1, 'confirmed': 1, 'in_production': 2, 'printing': 2, 'packing': 2, 'shipped': 3, 'delivered': 4 };
     function mapOrder(o) {
+      // Plagg + tryck + korrektur bärs i pdf_config: plagg i product.type, resten
+      // i ett kundvänt portal-objekt (metod, spårning, korrektur). Faller tillbaka
+      // på orderns färg/antal + generiskt namn för äldre ordrar utan de fälten.
+      var cfg = o.pdf_config || {};
+      var p = cfg.portal || {};
       return {
         nr: '#' + o.order_number,
         datum: String(o.created_at || '').slice(0, 10),
         status: Object.prototype.hasOwnProperty.call(STATUS_STEG, o.status) ? STATUS_STEG[o.status] : 0,
         cancelled: o.status === 'cancelled',
         summa: Number(o.total_price || 0).toLocaleString('sv-SE') + ' kr',
-        track: null,
+        track: p.track || null,
         live: true,
         raw: o,
-        rader: [{ plagg: 'T-shirt', farg: o.color || '—', antal: o.quantity || 0, tryck: '—' }]
+        rader: [{ plagg: (cfg.product && cfg.product.type) || 'Plagg', farg: o.color || '—', antal: o.quantity || 0, tryck: p.method || '—' }],
+        korrektur: p.korrektur || null
       };
     }
     function loadLive() {
