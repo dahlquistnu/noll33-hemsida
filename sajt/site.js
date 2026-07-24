@@ -208,7 +208,13 @@
       { nr: 'N33-2398', datum: '2026-06-12', status: 2, summa: '31 250 kr', track: null, rader: [
         { plagg: 'Hoodie Heavy 350g', farg: 'Svart', antal: 85, tryck: 'Brodyr · bröst + DTF rygg' } ] },
       { nr: 'N33-2371', datum: '2026-05-28', status: 1, summa: '9 640 kr', track: null, rader: [
-        { plagg: 'Piké Classic', farg: 'Kaki', antal: 60, tryck: 'Brodyr · bröst vänster' } ] },
+        { plagg: 'Piké Classic', farg: 'Kaki', antal: 60, tryck: 'Brodyr · bröst vänster' } ],
+        korrektur: {
+          garmentHex: '#7A6A48', placering: 'Vänster bröst', bredd: '8', hojd: '4,5',
+          pantone: [{ n: 'PMS 872 C', hex: '#B8860B' }, { n: 'PMS Black 6 C', hex: '#14181A' }],
+          storlekar: 'S ·12   M ·20   L ·18   XL ·10', leverans: '12–14 aug 2026', pris: '9 640 kr',
+          matsMsg: 'Loggan sitter på vänster bröst, 8 × 4,5 cm. Kolla stavningen i sloganen och att kaki-nyansen stämmer mot er förra order.',
+          godkand: null } },
       { nr: 'N33-2344', datum: '2025-11-20', status: 4, summa: '22 400 kr', track: 'PN10331877SE', rader: [
         { plagg: 'Arbetsjacka Pro', farg: 'Antracit', antal: 45, tryck: 'Screentransfer · rygg + vävt märke ärm' },
         { plagg: 'Keps 5-panel', farg: 'Svart', antal: 100, tryck: 'Brodyr · front' } ] }
@@ -355,7 +361,7 @@
         // Riktiga godkännanden sker via korrektur-mejlet — knappen driver bara demot.
         act = o.live
           ? '<a class="pill pill-ink" href="mailto:info@noll33.se?subject=' + encodeURIComponent('Korrektur ' + o.nr) + '">Svara på korrektur</a>'
-          : '<button class="pill pill-ink" data-kt-approve="' + esc(o.nr) + '">Godkänn korrektur</button>';
+          : '<button class="pill pill-ink" data-kt-korrektur="' + esc(o.nr) + '">Godkänn korrektur</button>';
       }
       else if (o.status === 2) msg = 'I produktion. Beräknat klart inom 5-7 arbetsdagar.';
       else msg = 'Skickad. Följ paketet via spårningsnumret nedan.';
@@ -370,6 +376,80 @@
         + '<table class="kt-table"><thead><tr><th>Plagg</th><th>Färg</th><th>Antal</th><th>Förädling</th></tr></thead><tbody>' + rows + '</tbody></table>'
         + '<div class="kt-orderfoot"><span>' + (o.track ? 'Spårning: <a class="gold-link" style="font-size:13px" href="#" onclick="return false">' + esc(o.track) + '</a>' : '&nbsp;') + '</span>'
         + '<span class="kt-sum">' + esc(o.summa) + '</span><button class="pill pill-ink kt-again" data-kt-again="' + esc(o.nr) + '">Beställ igen</button></div></div>';
+    }
+
+    /* Korrektur-godkännande. Modalen öppnas från "Godkänn korrektur" och visar
+       proof (Fram/Detalj), specar, Mats meddelande och åtgärder. Godkännande
+       låser ordern (status → produktion); "begär ändring" skickar en kommentar
+       och länkar till studion för justering. State hålls modul-lokalt. */
+    var ktModal = { nr: null, mode: 'view', view: 'fram' };
+    function orderByNr(nr) { return ordersData().filter(function (x) { return x.nr === nr; })[0]; }
+    // Proof: plagg-silhuett med trycket (Fram) resp. närbild med mått (Detalj).
+    // Demo ritar SVG; live kopplas senare till PRNTR-canvasens packshot.
+    function proofSvg(k, view) {
+      if (view === 'detalj') {
+        return '<svg viewBox="0 0 210 200" width="88%" aria-hidden="true">'
+          + '<rect x="34" y="46" width="140" height="78" fill="#14181A"></rect>'
+          + '<text x="104" y="92" font-size="20" fill="#B8860B" text-anchor="middle" font-weight="700" letter-spacing="1">JUST GO</text>'
+          + '<line x1="34" y1="140" x2="174" y2="140" stroke="#9A6E08" stroke-width="1.4"></line><line x1="34" y1="136" x2="34" y2="144" stroke="#9A6E08" stroke-width="1.4"></line><line x1="174" y1="136" x2="174" y2="144" stroke="#9A6E08" stroke-width="1.4"></line>'
+          + '<text x="104" y="156" font-size="11" fill="#6B531A" text-anchor="middle">' + esc(k.bredd) + ' cm</text>'
+          + '<line x1="186" y1="46" x2="186" y2="124" stroke="#9A6E08" stroke-width="1.4"></line><line x1="182" y1="46" x2="190" y2="46" stroke="#9A6E08" stroke-width="1.4"></line><line x1="182" y1="124" x2="190" y2="124" stroke="#9A6E08" stroke-width="1.4"></line>'
+          + '<text x="200" y="88" font-size="11" fill="#6B531A" text-anchor="middle" transform="rotate(90 200 88)">' + esc(k.hojd) + ' cm</text>'
+          + '</svg>';
+      }
+      return '<svg viewBox="0 0 140 150" width="72%" aria-hidden="true">'
+        + '<path d="M40 26 L54 20 Q70 30 86 20 L100 26 L112 42 L98 54 L96 126 Q70 132 44 126 L42 54 L28 42 Z" fill="' + (k.garmentHex || '#7A6A48') + '" stroke="#5F5333" stroke-width="1.5"></path>'
+        + '<rect x="58" y="52" width="24" height="14" fill="#14181A"></rect>'
+        + '<text x="70" y="61.5" font-size="6.5" fill="#B8860B" text-anchor="middle" font-weight="700">JUST GO</text>'
+        + '</svg>';
+    }
+    function korrekturModal(o) {
+      if (!o || !o.korrektur) return '';
+      var k = o.korrektur, view = ktModal.view || 'fram';
+      var check = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+      var pant = (k.pantone || []).map(function (p) {
+        return '<span class="kv-sw"><span class="kv-dot" style="background:' + esc(p.hex) + '"></span>' + esc(p.n) + '</span>';
+      }).join('');
+      var proofBox = '<div class="kv-shirt">' + proofSvg(k, view) + '</div>'
+        + '<div class="kv-views"><button class="kv-vtab' + (view === 'fram' ? ' on' : '') + '" data-kt-proofview="fram">Fram</button>'
+        + '<button class="kv-vtab' + (view === 'detalj' ? ' on' : '') + '" data-kt-proofview="detalj">Detalj</button></div>'
+        + '<a class="kv-dl" href="#" onclick="return false"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>Ladda ner korrektur (PDF)</a>';
+      var actions;
+      if (k.godkand) {
+        actions = '<div class="kv-done">' + check + '<span>Godkänt av ' + esc(k.godkand.namn) + ' · ' + esc(k.godkand.datum) + '</span></div>';
+      } else if (ktModal.mode === 'sent') {
+        actions = '<div class="kv-done">' + check + '<span>Skickat till Mats. Vi återkommer med ett nytt korrektur.</span></div>';
+      } else if (ktModal.mode === 'change') {
+        actions = '<div class="kv-changeform"><span class="kv-lbl">Vad behöver ändras?</span>'
+          + '<textarea class="kv-ta" id="ktChangeMsg" rows="3" placeholder="Beskriv vad som är fel — stavning, placering, färg, storlek …"></textarea>'
+          + '<div class="kv-changebtns"><button class="kv-approve" data-kt-change-send="' + esc(o.nr) + '">Skicka till Mats</button>'
+          + '<a class="kv-change" href="' + PRNTR_STUDIO + '/?from=noll33&order=' + encodeURIComponent(o.nr) + '" target="_blank" rel="noopener">Justera i studion →</a></div>'
+          + '<button class="kv-textbtn" data-kt-change-cancel="1">Avbryt</button></div>';
+      } else {
+        actions = '<div class="kv-warn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true"><path d="M12 9v4m0 4h.01M10.3 4.3 2.6 18a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 4.3a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>'
+          + '<span>Granska stavning, färger och placering noga. När ni godkänner går ordern i produktion och kan inte ändras.</span></div>'
+          + '<div class="kv-actions"><button class="kv-approve" data-kt-approve="' + esc(o.nr) + '">Godkänn korrektur</button>'
+          + '<button class="kv-change" data-kt-change="1">Något är fel — begär ändring</button></div>';
+      }
+      return '<div class="kv-overlay" data-kt-modal-close="1"><div class="kv-modal" role="dialog" aria-modal="true" aria-label="Korrektur ' + esc(o.nr) + '">'
+        + '<div class="kv-top"><div><p class="kv-eyeb">Korrektur · ' + esc(o.nr) + '</p><h2 class="kv-h">Godkänn innan produktion</h2></div>'
+        + '<div class="kv-topright"><span class="kv-status' + (k.godkand ? ' ok' : '') + '">' + (k.godkand ? 'Godkänt' : 'Väntar på ert godkännande') + '</span><button class="kv-x" data-kt-modal-close="1" aria-label="Stäng">✕</button></div></div>'
+        + '<div class="kv-grid"><div class="kv-proof">' + proofBox + '</div>'
+        + '<div class="kv-info"><dl class="kv-spec">'
+        + '<dt>Plagg</dt><dd>' + esc(o.rader[0].plagg) + '</dd>'
+        + '<dt>Färg</dt><dd>' + esc(o.rader[0].farg) + '</dd>'
+        + '<dt>Antal</dt><dd>' + o.rader[0].antal + ' st</dd>'
+        + '<dt>Storlekar</dt><dd>' + esc(k.storlekar) + '</dd>'
+        + '<dt>Placering</dt><dd>' + esc(k.placering) + '</dd>'
+        + '<dt>Tryckstorlek</dt><dd>' + esc(k.bredd) + ' × ' + esc(k.hojd) + ' cm</dd>'
+        + '<dt>Trådfärger</dt><dd>' + pant + '</dd>'
+        + '<dt>Leverans</dt><dd>' + esc(k.leverans) + '</dd>'
+        + '<dt>Pris</dt><dd>' + esc(k.pris || o.summa) + '</dd>'
+        + '</dl>'
+        + '<div class="kv-mats"><div class="kv-matshead"><span class="kv-av">MS</span><div><div class="kv-matsname">Mats Svensson</div><div class="kv-matsrole">Produktion · Noll33</div></div></div>'
+        + '<p class="kv-matsmsg">' + esc(k.matsMsg) + '</p></div>'
+        + actions
+        + '</div></div></div></div>';
     }
 
     /* Sektionsrubrik: eyebrow + hårfin linje (+ ev. handling till höger) — ger
@@ -625,7 +705,8 @@
         + '</div>'
         + tabs() + '<div class="kt-body">' + body + '</div>'
         // Skiss-notisen gäller bara exempeldata — riktigt inloggade ser sin riktiga data.
-        + (isLive() ? '' : '<p class="kt-demonote">Klickbar skiss med exempeldata — kopplas till riktiga konton och order i nästa steg.</p>');
+        + (isLive() ? '' : '<p class="kt-demonote">Klickbar skiss med exempeldata — kopplas till riktiga konton och order i nästa steg.</p>')
+        + (ktModal.nr ? korrekturModal(orderByNr(ktModal.nr)) : '');
     }
 
     function mount() { if (isLive()) loadLive(); render(); }
@@ -640,12 +721,25 @@
         if ((b = e.target.closest('[data-kt-back]'))) { e.preventDefault(); st.viewAs = null; st.tab = 'adm-kunder'; save(); render(); return; }
         if ((b = e.target.closest('[data-kt-logout]'))) { e.preventDefault(); logout(); return; }
         if ((b = e.target.closest('[data-kt-retry]'))) { e.preventDefault(); live.loaded = false; live.error = false; loadLive(); return; }
+        if ((b = e.target.closest('[data-kt-korrektur]'))) { e.preventDefault(); ktModal = { nr: b.getAttribute('data-kt-korrektur'), mode: 'view', view: 'fram' }; render(); return; }
+        if ((b = e.target.closest('[data-kt-proofview]'))) { e.preventDefault(); ktModal.view = b.getAttribute('data-kt-proofview'); render(); return; }
+        if (e.target.closest('[data-kt-change]')) { e.preventDefault(); ktModal.mode = 'change'; render(); return; }
+        if (e.target.closest('[data-kt-change-cancel]')) { e.preventDefault(); ktModal.mode = 'view'; render(); return; }
+        if (e.target.closest('[data-kt-change-send]')) { e.preventDefault(); ktModal.mode = 'sent'; render(); return; }
         if ((b = e.target.closest('[data-kt-approve]'))) {
           e.preventDefault();
-          var onr = b.getAttribute('data-kt-approve');
-          var ord = ORDERS.filter(function (x) { return x.nr === onr; })[0];
-          if (ord) { ord.status = 2; render(); }
+          var ord = orderByNr(b.getAttribute('data-kt-approve'));
+          if (ord) {
+            if (ord.korrektur) ord.korrektur.godkand = { namn: (isLive() ? st.email : (kund().kontakt || 'Er firma')), datum: new Date().toLocaleDateString('sv-SE') };
+            ord.status = 2; render();
+          }
           return;
+        }
+        var _close = e.target.closest('[data-kt-modal-close]');
+        if (_close) {
+          // Overlay-bakgrund eller ✕ stänger; klick inuti modalen gör inget.
+          if (_close.classList.contains('kv-overlay') && e.target.closest('.kv-modal')) return;
+          e.preventDefault(); ktModal.nr = null; ktModal.mode = 'view'; render(); return;
         }
         if ((b = e.target.closest('[data-kt-again]'))) {
           e.preventDefault();
@@ -685,6 +779,7 @@
           return;
         }
       });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && ktModal.nr) { ktModal.nr = null; ktModal.mode = 'view'; render(); } });
     }
     return { mount: mount, init: init, loggedIn: loggedIn, login: login };
   })();
