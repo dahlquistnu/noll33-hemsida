@@ -1045,6 +1045,14 @@ html[data-portal] [data-nav="ansok"] { display: none !important; }
 .kv-textbtn { align-self:flex-start; background:none; border:none; color:var(--muted2); font-size:12.5px; cursor:pointer; padding:2px 0; text-decoration:underline; text-underline-offset:2px; }
 .kv-textbtn:hover { color:var(--ink); }
 @media (max-width:560px) { .kv-grid { grid-template-columns:1fr; } .kv-proof { border-right:none; border-bottom:1px solid var(--line2); } .kv-changebtns { grid-template-columns:1fr; } }
+/* Korrektur-utskrift (Ladda ner PDF → browserns Spara som PDF): visa bara rutan */
+@media print {
+  body * { visibility:hidden; }
+  .kv-overlay, .kv-overlay * { visibility:visible; }
+  .kv-overlay { position:absolute; top:0; left:0; width:100%; background:none; padding:0; display:block; overflow:visible; }
+  .kv-modal { max-width:none; box-shadow:none; border:1px solid var(--line2); }
+  .kv-x, .kv-views, .kv-dl, .kv-actions, .kv-warn, .kv-changeform { display:none !important; }
+}
 
 @media (max-width: 900px) {
   .kt-grid2 { grid-template-columns:1fr; }

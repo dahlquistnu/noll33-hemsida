@@ -429,7 +429,7 @@
         + '</div>'
         + '<div class="kv-views"><button class="kv-vtab' + (view === 'fram' ? ' on' : '') + '" data-kt-proofview="fram">Fram</button>'
         + '<button class="kv-vtab' + (view === 'detalj' ? ' on' : '') + '" data-kt-proofview="detalj">Detalj</button></div>'
-        + '<a class="kv-dl" href="#" onclick="return false"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>Ladda ner korrektur (PDF)</a>';
+        + '<a class="kv-dl" href="#" data-kt-printproof="1"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>Ladda ner korrektur (PDF)</a>';
       var actions;
       if (k.godkand) {
         actions = '<div class="kv-done">' + check + '<span>Godkänt av ' + esc(k.godkand.namn) + ' · ' + esc(k.godkand.datum) + '</span></div>';
@@ -462,7 +462,7 @@
         + '<dt>Leverans</dt><dd>' + esc(k.leverans) + '</dd>'
         + '<dt>Pris</dt><dd>' + esc(k.pris || o.summa) + '</dd>'
         + '</dl>'
-        + '<div class="kv-mats"><div class="kv-matshead"><span class="kv-av">MS</span><div><div class="kv-matsname">Mats Svensson</div><div class="kv-matsrole">Produktion · Noll33</div></div></div>'
+        + '<div class="kv-mats"><div class="kv-matshead"><span class="kv-av">MC</span><div><div class="kv-matsname">Mats Crona</div><div class="kv-matsrole">Produktion · Noll33</div></div></div>'
         + '<p class="kv-matsmsg">' + esc(k.matsMsg) + '</p></div>'
         + actions
         + '</div></div></div></div>';
@@ -763,6 +763,7 @@
           }
           return;
         }
+        if (e.target.closest('[data-kt-printproof]')) { e.preventDefault(); window.print(); return; }
         if (e.target.closest('[data-kt-change]')) { e.preventDefault(); ktModal.mode = 'change'; render(); return; }
         if (e.target.closest('[data-kt-change-cancel]')) { e.preventDefault(); ktModal.mode = 'view'; render(); return; }
         if (e.target.closest('[data-kt-change-send]')) { e.preventDefault(); ktModal.mode = 'sent'; render(); return; }
