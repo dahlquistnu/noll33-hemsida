@@ -393,23 +393,25 @@
        och länkar till studion för justering. State hålls modul-lokalt. */
     var ktModal = { nr: null, mode: 'view', view: 'fram' };
     function orderByNr(nr) { return ordersData().filter(function (x) { return x.nr === nr; })[0]; }
-    // Proof: plagg-silhuett med trycket (Fram) resp. närbild med mått (Detalj).
-    // Demo ritar SVG; live kopplas senare till PRNTR-canvasens packshot.
+    // Proof: riktig plagg-packshot (ur katalogen) med loggan på bröstet (Fram),
+    // resp. logga-närbild + mått (Detalj). Silhuett-fallback om bild saknas.
     function proofSvg(k, view) {
       if (view === 'detalj') {
-        return '<svg viewBox="0 0 210 200" width="88%" aria-hidden="true">'
-          + '<rect x="34" y="46" width="140" height="78" fill="#14181A"></rect>'
-          + '<text x="104" y="92" font-size="20" fill="#B8860B" text-anchor="middle" font-weight="700" letter-spacing="1">JUST GO</text>'
-          + '<line x1="34" y1="140" x2="174" y2="140" stroke="#9A6E08" stroke-width="1.4"></line><line x1="34" y1="136" x2="34" y2="144" stroke="#9A6E08" stroke-width="1.4"></line><line x1="174" y1="136" x2="174" y2="144" stroke="#9A6E08" stroke-width="1.4"></line>'
-          + '<text x="104" y="156" font-size="11" fill="#6B531A" text-anchor="middle">' + esc(k.bredd) + ' cm</text>'
-          + '<line x1="186" y1="46" x2="186" y2="124" stroke="#9A6E08" stroke-width="1.4"></line><line x1="182" y1="46" x2="190" y2="46" stroke="#9A6E08" stroke-width="1.4"></line><line x1="182" y1="124" x2="190" y2="124" stroke="#9A6E08" stroke-width="1.4"></line>'
-          + '<text x="200" y="88" font-size="11" fill="#6B531A" text-anchor="middle" transform="rotate(90 200 88)">' + esc(k.hojd) + ' cm</text>'
-          + '</svg>';
+        return '<div style="width:100%;padding:22px 20px;text-align:center">'
+          + (k.logo ? '<img src="' + esc(k.logo) + '" alt="Tryck" style="max-width:76%;max-height:150px;object-fit:contain;display:inline-block">'
+                    : '<div style="height:130px;display:flex;align-items:center;justify-content:center;color:#8A8576;font-size:12px">Ingen förhandsbild</div>')
+          + '<div style="margin-top:16px;font-size:12px;color:#6B531A;letter-spacing:.02em">Tryckstorlek ' + esc(k.bredd) + ' × ' + esc(k.hojd) + ' cm · ' + esc(k.placering || '') + '</div>'
+          + '</div>';
       }
+      if (k.plaggBild) {
+        return '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:10px">'
+          + '<img src="' + esc(k.plaggBild) + '" alt="Plagg" style="max-width:100%;max-height:100%;object-fit:contain">'
+          + (k.logo ? '<img src="' + esc(k.logo) + '" alt="Tryck" style="position:absolute;left:56%;top:29%;width:13%;object-fit:contain">' : '')
+          + '</div>';
+      }
+      // Fallback (demo-order utan katalogbild): enkel silhuett i plaggfärgen.
       return '<svg viewBox="0 0 140 150" width="72%" aria-hidden="true">'
         + '<path d="M40 26 L54 20 Q70 30 86 20 L100 26 L112 42 L98 54 L96 126 Q70 132 44 126 L42 54 L28 42 Z" fill="' + (k.garmentHex || '#7A6A48') + '" stroke="#5F5333" stroke-width="1.5"></path>'
-        + '<rect x="58" y="52" width="24" height="14" fill="#14181A"></rect>'
-        + '<text x="70" y="61.5" font-size="6.5" fill="#B8860B" text-anchor="middle" font-weight="700">JUST GO</text>'
         + '</svg>';
     }
     function korrekturModal(o) {
