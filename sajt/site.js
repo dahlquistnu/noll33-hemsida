@@ -1441,15 +1441,13 @@
         story + '<div class="k-footpad"></div></div>';
     }
     function renderBrands() {
-      var BT = window.NOLL33_BRAND_TEXTER || {};
+      // Indexkorten: bara logotyp + antal produkter. Beskrivningstexten visas
+      // först på märkets landningssida (openBrand), inte här.
       var counts = {}; data.P.forEach(function (p) { if (p.brand) counts[p.brand] = (counts[p.brand] || 0) + 1; });
       var list = (data.brands || []).slice().sort(function (a, b) { return (counts[b] || 0) - (counts[a] || 0); });
       var tiles = list.map(function (b) {
-        var t = (BT[b] && BT[b].text) || '';
-        var hook = t ? (t.split('. ')[0] + '.') : '';
         return '<button class="k-brandcard k-reveal" data-k="openBrand" data-brand="' + esc(b) + '" aria-label="' + esc(b) + '">' +
           '<span class="k-brandcard-logo">' + brandHtml(b, 'k-blogo k-blogo-lg') + '</span>' +
-          '<span class="k-brandcard-hook">' + esc(hook) + '</span>' +
           '<span class="k-brandcard-count">' + esc((counts[b] || 0) + ' produkter') + '</span></button>';
       }).join('');
       return '<div class="k-wrap"><div class="k-crumb"><button class="k-back" data-k="flyReset">‹ Till sortimentet</button><h2 class="k-h2">Varumärken</h2></div><div class="k-brandgrid">' + tiles + '</div><div class="k-footpad"></div></div>';
