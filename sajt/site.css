@@ -844,8 +844,9 @@ body[data-page="catalog"] .site-header { border-bottom: 0; }
 /* Portalen (#kontoRoot) kör app-systemet: mappa de marketing-klasser som
    render() fortfarande skickar ut ned till app-skalan. Scope = #kontoRoot
    så marketing-sidorna aldrig påverkas (även för inloggade). */
-#kontoRoot .h-statement { font-weight:600; font-size:21px; line-height:1.15; letter-spacing:-.02em; }
-#kontoRoot .eyebrow     { font-size:10.5px; letter-spacing:.14em; color:var(--muted2); }
+#kontoRoot .h-statement       { font-weight:600; font-size:clamp(26px,3vw,38px); line-height:1.02; letter-spacing:-.02em; }
+#kontoRoot .kt-head .eyebrow  { font-size:11px; letter-spacing:.22em; color:var(--muted2); }
+#kontoRoot .eyebrow           { font-size:10.5px; letter-spacing:.14em; color:var(--muted2); }
 #kontoRoot .prose       { font-size:13px; line-height:1.6; max-width:72ch; }
 #kontoRoot .kt-lead     { font-size:13px; line-height:1.6; color:var(--body); max-width:80ch; margin-bottom:clamp(18px,2.4vw,26px); }
 #kontoRoot .kt-sub      { font-size:12px; color:var(--muted); margin-top:7px; }
