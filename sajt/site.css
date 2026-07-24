@@ -844,8 +844,9 @@ body[data-page="catalog"] .site-header { border-bottom: 0; }
 /* Portalen (#kontoRoot) kör app-systemet: mappa de marketing-klasser som
    render() fortfarande skickar ut ned till app-skalan. Scope = #kontoRoot
    så marketing-sidorna aldrig påverkas (även för inloggade). */
-#kontoRoot .h-statement { font-weight:600; font-size:21px; line-height:1.15; letter-spacing:-.02em; }
-#kontoRoot .eyebrow     { font-size:10.5px; letter-spacing:.14em; color:var(--muted2); }
+#kontoRoot .h-statement       { font-weight:600; font-size:clamp(26px,3vw,38px); line-height:1.02; letter-spacing:-.02em; }
+#kontoRoot .kt-head .eyebrow  { font-size:11px; letter-spacing:.22em; color:var(--muted2); }
+#kontoRoot .eyebrow           { font-size:10.5px; letter-spacing:.14em; color:var(--muted2); }
 #kontoRoot .prose       { font-size:13px; line-height:1.6; max-width:72ch; }
 #kontoRoot .kt-lead     { font-size:13px; line-height:1.6; color:var(--body); max-width:80ch; margin-bottom:clamp(18px,2.4vw,26px); }
 #kontoRoot .kt-sub      { font-size:12px; color:var(--muted); margin-top:7px; }
@@ -1089,3 +1090,23 @@ html[data-portal] [data-nav="ansok"] { display: none !important; }
   .kt-head { position:relative; }
   .kt-logout { position:absolute; top:0; right:0; padding:2px 0 3px; }
 }
+
+/* === Plagg-säljtext ("Om plagget") + per-märke-vy === */
+.k-selllist { margin:2px 0 0; padding-left:18px; color:var(--ink); font-size:13.5px; line-height:1.55; }
+.k-selllist li { margin:3px 0; }
+
+.k-dbrand-link { background:none; border:0; padding:0; cursor:pointer; display:block; text-align:left; }
+.k-dbrand-link:hover { opacity:.7; }
+
+.k-brandgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:clamp(18px,2vw,30px); margin-top:8px; }
+.k-brandcard { display:flex; flex-direction:column; align-items:flex-start; gap:12px; text-align:left; background:none; border:1px solid var(--k-line,#E3DECF); border-radius:2px; padding:22px 22px 20px; cursor:pointer; transition:border-color .15s ease; }
+.k-brandcard:hover { border-color:var(--gold); }
+.k-brandcard-logo { display:flex; align-items:center; min-height:34px; }
+.k-brandcard-hook { font-size:13px; line-height:1.45; color:var(--ink); }
+.k-brandcard-count { font-size:12px; color:var(--k-muted2,#6A6F69); }
+
+.k-brandhero { display:flex; gap:clamp(18px,2.4vw,36px); align-items:flex-start; border-bottom:1px solid var(--k-line,#E3DECF); padding-bottom:22px; margin-bottom:24px; }
+.k-brandhero-logo { flex:0 0 auto; display:flex; align-items:center; }
+.k-brandhero-body { max-width:70ch; }
+.k-brandhero-text { font-size:14.5px; line-height:1.6; color:var(--ink); margin:0 0 10px; }
+@media (max-width:640px){ .k-brandhero { flex-direction:column; gap:14px; } }

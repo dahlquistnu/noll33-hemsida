@@ -86,7 +86,7 @@
     LOADBAR.start();
     katalogLoad = new Promise(function (resolve) {
       var s = document.createElement('script');
-      s.src = 'katalog-data.js?v=d2';
+      s.src = 'katalog-data.js?v=d3';
       s.onload = s.onerror = function () { LOADBAR.done(); resolve(); };
       document.head.appendChild(s);
     });
@@ -403,6 +403,14 @@
           + '<div style="margin-top:16px;font-size:12px;color:#6B531A;letter-spacing:.02em">Tryckstorlek ' + esc(k.bredd) + ' × ' + esc(k.hojd) + ' cm · ' + esc(k.placering || '') + '</div>'
           + '</div>';
       }
+      // Riktig order: admin bakar in en färdig komposit-render (plagg+logga i
+      // rätt läge) i proofFront → visa den rakt av, pixelträffsäker.
+      if (k.proofFront) {
+        return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:10px">'
+          + '<img src="' + esc(k.proofFront) + '" alt="Korrektur" style="max-width:100%;max-height:100%;object-fit:contain">'
+          + '</div>';
+      }
+      // Fallback (seed/demo): bar packshot med loggan lagd på bröstet.
       if (k.plaggBild) {
         return '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:10px">'
           + '<img src="' + esc(k.plaggBild) + '" alt="Plagg" style="max-width:100%;max-height:100%;object-fit:contain">'
@@ -1171,7 +1179,9 @@
     function mode() {
       if (st.detailId && data && data.byId[st.detailId]) return 'product';
       if (st.detailId && data) return 'notfound';   // id satt + katalog laddad men produkten finns ej → designat 404
+      if (st.brandsIndex) return 'brands';
       if (st.q) return 'products';
+      if (st.brand) return 'products';   // märkes-landning: brand satt utan family → produktvy (med märkes-header)
       if (!st.family) return 'start';
       if (!st.sub && !st.showAll) return 'category';
       return 'products';
@@ -1286,7 +1296,7 @@
       if (st.sub || st.showAll) { setState({ sub: '', showAll: false, shown: 48 }); top(); return; }
       setState({ family: '', gender: '', shown: 48 }); top();
     }
-    function clearFilters() { setState({ q: '', family: '', gender: '', sub: '', brand: '', showAll: false, shown: 48 }); }
+    function clearFilters() { setState({ q: '', family: '', gender: '', sub: '', brand: '', showAll: false, shown: 48, brandsIndex: false }); }
     function openDetail(id) { setState({ detailId: id, dcolor: 0, dview: 0, panelQty: false, cartMsg: '' }); top(); }
     function closeDetail() { setState({ detailId: null }); }
     function stepView(dir) { var c = detailCtx(); if (c && c.views.length > 1) setState({ dview: (c.vi + dir + c.views.length) % c.views.length }); }
@@ -1369,6 +1379,7 @@
         // Ingen rubrik i flyouten — guld-understrykningen på navknappen pekar redan ut valet.
         inner = '<div class="k-fly-list">' +
           data.CATS.map(function (c) { return '<button class="k-fly-link" data-k="flyCat" data-cat="' + esc(c.name) + '"><span class="k-fly-lbl">' + esc(c.name) + '</span></button>'; }).join('') + '</div>' +
+          '<button class="k-fly-all" data-k="brandIndex">Varumärken</button>' +
           '<button class="k-fly-all" data-k="flyReset">Visa hela sortimentet</button>';
       } else {
         var mg = st.menu, subc = {};
@@ -1429,6 +1440,20 @@
         (feat ? '<div class="k-sec k-featured"><div class="k-sec-h">Mest populära</div><div class="k-featrow">' + feat + '</div></div>' : '') +
         story + '<div class="k-footpad"></div></div>';
     }
+    function renderBrands() {
+      var BT = window.NOLL33_BRAND_TEXTER || {};
+      var counts = {}; data.P.forEach(function (p) { if (p.brand) counts[p.brand] = (counts[p.brand] || 0) + 1; });
+      var list = (data.brands || []).slice().sort(function (a, b) { return (counts[b] || 0) - (counts[a] || 0); });
+      var tiles = list.map(function (b) {
+        var t = (BT[b] && BT[b].text) || '';
+        var hook = t ? (t.split('. ')[0] + '.') : '';
+        return '<button class="k-brandcard k-reveal" data-k="openBrand" data-brand="' + esc(b) + '" aria-label="' + esc(b) + '">' +
+          '<span class="k-brandcard-logo">' + brandHtml(b, 'k-blogo k-blogo-lg') + '</span>' +
+          '<span class="k-brandcard-hook">' + esc(hook) + '</span>' +
+          '<span class="k-brandcard-count">' + esc((counts[b] || 0) + ' produkter') + '</span></button>';
+      }).join('');
+      return '<div class="k-wrap"><div class="k-crumb"><button class="k-back" data-k="flyReset">‹ Till sortimentet</button><h2 class="k-h2">Varumärken</h2></div><div class="k-brandgrid">' + tiles + '</div><div class="k-footpad"></div></div>';
+    }
     function renderCategory() {
       var subs = subCountsSorted();
       var tiles = subs.map(function (o) { var ti = typeImage(o.sub); var lbl = subLabel(o.sub, st.gender); return '<div class="k-tile k-reveal"><button class="k-plate" data-k="setSub" data-sub="' + esc(o.sub) + '" aria-label="' + esc(lbl) + '"><img class="' + (ti.photo ? 'photo' : '') + '" src="' + esc(ti.src) + '" alt="' + esc(lbl) + '" loading="lazy"></button><div class="k-tile-name">' + esc(lbl) + '</div><div class="k-tile-count">' + esc(o.n + ' produkter') + '</div></div>'; }).join('');
@@ -1462,14 +1487,16 @@
       if (st.sort === 'price-asc') all.sort(function (a, b) { return (a.priceFrom == null ? 1e9 : a.priceFrom) - (b.priceFrom == null ? 1e9 : b.priceFrom); });
       else if (st.sort === 'price-desc') all.sort(function (a, b) { return (b.priceFrom == null ? -1 : b.priceFrom) - (a.priceFrom == null ? -1 : a.priceFrom); });
       else if (st.sort === 'name') all.sort(function (a, b) { return String(a.name || '').localeCompare(String(b.name || ''), 'sv'); });
-      var subTitle = st.q ? ('Sökning: ' + st.q) : (st.sub ? subLabel(st.sub, st.gender) : (st.family || 'Alla produkter'));
+      var subTitle = st.q ? ('Sökning: ' + st.q) : (st.sub ? subLabel(st.sub, st.gender) : (st.family || (st.brand ? ('Alla produkter från ' + st.brand) : 'Alla produkter')));
       var backLabel = st.q ? '‹ Alla kategorier' : ('‹ ' + (st.family || 'Alla kategorier'));
       var ctx = (st.gender && !st.q) ? '<div class="k-ctx">' + esc(st.gender) + '</div>' : '';
       var brandOpts = '<option value="">Alla varumärken</option>' + data.brands.map(function (b) { return '<option value="' + esc(b) + '"' + (st.brand === b ? ' selected' : '') + '>' + esc(b) + '</option>'; }).join('');
       var sortOpts = [['pop', 'Populärast'], ['price-asc', 'Pris: låg till hög'], ['price-desc', 'Pris: hög till låg'], ['name', 'Namn A-Ö']].map(function (o) { return '<option value="' + o[0] + '"' + (st.sort === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('');
       var head = '<div class="k-crumb"><button class="k-back" data-k="goBack">' + esc(backLabel) + '</button>' + ctx + '<h2 class="k-h2">' + esc(subTitle) + '</h2></div>';
       var toolbar = '<div class="k-toolbar"><select class="k-select" id="kSort" aria-label="Sortera">' + sortOpts + '</select><select class="k-select" id="kBrand" aria-label="Filtrera på varumärke">' + brandOpts + '</select><span class="k-count">' + all.length + (all.length === 1 ? ' produkt' : ' produkter') + '</span></div>';
-      if (!all.length) return '<div class="k-wrap">' + head + toolbar + '<div class="k-empty"><div>Inga produkter matchar.</div><button data-k="clearFilters">Rensa filter</button></div><div class="k-footpad"></div></div>';
+      var BT = window.NOLL33_BRAND_TEXTER || {};
+      var heroHtml = (st.brand && BT[st.brand]) ? ('<div class="k-brandhero"><div class="k-brandhero-logo">' + brandHtml(st.brand, 'k-blogo k-blogo-lg') + '</div><div class="k-brandhero-body"><p class="k-brandhero-text">' + esc(BT[st.brand].text || '') + '</p>' + (BT[st.brand].url ? ('<a class="gold-link" href="' + esc(BT[st.brand].url) + '" target="_blank" rel="noopener">Besök ' + esc(st.brand) + ' →</a>') : '') + '</div></div>') : '';
+      if (!all.length) return '<div class="k-wrap">' + heroHtml + head + toolbar + '<div class="k-empty"><div>Inga produkter matchar.</div><button data-k="clearFilters">Rensa filter</button></div><div class="k-footpad"></div></div>';
       var visible = all.slice(0, st.shown);
       var grid = visible.map(renderCard).join('');
       var more = '';
@@ -1480,7 +1507,7 @@
           '<div class="k-progress" role="progressbar" aria-valuenow="' + visible.length + '" aria-valuemax="' + all.length + '"><span style="width:' + pct + '%"></span></div>' +
           '</div><button class="k-morebtn" data-k="more">Visa fler</button></div>';
       }
-      return '<div class="k-wrap">' + head + toolbar + '<div class="k-grid">' + grid + '</div>' + more + '<div class="k-footpad"></div></div>';
+      return '<div class="k-wrap">' + heroHtml + head + toolbar + '<div class="k-grid">' + grid + '</div>' + more + '<div class="k-footpad"></div></div>';
     }
     function renderRelated(p) {
       var seen = {}; seen[p.id] = 1;
@@ -1539,9 +1566,11 @@
           : '<button class="k-designbtn is-soon" type="button" disabled aria-disabled="true">Designa med tryck — kommer snart</button>';
       }
       var priceHtml = KONTO.loggedIn()
-        ? '<div class="k-dprice">' + esc(priceLabel(p)) + '</div><div class="k-dnote">Listpris utan förädling. Ert pris med tryck eller brodyr lämnas i offert.</div>'
+        ? '<div class="k-dprice">' + esc(priceLabel(p)) + '</div><div class="k-dnote">Listpris utan förädling.</div>'
         : '<div class="k-dprice">Pris vid inloggning</div><div class="k-dnote"><a href="#" class="gold-link" data-nav="login" style="font-size:12.5px">Logga in</a> för att se era priser.</div>';
-      var info = '<div class="k-prod-info"><div class="k-dbrand">' + brandHtml(p.brand, 'k-blogo k-blogo-lg') + '</div><div class="k-dname">' + esc(p.name) + '</div>' + colorsHtml + sizesHtml + specsHtml + databladHtml + priceHtml + qtyHtml + cta + cartMsg + designbtn + '</div>';
+      var aboutHtml = (p.salespunkter && p.salespunkter.length) ? ('<div class="k-detailsblock"><div class="k-dlabel">Om plagget</div><ul class="k-selllist">' + p.salespunkter.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul></div>') : '';
+      var brandBtn = p.brand ? ('<button class="k-dbrand k-dbrand-link" data-k="openBrand" data-brand="' + esc(p.brand) + '" aria-label="Visa alla från ' + esc(p.brand) + '">' + brandHtml(p.brand, 'k-blogo k-blogo-lg') + '</button>') : ('<div class="k-dbrand">' + brandHtml(p.brand, 'k-blogo k-blogo-lg') + '</div>');
+      var info = '<div class="k-prod-info">' + brandBtn + '<div class="k-dname">' + esc(p.name) + '</div>' + colorsHtml + sizesHtml + aboutHtml + specsHtml + databladHtml + priceHtml + qtyHtml + cta + cartMsg + designbtn + '</div>';
       var media = '<div class="k-prod-media">' + stage + stagenav + thumbs + '</div>';
       return '<div class="k-wrap k-prodwrap"><div class="k-crumb"><button class="k-back" data-k="closeDetail">‹ ' + esc(p.sub ? subLabel(p.sub, p.gender) : (p.family || 'Sortiment')) + '</button></div>' +
         '<div class="k-prod">' + media + info + '</div>' + renderRelated(p) + '<div class="k-footpad"></div></div>';
@@ -1550,6 +1579,7 @@
       var m = mode();
       if (m === 'start') return renderStart();
       if (m === 'category') return renderCategory();
+      if (m === 'brands') return renderBrands();
       if (m === 'product') return renderProduct();
       if (m === 'notfound') return renderNotFound();
       return renderProducts();
@@ -1667,13 +1697,15 @@
         case 'open': openDetail(d.id); break;
         case 'more': setState({ shown: st.shown + PAGE }); break;
         case 'clearFilters': clearFilters(); break;
+        case 'brandIndex': setState({ brandsIndex: true, detailId: null, q: '', family: '', gender: '', sub: '', brand: '', showAll: false, shown: 48, menu: null }); top(); break;
+        case 'openBrand': setState({ brandsIndex: false, brand: d.brand, detailId: null, q: '', family: '', gender: '', sub: '', showAll: false, shown: 48, menu: null }); top(); break;
         case 'closeDetail': closeDetail(); break;
         case 'toggleMenu': setState({ menu: st.menu === d.menu ? null : d.menu }); break;
-        case 'flyReset': setState({ detailId: null, q: '', brand: '', family: '', gender: '', sub: '', showAll: false, shown: 48, menu: null }); window.scrollTo(0, 0); break;
+        case 'flyReset': setState({ detailId: null, q: '', brand: '', family: '', gender: '', sub: '', showAll: false, shown: 48, menu: null, brandsIndex: false }); window.scrollTo(0, 0); break;
         case 'closeMenu': setState({ menu: null }); break;
-        case 'flyCat': setState({ family: d.cat, gender: '', sub: '', showAll: false, brand: '', q: '', shown: 48, detailId: null, menu: null }); top(); break;
-        case 'flySub': setState({ family: 'Kläder', gender: d.gender, sub: d.sub, showAll: false, shown: 48, detailId: null, menu: null }); top(); break;
-        case 'flyAll': setState({ family: 'Kläder', gender: d.gender, sub: '', showAll: true, shown: 48, detailId: null, menu: null }); top(); break;
+        case 'flyCat': setState({ family: d.cat, gender: '', sub: '', showAll: false, brand: '', q: '', shown: 48, detailId: null, menu: null, brandsIndex: false }); top(); break;
+        case 'flySub': setState({ family: 'Kläder', gender: d.gender, sub: d.sub, showAll: false, shown: 48, detailId: null, menu: null, brandsIndex: false }); top(); break;
+        case 'flyAll': setState({ family: 'Kläder', gender: d.gender, sub: '', showAll: true, shown: 48, detailId: null, menu: null, brandsIndex: false }); top(); break;
         case 'setColor': setState({ dcolor: +d.i, dview: 0 }); break;
         case 'setView': setState({ dview: +d.i }); break;
         case 'nextView': stepView(1); break;
@@ -1730,14 +1762,14 @@
       ready: function () { return ensureData(); },
       products: function () { return ensureData() ? data.P : []; },
       priceLabel: function (p) { return priceLabel(p); },
-      search: function (q) { st.q = (q || '').trim().toLowerCase(); st.shown = 48; st.detailId = null; st.menu = null; st.family = ''; st.gender = ''; st.sub = ''; st.showAll = false; st.brand = ''; if (root && bound) renderAll(); },
+      search: function (q) { st.q = (q || '').trim().toLowerCase(); st.shown = 48; st.detailId = null; st.menu = null; st.family = ''; st.gender = ''; st.sub = ''; st.showAll = false; st.brand = ''; st.brandsIndex = false; if (root && bound) renderAll(); },
       openProduct: function (id) { st.detailId = id; st.dcolor = 0; st.dview = 0; st.panelQty = false; st.cartMsg = ''; if (root && bound) renderAll(); },
       // Djuplänk från startsidans sortimentskort → plaggtyp-lista (könsneutral).
-      openSub: function (sub) { st.detailId = null; st.q = ''; st.brand = ''; st.family = 'Kläder'; st.gender = ''; st.sub = sub; st.showAll = false; st.shown = 48; st.menu = null; if (root && bound) renderAll(); },
+      openSub: function (sub) { st.detailId = null; st.q = ''; st.brand = ''; st.family = 'Kläder'; st.gender = ''; st.sub = sub; st.showAll = false; st.shown = 48; st.menu = null; st.brandsIndex = false; if (root && bound) renderAll(); },
       // Djuplänk → hel kategori (family) i katalogen.
-      openFamily: function (fam) { st.detailId = null; st.q = ''; st.brand = ''; st.family = fam; st.gender = ''; st.sub = ''; st.showAll = false; st.shown = 48; st.menu = null; if (root && bound) renderAll(); },
+      openFamily: function (fam) { st.detailId = null; st.q = ''; st.brand = ''; st.family = fam; st.gender = ''; st.sub = ''; st.showAll = false; st.shown = 48; st.menu = null; st.brandsIndex = false; if (root && bound) renderAll(); },
       // Nollställ till katalogens startsida (header "Sortiment" / "Utforska hela katalogen").
-      reset: function () { st.detailId = null; st.q = ''; st.brand = ''; st.family = ''; st.gender = ''; st.sub = ''; st.showAll = false; st.shown = 48; st.menu = null; if (root && bound) renderAll(); },
+      reset: function () { st.detailId = null; st.q = ''; st.brand = ''; st.family = ''; st.gender = ''; st.sub = ''; st.showAll = false; st.shown = 48; st.menu = null; st.brandsIndex = false; if (root && bound) renderAll(); },
       // Stäng flyouten vid scroll: blur under transform flimrar, och en öppen
       // mega-meny som följer med scrollen är ändå fel läge.
       closeMenu: function () { if (st.menu) setState({ menu: null }); }
