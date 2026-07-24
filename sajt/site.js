@@ -613,11 +613,13 @@
         n = live.designs.length;
         lead = LEAD;
         grid = live.designs.map(function (d) {
+          // Portal-metadata (typ, färger, pantone, plagg, metod, order) bärs i
+          // design_data.portal och returneras nu av get_customer_designs som d.portal.
+          var pd = d.portal || {};
           return libCard({
             img: d.thumbnail_url || demoLogo('#14181A', '#C79A2E', (d.name || 'D').slice(0, 6).toUpperCase()),
-            namn: d.name, typ: d.file_kind || d.kind, farger: d.color_count,
-            pantone: d.pantone || d.colors, plagg: d.last_garment, pfarg: d.last_color,
-            antal: d.last_quantity, metod: d.last_method, order: d.last_order_number
+            namn: d.name, typ: pd.typ, farger: pd.farger, pantone: pd.pantone,
+            plagg: pd.plagg, pfarg: pd.pfarg, antal: pd.antal, metod: pd.metod, order: pd.order
           });
         }).join('');
       } else {
@@ -649,9 +651,16 @@
         }).join('') + '</div></div>';
     }
     function vUppgifter(k) {
+      // Live: firma ur order-snapshot, kontakt ur e-posten, e-post ur sessionen.
+      // Leveransadress finns ej i snapshot → kompletteras av oss.
+      var lo = (isLive() && live.orders && live.orders[0] && live.orders[0].raw) || {};
+      var lFirma = lo.customer_company_snapshot || lo.customer_name_snapshot || '';
+      var lKontakt = (function () { var n = (st.email || '').split('@')[0].replace(/[._-]?demo$/i, '').split(/[._-]/)[0]; return n ? n.charAt(0).toUpperCase() + n.slice(1) : ''; })();
       var rows = isLive()
-        ? '<div class="kt-kv"><span>E-post</span><strong>' + esc(st.email) + '</strong></div>'
-          + '<p class="prose" style="margin:14px 0 0;font-size:13px;color:var(--muted2)">Företagsuppgifter kompletteras av oss. Hör av er om något behöver ändras.</p>'
+        ? (lFirma ? '<div class="kt-kv"><span>Företag</span><strong>' + esc(lFirma) + '</strong></div>' : '')
+          + (lKontakt ? '<div class="kt-kv"><span>Kontakt</span><strong>' + esc(lKontakt) + '</strong></div>' : '')
+          + '<div class="kt-kv"><span>E-post</span><strong>' + esc(st.email) + '</strong></div>'
+          + '<p class="prose" style="margin:14px 0 0;font-size:13px;color:var(--muted2)">Leveransadress och fler uppgifter kompletteras av oss. Hör av er om något behöver ändras.</p>'
         : '<div class="kt-kv"><span>Företag</span><strong>' + esc(k.foretag) + '</strong></div>'
           + '<div class="kt-kv"><span>Kontakt</span><strong>' + esc(k.kontakt) + '</strong></div>'
           + '<div class="kt-kv"><span>E-post</span><strong>' + esc(k.email) + '</strong></div>'
