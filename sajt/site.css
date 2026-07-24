@@ -1012,7 +1012,7 @@ html[data-portal] [data-nav="ansok"] { display: none !important; }
 .kv-proof { padding:28px 26px; border-right:1px solid var(--line2); display:flex; flex-direction:column; gap:16px; }
 .kv-shirt { background:var(--panel); border:1px solid var(--line2); aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; }
 .kv-views { display:flex; gap:7px; }
-.kv-vtab { font-size:11.5px; padding:4px 12px; border:1px solid var(--line2); color:var(--ink); background:var(--bg); cursor:pointer; }
+.kv-vtab { font-size:11.5px; padding:5px 15px; border:1px solid var(--line2); border-radius:999px; color:var(--ink); background:var(--bg); cursor:pointer; }
 .kv-vtab.on { background:var(--ink); color:#fff; border-color:var(--ink); }
 .kv-dl { display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:var(--muted2); text-decoration:none; }
 .kv-dl:hover { color:var(--ink); }
@@ -1031,9 +1031,9 @@ html[data-portal] [data-nav="ansok"] { display: none !important; }
 .kv-warn { display:flex; gap:9px; align-items:flex-start; background:#FBF3E3; border:1px solid #E7CE92; padding:10px 12px; font-size:12px; color:#6B531A; line-height:1.5; }
 .kv-warn svg { flex:none; color:#9A6E08; margin-top:1px; }
 .kv-actions { display:flex; flex-direction:column; gap:9px; }
-.kv-approve { background:var(--ink); color:#fff; border:none; font-weight:500; font-size:13.5px; padding:11px; letter-spacing:.02em; cursor:pointer; text-align:center; text-decoration:none; transition:opacity .2s; }
+.kv-approve { background:var(--ink); color:#fff; border:none; border-radius:999px; font-weight:500; font-size:13.5px; padding:12px; letter-spacing:.02em; cursor:pointer; text-align:center; text-decoration:none; transition:opacity .2s; }
 .kv-approve:hover { opacity:.9; }
-.kv-change { background:none; border:1px solid var(--line2); color:var(--ink); font-size:13px; padding:10px; cursor:pointer; text-align:center; text-decoration:none; transition:border-color .2s; }
+.kv-change { background:none; border:1px solid var(--line2); border-radius:999px; color:var(--ink); font-size:13px; padding:11px; cursor:pointer; text-align:center; text-decoration:none; transition:border-color .2s; }
 .kv-change:hover { border-color:var(--muted2); }
 .kv-done { display:flex; align-items:center; gap:9px; background:#EAF3DE; border:1px solid #C0DD97; padding:12px 14px; font-size:13px; color:#3B6D11; font-weight:500; }
 .kv-done svg { flex:none; }

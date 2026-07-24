@@ -424,8 +424,8 @@
       // Båda vyerna renderas en gång; Fram/Detalj togglar bara synlighet (ingen
       // re-render → sidan laddas inte om och packshoten flimrar inte).
       var proofBox = '<div class="kv-shirt">'
-        + '<div data-proof="fram"' + (view === 'fram' ? '' : ' hidden') + ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">' + proofSvg(k, 'fram') + '</div>'
-        + '<div data-proof="detalj"' + (view === 'detalj' ? '' : ' hidden') + ' style="width:100%">' + proofSvg(k, 'detalj') + '</div>'
+        + '<div data-proof="fram" style="width:100%;height:100%;align-items:center;justify-content:center;display:' + (view === 'fram' ? 'flex' : 'none') + '">' + proofSvg(k, 'fram') + '</div>'
+        + '<div data-proof="detalj" style="width:100%;align-items:center;justify-content:center;display:' + (view === 'detalj' ? 'flex' : 'none') + '">' + proofSvg(k, 'detalj') + '</div>'
         + '</div>'
         + '<div class="kv-views"><button class="kv-vtab' + (view === 'fram' ? ' on' : '') + '" data-kt-proofview="fram">Fram</button>'
         + '<button class="kv-vtab' + (view === 'detalj' ? ' on' : '') + '" data-kt-proofview="detalj">Detalj</button></div>'
@@ -445,7 +445,7 @@
         actions = '<div class="kv-warn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true"><path d="M12 9v4m0 4h.01M10.3 4.3 2.6 18a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 4.3a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>'
           + '<span>Granska stavning, färger och placering noga. När ni godkänner går ordern i produktion och kan inte ändras.</span></div>'
           + '<div class="kv-actions"><button class="kv-approve" data-kt-approve="' + esc(o.nr) + '">Godkänn korrektur</button>'
-          + '<button class="kv-change" data-kt-change="1">Något är fel — begär ändring</button></div>';
+          + '<button class="kv-change" data-kt-change="1">Korrigera</button></div>';
       }
       return '<div class="kv-overlay" data-kt-modal-close="1"><div class="kv-modal" role="dialog" aria-modal="true" aria-label="Korrektur ' + esc(o.nr) + '">'
         + '<div class="kv-top"><div><p class="kv-eyeb">Korrektur · ' + esc(o.nr) + '</p><h2 class="kv-h">Godkänn innan produktion</h2></div>'
@@ -758,7 +758,7 @@
           var pv = b.getAttribute('data-kt-proofview'); ktModal.view = pv;
           var pm = b.closest('.kv-modal');
           if (pm) {
-            pm.querySelectorAll('[data-proof]').forEach(function (el) { el.hidden = el.getAttribute('data-proof') !== pv; });
+            pm.querySelectorAll('[data-proof]').forEach(function (el) { el.style.display = (el.getAttribute('data-proof') === pv) ? 'flex' : 'none'; });
             pm.querySelectorAll('.kv-vtab').forEach(function (el) { el.classList.toggle('on', el.getAttribute('data-kt-proofview') === pv); });
           }
           return;
@@ -1512,7 +1512,7 @@
         var stockNote = (function () { if (!col.stock) return ''; var af = false, ao = false; sizesArr.forEach(function (sz) { var l = col.stock[sz]; if (l === 'order') ao = true; else if (l !== 'out') af = true; }); if (!af && !ao) return ''; return (af ? 'I lager hos leverantör — leverans normalt 2–4 dagar. ' : '') + (ao ? '* Beställningsvara — längre leveranstid, bekräftas i offerten.' : ''); })();
         sizesHtml = '<div class="k-dlabel">Storlekar</div><div class="k-dsizes">' + chips + '</div>' + (stockNote ? '<div class="k-stocknote">' + esc(stockNote) + '</div>' : '');
       }
-      var specOrder = [['material', 'Material'], ['tygvikt', 'Tygvikt'], ['vikt', 'Plaggvikt'], ['passform', 'Passform'], ['hals', 'Hals'], ['stangning', 'Stängning'], ['etikett', 'Etikett'], ['vattenpelare', 'Vattenpelare'], ['ursprung', 'Ursprung'], ['tryckyta', 'Tryckyta']];
+      var specOrder = [['material', 'Material'], ['tygvikt', 'Tygvikt'], ['passform', 'Passform'], ['hals', 'Hals'], ['stangning', 'Stängning'], ['etikett', 'Etikett'], ['vattenpelare', 'Vattenpelare'], ['ursprung', 'Ursprung'], ['tryckyta', 'Tryckyta']];
       var specRows = []; specOrder.forEach(function (r) { var v = p.specs && p.specs[r[0]]; if (v) specRows.push('<tr><td>' + esc(r[1]) + '</td><td>' + esc(v) + '</td></tr>'); });
       var certs = p.certs || [], datablad = (p.specs && p.specs.datablad) || '';
       var hasSpecs = specRows.length || certs.length || datablad || p.utgaende;
